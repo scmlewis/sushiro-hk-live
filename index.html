@@ -3,15 +3,69 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>壽司郎 HK Live - 即時籌號與等候時間</title>
+
+    <title>壽司郎 HK Live - 即時籌號與等候時間 | 全港 44 間門市輪候追蹤</title>
+    <meta name="description" content="即時追蹤香港全港 44 間壽司郎門市之籌號發放狀態、輪候組數與預估等候時間。支援門市比對、籌號計算器、歷史人流趨勢及 GPS 定位排序。" />
+    <meta name="keywords" content="壽司郎,Sushiro,香港,即時等候,籌號,輪候時間,排隊,門市,追蹤,HK,queue,live,wait time" />
+    <meta name="author" content="Sushiro HK Live" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://sushiro-hk-live.vercel.app/" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://sushiro-hk-live.vercel.app/" />
+    <meta property="og:title" content="壽司郎 HK Live - 即時籌號與等候時間" />
+    <meta property="og:description" content="即時追蹤香港全港 44 間壽司郎門市之籌號發放狀態、輪候組數與預估等候時間。" />
+    <meta property="og:image" content="https://sushiro-hk-live.vercel.app/og-image.png" />
+    <meta property="og:locale" content="zh_HK" />
+    <meta property="og:site_name" content="壽司郎 HK Live" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://sushiro-hk-live.vercel.app/" />
+    <meta name="twitter:title" content="壽司郎 HK Live - 即時籌號與等候時間" />
+    <meta name="twitter:description" content="即時追蹤香港全港 44 間壽司郎門市之籌號發放狀態、輪候組數與預估等候時間。" />
+    <meta name="twitter:image" content="https://sushiro-hk-live.vercel.app/og-image.png" />
+
+    <!-- PWA -->
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#E21F26" />
-    <meta name="description" content="全港壽司郎門市即時輪候時間與籌號進度追蹤" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="壽司郎 HK" />
+    <link rel="apple-touch-icon" href="/icon.svg" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "壽司郎 HK Live Queue",
+      "url": "https://sushiro-hk-live.vercel.app/",
+      "description": "即時追蹤香港全港 44 間壽司郎門市之籌號發放狀態、輪候組數與預估等候時間。",
+      "applicationCategory": "FoodApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "HKD"
+      },
+      "inLanguage": ["zh-HK", "en"],
+      "featureList": [
+        "全港 44 間門市即時輪候時間",
+        "籌號發放狀態追蹤",
+        "門市比對功能",
+        "籌號計算器",
+        "歷史人流趨勢",
+        "GPS 定位排序",
+        "PWA 離線支援"
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-
