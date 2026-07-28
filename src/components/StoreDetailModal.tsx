@@ -330,7 +330,8 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
         {/* VIEW MODE 1: LIVE CALLING & TICKET CALCULATOR */}
         {viewMode === 'live' ? (
           <>
-            {/* Calling Status Cards snippet (Matching Screencap 1) */}
+            {/* Calling Status Cards */}
+            {allCurrentNums.length > 0 && (
             <div className="p-5 border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-black text-neutral-800 dark:text-neutral-200 uppercase tracking-tight">
@@ -340,7 +341,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
               </div>
 
               <div className="grid grid-cols-3 gap-3">
-                {(allCurrentNums.length > 0 ? allCurrentNums.slice(0, 3) : [minCalledNum, minCalledNum + 1, minCalledNum + 2]).map((num, i) => (
+                {allCurrentNums.slice(0, 3).map((num, i) => (
                   <div key={i} className="bg-white dark:bg-neutral-800 p-3 rounded-lg border border-neutral-200 dark:border-neutral-700 text-center shadow-xs">
                     <span className="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white tabular-nums">
                       {num}
@@ -349,6 +350,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                 ))}
               </div>
             </div>
+            )}
 
             {/* Ticket Calculator Keypad (籌號試算器) */}
             <div className="p-5 sm:p-6 border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
@@ -356,9 +358,10 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                 <h3 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
                   <Calculator className="w-4 h-4 text-[#E21F26]" />
                   <span>籌號計算器</span>
-                  <span className="text-xs text-neutral-400 font-normal">(我的籌號估算 Keypad)</span>
                 </h3>
-                <span className="text-xs text-neutral-400">目前最新號碼: <strong className="text-neutral-900 dark:text-white">#{minCalledNum}</strong></span>
+                {allCurrentNums.length > 0 && (
+                  <span className="text-xs text-neutral-400">目前最新號碼: <strong className="text-neutral-900 dark:text-white">#{minCalledNum}</strong></span>
+                )}
               </div>
 
               {/* Validation Status Banner */}

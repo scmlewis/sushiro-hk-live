@@ -1,6 +1,8 @@
 import React from 'react';
 import { Store, Heart, Layers, Calculator, WifiOff, Clock, Sparkles, CheckCircle2, ExternalLink, Github } from 'lucide-react';
 
+const SUSHIRO_HK_URL = 'https://www.sushiro.com.hk/';
+
 export const AboutSection: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-6 mb-12 animate-fade-in">
@@ -110,6 +112,15 @@ export const AboutSection: React.FC = () => {
           <span>相關連結</span>
         </h3>
         <div className="flex flex-wrap gap-2">
+          <a
+            href={SUSHIRO_HK_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#E21F26] hover:bg-red-700 text-white text-xs font-bold rounded-lg transition-colors"
+          >
+            <ExternalLink className="w-3.5 h-3.5" />
+            <span>壽司郎官方網站</span>
+          </a>
           <a
             href="https://github.com/scmlewis/sushiro-hk-live"
             target="_blank"

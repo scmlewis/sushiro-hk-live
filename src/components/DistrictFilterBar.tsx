@@ -61,7 +61,7 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
     (sortBy !== 'wait-asc' ? 1 : 0);
 
   return (
-    <div className="sticky top-14 z-30 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 mb-4 space-y-3 shadow-sm transition-all rounded-xl">
+    <div className="sticky top-20 z-30 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 mb-4 space-y-3 shadow-sm transition-all rounded-xl">
       {/* Top Main Row: Search Input + Mobile Filter Toggle Button */}
       <div className="flex items-center gap-2">
         {/* Search Input */}

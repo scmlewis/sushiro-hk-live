@@ -73,7 +73,6 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Store className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">全港門市</span>
             <span className="sm:hidden">門市</span>
-            <span>({storeCount})</span>
           </button>
 
           <button
