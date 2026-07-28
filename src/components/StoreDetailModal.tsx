@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { SushiroStore, GroupQueue } from '../types';
 import { getStoreStatusInfo, getTicketStatusInfo, formatGoogleMapsUrl } from '../utils/status';
-import { X, RefreshCw, Heart, MapPin, ExternalLink, Ticket, Info, TrendingUp, TrendingDown, Minus, Calculator, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import { X, RefreshCw, Heart, MapPin, ExternalLink, Ticket, Info, Calculator } from 'lucide-react';
 
 interface StoreDetailModalProps {
   store: SushiroStore | null;
   queue: GroupQueue | null;
   loading: boolean;
   isBookmarked: boolean;
-  initialViewMode?: 'live' | 'history';
   onClose: () => void;
   onRefreshQueue: (storeId: number, storeName: string) => void;
   onToggleBookmark: (store: SushiroStore) => void;
@@ -21,87 +19,23 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   queue,
   loading,
   isBookmarked,
-  initialViewMode = 'live',
   onClose,
   onRefreshQueue,
   onToggleBookmark,
 }) => {
   const [activeTab, setActiveTab] = useState<'all' | 'booth' | 'counter' | 'store' | 'reservation'>('all');
-  const [viewMode, setViewMode] = useState<'live' | 'history'>(initialViewMode);
-  const [liveSection, setLiveSection] = useState<'all' | 'calculator' | 'trend' | 'breakdown'>('all');
   const [myTicket, setMyTicket] = useState<string>('');
 
-  // Sync view mode and reset ticket when modal opens for a new store
   useEffect(() => {
-    setViewMode(initialViewMode);
     setMyTicket('');
-  }, [initialViewMode, store?.id]);
+  }, [store?.id]);
 
-  // State for date management in history table
-  const [currentDateObj, setCurrentDateObj] = useState<Date>(new Date());
-  const daysOfWeek = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-  const dayNamesFull = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-
-  // History records state
-  const [historyRecords, setHistoryRecords] = useState<{ t: number; wait: number; waitingGroup: number; booth: string[] }[]>([]);
-  const [historyLoading, setHistoryLoading] = useState(false);
-
-  const fetchHistory = async (storeId: number, dateStr: string) => {
-    setHistoryLoading(true);
-    try {
-      const res = await fetch(`/api/history?storeid=${storeId}&date=${dateStr}`);
-      const data = await res.json();
-      setHistoryRecords(data.success ? data.records : []);
-    } catch {
-      setHistoryRecords([]);
-    } finally {
-      setHistoryLoading(false);
-    }
-  };
-
-  // Format date as yyyy-mm-dd for API
-  const formatDateKey = (d: Date) => {
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${y}-${m}-${day}`;
-  };
-
-  // Fetch history when date changes or store changes
-  useEffect(() => {
-    if (viewMode === 'history' && store) {
-      fetchHistory(store.id, formatDateKey(currentDateObj));
-    }
-  }, [currentDateObj, store?.id, viewMode]);
-
-  // Derived date selection day of week
-  const selectedDayIdx = currentDateObj.getDay();
-  const formattedDateStr = `${String(currentDateObj.getDate()).padStart(2, '0')}/${String(currentDateObj.getMonth() + 1).padStart(2, '0')}/${currentDateObj.getFullYear()}`;
-
-  // Date step handler (-1 day or +1 day)
-  const handleDateChange = (offsetDays: number) => {
-    const newDate = new Date(currentDateObj);
-    newDate.setDate(newDate.getDate() + offsetDays);
-    setCurrentDateObj(newDate);
-  };
-
-  // Select day of week in current week
-  const handleSelectDayOfWeek = (targetDayIdx: number) => {
-    const currentDay = currentDateObj.getDay();
-    const diff = targetDayIdx - currentDay;
-    const newDate = new Date(currentDateObj);
-    newDate.setDate(newDate.getDate() + diff);
-    setCurrentDateObj(newDate);
-  };
-
-  // Numpad key press handler with validation
   const handleNumpad = (key: string) => {
     if (key === 'del') {
       setMyTicket((prev) => prev.slice(0, -1));
     } else if (key === 'clear') {
       setMyTicket('');
     } else {
-      // Prevent leading double zeros or overly long tickets (>4 digits)
       if (myTicket === '0') {
         setMyTicket(key);
       } else if (myTicket.length < 4) {
@@ -110,7 +44,6 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
     }
   };
 
-  // Quick preset ticket buttons
   const handleQuickPreset = (preset: 'called' | 'next10' | 'next25') => {
     if (preset === 'called') {
       setMyTicket(String(minCalledNum));
@@ -127,7 +60,6 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   const ticketStatusInfo = getTicketStatusInfo(store.netTicketStatus, store.storeStatus);
   const mapsUrl = formatGoogleMapsUrl(store.latitude, store.longitude, store.address, store.name);
 
-  // Grouped queue numbers
   const boothNumbers = queue?.boothQueue || queue?.storeBoothQueue || [];
   const counterNumbers = queue?.counterQueue || queue?.storeCounterQueue || [];
   const storeNumbers = queue?.storeQueue || queue?.mixedQueue || [];
@@ -136,14 +68,12 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   const totalNumbersCount =
     boothNumbers.length + counterNumbers.length + storeNumbers.length + reservationNumbers.length;
 
-  // Find lowest calling ticket or current queue base
   const allCurrentNums = [...boothNumbers, ...counterNumbers, ...storeNumbers]
     .map((n) => parseInt(n.replace(/\D/g, ''), 10))
     .filter((n) => !isNaN(n));
 
   const minCalledNum = allCurrentNums.length > 0 ? Math.min(...allCurrentNums) : Math.max(1, (store.id * 10) % 150 + 50);
 
-  // Keypad & Ticket Calculator Validation Logic
   const myTicketNum = parseInt(myTicket, 10);
   let groupsAhead = 0;
   let estimatedMins = 0;
@@ -168,47 +98,6 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
     groupsAhead = myTicketNum - minCalledNum;
     estimatedMins = Math.max(2, Math.round(groupsAhead * 1.35));
     validationMessage = `正常輪候中：前面尚有 ${groupsAhead} 組，預估等待時間約 ${estimatedMins} 分鐘。`;
-  }
-
-  // Dynamic Historical Records Data Generator based on selected date & store
-  const isWeekend = selectedDayIdx === 0 || selectedDayIdx === 6;
-  const isFriday = selectedDayIdx === 5;
-
-  // 1-Hour Busy Trend derived from real history records
-  const isClosed = store.storeStatus !== 'OPEN';
-
-  // Build trend data from last 5 history records (most recent = now)
-  const last5 = historyRecords.slice(-5);
-  const trendData = last5.length > 0
-    ? last5.map((r, i) => ({
-        time: i === last5.length - 1 ? '現在' : `-${(last5.length - 1 - i) * 15}m`,
-        wait: r.wait,
-      }))
-    : [{ time: '現在', wait: isClosed ? 0 : store.wait }];
-
-  const p60 = trendData.length > 1 ? trendData[0].wait : store.wait;
-  const diff = store.wait - p60;
-
-  let trendBadge = {
-    label: '趨勢平穩',
-    icon: <Minus className="w-3.5 h-3.5" />,
-    color: 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border-neutral-300',
-  };
-
-  if (!isClosed) {
-    if (diff >= 5) {
-      trendBadge = {
-        label: '人流上升中 (Getting Busier)',
-        icon: <TrendingUp className="w-3.5 h-3.5" />,
-        color: 'bg-red-50 text-[#E21F26] border-[#E21F26]/40 dark:bg-red-950/60 dark:text-red-300',
-      };
-    } else if (diff <= -5) {
-      trendBadge = {
-        label: '人流舒緩中 (Getting Quieter)',
-        icon: <TrendingDown className="w-3.5 h-3.5" />,
-        color: 'bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300',
-      };
-    }
   }
 
   return (
@@ -276,38 +165,8 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
           </div>
         </div>
 
-        {/* Fixed Primary View Mode Tab Bar */}
-        <div className="shrink-0 flex border-b-2 border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-950 p-1.5 gap-2">
-          <button
-            onClick={() => setViewMode('live')}
-            className={`flex-1 py-2 px-3 font-black text-xs sm:text-sm uppercase tracking-wider transition-all cursor-pointer rounded-lg flex items-center justify-center gap-2 ${
-              viewMode === 'live'
-                ? 'bg-[#E21F26] text-white shadow-md'
-                : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-200 dark:hover:bg-neutral-800'
-            }`}
-          >
-            <Calculator className="w-4 h-4" />
-            <span>即時叫號 & 籌號估算</span>
-          </button>
-
-          <button
-            onClick={() => setViewMode('history')}
-            className={`flex-1 py-2 px-3 font-black text-xs sm:text-sm uppercase tracking-wider transition-all cursor-pointer rounded-lg flex items-center justify-center gap-2 ${
-              viewMode === 'history'
-                ? 'bg-[#141414] text-white dark:bg-white dark:text-[#141414] shadow-md'
-                : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-200 dark:hover:bg-neutral-800'
-            }`}
-          >
-            <Calendar className="w-4 h-4" />
-            <span>歷史紀錄</span>
-          </button>
-        </div>
-
         {/* Scrollable Modal Content Area */}
         <div className="flex-1 overflow-y-auto">
-        {/* VIEW MODE 1: LIVE CALLING & TICKET CALCULATOR */}
-        {viewMode === 'live' ? (
-          <>
             {/* Calling Status Cards */}
             {allCurrentNums.length > 0 && (
             <div className="p-5 border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50">
@@ -330,7 +189,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
             </div>
             )}
 
-            {/* Ticket Calculator Keypad (籌號試算器) */}
+            {/* Ticket Calculator Keypad */}
             <div className="p-5 sm:p-6 border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
@@ -342,7 +201,6 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                 )}
               </div>
 
-              {/* Validation Status Banner */}
               <div className={`mb-4 p-3 rounded-md border text-xs font-bold flex items-center justify-between gap-2 transition-all ${
                 ticketValidationState === 'called'
                   ? 'bg-red-50 text-red-700 border-red-300 dark:bg-red-950/60 dark:text-red-300 dark:border-red-800'
@@ -367,9 +225,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Keypad Column */}
                 <div>
-                  {/* Quick Preset Buttons */}
                   <div className="flex items-center gap-1.5 mb-2 text-[11px]">
                     <span className="text-neutral-400 font-bold">快速輸入:</span>
                     <button
@@ -392,7 +248,6 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                     </button>
                   </div>
 
-                  {/* Entered Display */}
                   <div className={`mb-3 p-3 bg-white dark:bg-neutral-800 border-2 rounded-lg text-center h-12 flex items-center justify-between px-4 ${myTicket ? 'border-[#E21F26]' : 'border-neutral-200 dark:border-neutral-700'}`}>
                     <span className="text-xs font-bold text-neutral-400">您輸入的籌號</span>
                     <span className={`text-2xl font-black tracking-widest tabular-nums ${myTicket ? 'text-[#E21F26]' : 'text-neutral-300 dark:text-neutral-600'}`}>
@@ -400,7 +255,6 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                     </span>
                   </div>
 
-                  {/* Numpad */}
                   <div className="grid grid-cols-3 gap-1.5 text-lg font-bold">
                     {['7', '8', '9', '4', '5', '6', '1', '2', '3', 'clear', '0', 'del'].map((k) => (
                       <button
@@ -418,7 +272,6 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                   </div>
                 </div>
 
-                {/* Estimation Results Column */}
                 <div className="flex flex-col gap-3 justify-between">
                   <div className={`border-2 rounded-lg p-4 text-center flex-1 flex flex-col items-center justify-center min-h-[90px] transition-all ${
                     ticketValidationState === 'called'
@@ -453,70 +306,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
               </div>
             </div>
 
-            {/* 1-Hour Busy Trend Graph Section */}
-            <div className="px-6 sm:px-8 py-5 border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <h3 className="text-sm font-black tracking-tight uppercase text-neutral-900 dark:text-white flex items-center gap-1.5">
-                    <span>近期人流趨勢</span>
-                    <span className="text-[10px] text-neutral-400 font-bold uppercase">(人流趨勢)</span>
-                  </h3>
-                </div>
-
-                <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black border ${trendBadge.color}`}>
-                  {trendBadge.icon}
-                  <span>{trendBadge.label}</span>
-                </div>
-              </div>
-
-              <div className="h-36 w-full pt-2">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={trendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="waitTrendGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#E21F26" stopOpacity={0.35} />
-                        <stop offset="95%" stopColor="#E21F26" stopOpacity={0.0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#33333322" />
-                    <XAxis
-                      dataKey="time"
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fontSize: 10, fontWeight: 'bold', fill: '#888888' }}
-                    />
-                    <YAxis
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fontSize: 10, fontWeight: 'bold', fill: '#888888' }}
-                      unit="m"
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: '#141414',
-                        borderColor: '#E21F26',
-                        borderRadius: '8px',
-                        color: '#ffffff',
-                        fontWeight: 'bold',
-                        fontSize: '12px',
-                      }}
-                      formatter={(val: number | string | undefined) => [`${val ?? 0} 分鐘`, '預估等候']}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="wait"
-                      stroke="#E21F26"
-                      strokeWidth={3}
-                      fillOpacity={1}
-                      fill="url(#waitTrendGrad)"
-                      activeDot={{ r: 6, fill: '#E21F26', stroke: '#ffffff', strokeWidth: 2 }}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-
-            {/* Live Queue Breakdown Tabs */}
+            {/* Live Queue Breakdown */}
             <div className="p-6 sm:p-8">
               <div className="flex items-center justify-between mb-5">
                 <h3 className="text-xl font-black tracking-tight text-neutral-900 dark:text-white flex items-center gap-2">
@@ -549,7 +339,6 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                 </div>
               </div>
 
-              {/* Queue Filter Tabs */}
               <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-1 text-xs no-scrollbar">
                 <button
                   onClick={() => setActiveTab('all')}
@@ -603,7 +392,6 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                 </button>
               </div>
 
-              {/* Queue Content List */}
               <div className="space-y-4 max-h-64 overflow-y-auto pr-1">
                 {(activeTab === 'all' || activeTab === 'booth') && (
                   <QueueCategoryBlock
@@ -647,126 +435,6 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                 )}
               </div>
             </div>
-          </>
-        ) : (
-          /* VIEW MODE 2: REAL HISTORICAL DATA (collected passively from live API) */
-          <div className="p-6 sm:p-8">
-            {/* Date Picker Header */}
-            <div className="flex items-center justify-between mb-3 bg-neutral-50 dark:bg-neutral-800/80 p-3 rounded-lg border border-neutral-200 dark:border-neutral-700">
-              <button
-                onClick={() => handleDateChange(-1)}
-                className="p-2 rounded-lg border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-800 dark:text-white cursor-pointer text-xs font-black flex items-center gap-1 transition-colors"
-                title="前一天"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                <span>前一天</span>
-              </button>
-
-              <div className="text-center">
-                <div className="text-base sm:text-lg font-black tracking-tight text-neutral-900 dark:text-white flex items-center justify-center gap-2">
-                  <Calendar className="w-4 h-4 text-[#E21F26]" />
-                  <span>{formattedDateStr}</span>
-                  <span className="text-xs px-2 py-0.5 rounded bg-[#E21F26] text-white font-bold">{dayNamesFull[selectedDayIdx]}</span>
-                </div>
-                <div className="text-[11px] text-neutral-400 font-bold mt-0.5">
-                  {isWeekend ? '🔥 週末假日 (尖峰時段等候較長)' : isFriday ? '⚡ 星期五小週末 (晚市熱門)' : '☕ 平日時段 (流動迅速)'}
-                </div>
-              </div>
-
-              <button
-                onClick={() => handleDateChange(1)}
-                className="p-2 rounded-lg border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-800 dark:text-white cursor-pointer text-xs font-black flex items-center gap-1 transition-colors"
-                title="後一天"
-              >
-                <span>後一天</span>
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Day of Week Selector */}
-            <div className="flex items-center justify-between gap-1.5 mb-4 border-b border-neutral-200 dark:border-neutral-800 pb-3 overflow-x-auto no-scrollbar">
-              {daysOfWeek.map((day, idx) => (
-                <button
-                  key={day}
-                  onClick={() => handleSelectDayOfWeek(idx)}
-                  className={`flex-1 min-w-[40px] py-2 rounded-lg font-black text-xs transition-all cursor-pointer flex flex-col items-center justify-center ${
-                    selectedDayIdx === idx
-                      ? 'bg-[#E21F26] text-white shadow-md scale-105 ring-2 ring-[#E21F26]/40'
-                      : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700'
-                  }`}
-                >
-                  <span className="text-[10px] opacity-80 uppercase">{day}</span>
-                  <span className="text-xs font-extrabold">{dayNamesFull[idx].replace('星期', '周')}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Historical Log Table */}
-            <div className="max-h-[380px] overflow-y-auto border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-xs">
-              {historyLoading ? (
-                <div className="flex items-center justify-center py-12 text-neutral-400">
-                  <RefreshCw className="w-5 h-5 animate-spin mr-2" />
-                  <span className="text-sm font-bold">載入中...</span>
-                </div>
-              ) : historyRecords.length === 0 ? (
-                <div className="text-center py-12 px-6">
-                  <Info className="w-8 h-8 mx-auto text-neutral-400 mb-2" />
-                  <p className="text-neutral-800 dark:text-neutral-200 font-bold text-sm">
-                    暫無歷史紀錄（資料於用家查閱時自動收集）
-                  </p>
-                </div>
-              ) : (
-                <table className="w-full text-left text-xs sm:text-sm">
-                  <thead className="bg-neutral-100 dark:bg-neutral-800 text-neutral-500 font-bold sticky top-0 border-b border-neutral-200 dark:border-neutral-700 z-10">
-                    <tr>
-                      <th className="py-3 px-4">時間</th>
-                      <th className="py-3 px-4 text-center">等候組數</th>
-                      <th className="py-3 px-4 text-center">等候時間</th>
-                      <th className="py-3 px-4 text-right">最新籌號</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800 font-medium">
-                    {historyRecords.map((row, i) => {
-                      const waitMins = row.wait;
-                      let densityCategory: 'offpeak' | 'medium' | 'peak' = 'offpeak';
-                      if (waitMins >= 30) densityCategory = 'peak';
-                      else if (waitMins >= 10) densityCategory = 'medium';
-                      const timeStr = new Date(row.t).toLocaleTimeString('en-HK', {
-                        timeZone: 'Asia/Hong_Kong',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: false,
-                      });
-                      return (
-                        <tr
-                          key={i}
-                          className={`transition-colors ${
-                            densityCategory === 'peak'
-                              ? 'bg-red-50/40 dark:bg-red-950/20 hover:bg-red-50 dark:hover:bg-red-950/40'
-                              : 'hover:bg-neutral-50 dark:hover:bg-neutral-800/50'
-                          }`}
-                        >
-                          <td className="py-2.5 px-4 font-mono font-bold text-neutral-900 dark:text-white">
-                            {timeStr}
-                          </td>
-                          <td className="py-2.5 px-4 text-center font-bold text-neutral-700 dark:text-neutral-300">
-                            {row.waitingGroup > 0 ? `${row.waitingGroup} 組` : '0 組'}
-                          </td>
-                          <td className={`py-2.5 px-4 text-center font-black ${waitMins > 0 ? 'text-[#E21F26]' : 'text-emerald-600 dark:text-emerald-400'}`}>
-                            {waitMins > 0 ? `${waitMins}分` : '0分'}
-                          </td>
-                          <td className="py-2.5 px-4 text-right font-mono text-neutral-600 dark:text-neutral-400">
-                            {row.booth && row.booth.length > 0 ? row.booth.map((b) => `#${b}`).join(' ') : '—'}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              )}
-            </div>
-          </div>
-        )}
         </div>
 
         {/* Fixed Modal Footer */}
@@ -812,4 +480,3 @@ const QueueCategoryBlock: React.FC<QueueCategoryBlockProps> = ({ title, numbers,
     </div>
   );
 };
-

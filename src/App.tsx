@@ -60,7 +60,7 @@ export default function App() {
 
   // Modal & Geolocation
   const [selectedStoreModal, setSelectedStoreModal] = useState<SushiroStore | null>(null);
-  const [modalInitialMode, setModalInitialMode] = useState<'live' | 'history'>('live');
+
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [locationLoading, setLocationLoading] = useState<boolean>(false);
 
@@ -308,9 +308,8 @@ export default function App() {
   }, [fetchSingleQueue, showToast]);
 
   // Handle select store modal
-  const handleSelectStoreModal = useCallback((store: SushiroStore, mode: 'live' | 'history' = 'live') => {
+  const handleSelectStoreModal = useCallback((store: SushiroStore) => {
     setSelectedStoreModal(store);
-    setModalInitialMode(mode);
     fetchSingleQueue(store.id, true);
   }, [fetchSingleQueue]);
 
@@ -525,7 +524,7 @@ export default function App() {
                 onRemoveFromCompare={(id) => setCompareIds((prev) => prev.filter((item) => item !== id))}
                 onClearCompare={() => setCompareIds([])}
                 onRefreshQueue={handleManualStoreRefresh}
-                onSelectStore={(store) => handleSelectStoreModal(store, 'live')}
+                onSelectStore={(store) => handleSelectStoreModal(store)}
                 onAddDefaultStores={handleAddDefaultCompareStores}
               />
             )}
@@ -655,7 +654,6 @@ export default function App() {
             queue={selectedStoreModal ? queues[selectedStoreModal.id]?.queue || null : null}
             loading={selectedStoreModal ? queues[selectedStoreModal.id]?.loading || false : false}
             isBookmarked={selectedStoreModal ? bookmarkedIds.includes(selectedStoreModal.id) : false}
-            initialViewMode={modalInitialMode}
             onClose={() => setSelectedStoreModal(null)}
             onRefreshQueue={handleManualStoreRefresh}
             onToggleBookmark={handleToggleBookmark}
