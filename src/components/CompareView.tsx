@@ -26,6 +26,17 @@ export const CompareView: React.FC<CompareViewProps> = ({
   const minWait = openStores.length > 1 ? Math.min(...openStores.map((s) => s.wait)) : null;
   const minGroup = openStores.length > 1 ? Math.min(...openStores.map((s) => s.waitingGroup)) : null;
 
+  const sortedStores = [...stores].sort((a, b) => {
+    if (a.storeStatus === 'OPEN' && b.storeStatus !== 'OPEN') return -1;
+    if (a.storeStatus !== 'OPEN' && b.storeStatus === 'OPEN') return 1;
+    if (a.storeStatus === 'OPEN' && b.storeStatus === 'OPEN') {
+      if (minWait !== null && a.wait === minWait) return -1;
+      if (minWait !== null && b.wait === minWait) return 1;
+      return a.wait - b.wait;
+    }
+    return 0;
+  });
+
   if (stores.length === 0) {
     return (
       <div className="text-center py-16 px-4 text-neutral-500 font-medium">
@@ -71,7 +82,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stores.map((store) => {
+        {sortedStores.map((store) => {
           const storeStatusInfo = getStoreStatusInfo(store.storeStatus);
           const ticketStatusInfo = getTicketStatusInfo(store.netTicketStatus, store.storeStatus);
           const qData = queues[store.id];
@@ -109,8 +120,8 @@ export const CompareView: React.FC<CompareViewProps> = ({
 
                 <h3 className="font-black text-base text-neutral-900 dark:text-white truncate mb-3">{store.name}</h3>
 
-                <div className="space-y-2 mb-3">
-                  <div className="flex items-center justify-between text-xs bg-neutral-50 dark:bg-neutral-900/80 p-2 rounded-lg border border-neutral-200/80 dark:border-neutral-700/60">
+                <div className="flex items-center justify-between text-xs bg-neutral-50 dark:bg-neutral-900/80 p-2.5 rounded-lg border border-neutral-200/80 dark:border-neutral-700/60 mb-3">
+                  <div className="flex items-center gap-1.5">
                     <span className="text-[10px] font-black text-neutral-400 uppercase flex items-center gap-1">
                       <Clock className="w-3 h-3 text-[#E21F26]" />等候
                     </span>
@@ -118,7 +129,8 @@ export const CompareView: React.FC<CompareViewProps> = ({
                       {store.storeStatus === 'OPEN' ? `${store.wait} 分鐘` : '休息中'}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between text-xs bg-neutral-50 dark:bg-neutral-900/80 p-2 rounded-lg border border-neutral-200/80 dark:border-neutral-700/60">
+                  <div className="w-px h-4 bg-neutral-300 dark:bg-neutral-600" />
+                  <div className="flex items-center gap-1.5">
                     <span className="text-[10px] font-black text-neutral-400 uppercase flex items-center gap-1">
                       <Users className="w-3 h-3 text-sky-500" />組數
                     </span>

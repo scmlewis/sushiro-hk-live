@@ -113,10 +113,10 @@ export function getWaitTimeTier(waitMinutes: number, storeStatus = 'OPEN'): Wait
     return {
       tier: 'medium',
       title: '中等輪候',
-      badgeBg: 'bg-orange-50 dark:bg-orange-950/40',
-      badgeText: 'text-orange-800 dark:text-orange-300',
-      borderAccent: 'border-orange-300 dark:border-orange-800',
-      cardHighlight: 'border-l-4 border-l-orange-500',
+      badgeBg: 'bg-violet-50 dark:bg-violet-950/40',
+      badgeText: 'text-violet-800 dark:text-violet-300',
+      borderAccent: 'border-violet-300 dark:border-violet-800',
+      cardHighlight: 'border-l-4 border-l-violet-500',
     };
   }
 
@@ -124,10 +124,10 @@ export function getWaitTimeTier(waitMinutes: number, storeStatus = 'OPEN'): Wait
     return {
       tier: 'long',
       title: '輪候較久',
-      badgeBg: 'bg-rose-50 dark:bg-rose-950/40',
-      badgeText: 'text-rose-800 dark:text-rose-300',
-      borderAccent: 'border-rose-300 dark:border-rose-800',
-      cardHighlight: 'border-l-4 border-l-rose-500',
+      badgeBg: 'bg-orange-50 dark:bg-orange-950/40',
+      badgeText: 'text-orange-800 dark:text-orange-300',
+      borderAccent: 'border-orange-300 dark:border-orange-800',
+      cardHighlight: 'border-l-4 border-l-orange-500',
     };
   }
 

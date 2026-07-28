@@ -41,6 +41,9 @@ export const StoreCard: React.FC<StoreCardProps> = ({
     } else if (store.wait < 15) {
       borderLeftColor = 'border-l-8 border-amber-500';
       waitTextColor = 'text-amber-600 dark:text-amber-400';
+    } else if (store.wait < 30) {
+      borderLeftColor = 'border-l-8 border-violet-500';
+      waitTextColor = 'text-violet-600 dark:text-violet-400';
     } else {
       borderLeftColor = 'border-l-8 border-[#E21F26]';
       waitTextColor = 'text-[#E21F26]';
