@@ -51,12 +51,8 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
       {/* Left Accent Bar */}
       <div className={`absolute left-0 top-0 bottom-0 w-1 ${accentColorClass}`} />
 
-      {/* Row 1: Status — area, name, wait time, group count */}
+      {/* Row 1: Status — name, wait time, group count */}
       <div className="flex items-center gap-2 px-3 py-2.5 ml-1">
-        <span className="px-1.5 py-0.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 font-black text-[9px] uppercase tracking-wider shrink-0">
-          {store.area}
-        </span>
-
         <h4
           onClick={() => onSelectStore(store)}
           className="text-sm font-black text-neutral-900 dark:text-white truncate cursor-pointer hover:text-[#E21F26] transition-colors min-w-0 flex-1"

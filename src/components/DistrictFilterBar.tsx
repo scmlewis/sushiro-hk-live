@@ -101,12 +101,13 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
         </button>
       </div>
 
-      {/* Collapsible Filter Options Panel (Collapsed by default on mobile, always visible on md+) */}
+      {/* Collapsible Filter Options Panel */}
       <div
-        className={`${
-          isExpanded ? 'block' : 'hidden md:block'
-        } space-y-3 pt-2 md:pt-0 border-t md:border-none border-neutral-100 dark:border-neutral-800 transition-all`}
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${
+          isExpanded ? 'max-h-60 opacity-100' : 'max-h-0 opacity-0 md:max-h-[500px] md:opacity-100'
+        }`}
       >
+        <div className="space-y-3 pt-2 md:pt-0 border-t md:border-none border-neutral-100 dark:border-neutral-800">
         {/* Row 1: Sort Selector & Location Button */}
         <div className="flex flex-col sm:flex-row items-center gap-2.5">
           <div className="relative w-full sm:w-60">
@@ -206,6 +207,7 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
             {onlyIssuingTickets && <Check className="w-3 h-3" />}
             <span>只看派籌中</span>
           </button>
+        </div>
         </div>
       </div>
     </div>

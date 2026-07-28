@@ -8,16 +8,16 @@ import { BookmarksSection } from './components/BookmarksSection';
 import { DistrictFilterBar } from './components/DistrictFilterBar';
 import { CompactStoreRow } from './components/CompactStoreRow';
 import { StoreDetailModal } from './components/StoreDetailModal';
-import { CompareDrawer } from './components/CompareDrawer';
+import { CompareView } from './components/CompareView';
 import { AboutSection } from './components/AboutSection';
 import { Toast } from './components/Toast';
-import { AlertCircle, Layers, ChevronUp } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import noStoresFoundImg from './assets/images/no_stores_found_1785143279312.jpg';
 
 const BOOKMARKS_STORAGE_KEY = 'sushiro_hk_bookmarks_v1';
 const TEXT_SIZE_KEY = 'sushiro_hk_text_size';
 type TextSize = 'S' | 'M' | 'L';
-const TEXT_SIZE_MAP: Record<TextSize, string> = { S: '13px', M: '15px', L: '17px' };
+const TEXT_SIZE_MAP: Record<TextSize, string> = { S: '12px', M: '15px', L: '19px' };
 
 export default function App() {
   const [textSize, setTextSize] = useState<TextSize>(() => {
@@ -55,7 +55,6 @@ export default function App() {
     }
   });
   const [compareIds, setCompareIds] = useState<number[]>([]);
-  const [isCompareOpen, setIsCompareOpen] = useState<boolean>(false);
 
   // Modal & Geolocation
   const [selectedStoreModal, setSelectedStoreModal] = useState<SushiroStore | null>(null);
@@ -260,7 +259,7 @@ export default function App() {
     if (bookmarkedIds.length === 0) return;
     const combined = Array.from(new Set([...compareIds, ...bookmarkedIds])).slice(0, 4);
     setCompareIds(combined);
-    setIsCompareOpen(true);
+    setActiveMainTab('compare');
     showToast(`已將關注門市加入即時比對（已加入 ${combined.length} 間）`, 'success');
   }, [bookmarkedIds, compareIds, showToast]);
 
@@ -342,16 +341,29 @@ export default function App() {
       return { ...s, distanceKm };
     });
 
-    // Search query filter
+    // Search query filter (fuzzy: supports partial, pinyin-like, and sequential char matching)
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
-      list = list.filter(
-        (s) =>
-          s.name.toLowerCase().includes(q) ||
-          (s.nameEn && s.nameEn.toLowerCase().includes(q)) ||
-          s.area.toLowerCase().includes(q) ||
-          s.address.toLowerCase().includes(q)
-      );
+      list = list.filter((s) => {
+        const nameLower = s.name.toLowerCase();
+        const nameEnLower = (s.nameEn || '').toLowerCase();
+        const areaLower = s.area.toLowerCase();
+        const addrLower = s.address.toLowerCase();
+        // Direct substring match (highest priority)
+        if (nameLower.includes(q) || nameEnLower.includes(q) || areaLower.includes(q) || addrLower.includes(q)) return true;
+        // Fuzzy: all chars of query appear in order within the name
+        let qi = 0;
+        for (let ci = 0; ci < nameLower.length && qi < q.length; ci++) {
+          if (nameLower[ci] === q[qi]) qi++;
+        }
+        if (qi === q.length) return true;
+        // Also try fuzzy match on English name
+        qi = 0;
+        for (let ci = 0; ci < nameEnLower.length && qi < q.length; ci++) {
+          if (nameEnLower[ci] === q[qi]) qi++;
+        }
+        return qi === q.length;
+      });
     }
 
     // Region Area filter (港島 / 九龍 / 新界)
@@ -446,9 +458,6 @@ export default function App() {
         activeMainTab={activeMainTab}
         onSelectTab={(tab) => {
           setActiveMainTab(tab);
-          if (tab === 'compare') {
-            setIsCompareOpen(true);
-          }
         }}
         onGlobalRefresh={() => fetchStores(true)}
       />
@@ -513,8 +522,21 @@ export default function App() {
               />
             )}
 
+            {/* Compare View Tab (Inline) */}
+            {activeMainTab === 'compare' && (
+              <CompareView
+                stores={comparedStores}
+                queues={queues}
+                onRemoveFromCompare={(id) => setCompareIds((prev) => prev.filter((item) => item !== id))}
+                onClearCompare={() => setCompareIds([])}
+                onRefreshQueue={handleManualStoreRefresh}
+                onSelectStore={(store) => handleSelectStoreModal(store, 'live')}
+                onAddDefaultStores={handleAddDefaultCompareStores}
+              />
+            )}
+
             {/* All Stores View Tab (Isolated View) */}
-            {(activeMainTab === 'all' || activeMainTab === 'compare') && (
+            {activeMainTab === 'all' && (
               <>
                 {/* District Filter & Floating Search & Sort Bar */}
                 <DistrictFilterBar
@@ -641,38 +663,6 @@ export default function App() {
         onRefreshQueue={handleManualStoreRefresh}
         onToggleBookmark={handleToggleBookmark}
       />
-
-      {/* Compare Side-by-Side Drawer */}
-      <CompareDrawer
-        isOpen={isCompareOpen}
-        stores={comparedStores}
-        queues={queues}
-        onClose={() => setIsCompareOpen(false)}
-        onRemoveFromCompare={(id) => {
-          setCompareIds((prev) => prev.filter((item) => item !== id));
-        }}
-        onClearCompare={() => setCompareIds([])}
-        onRefreshQueue={handleManualStoreRefresh}
-        onSelectStore={(store) => handleSelectStoreModal(store, 'live')}
-        onAddDefaultStores={handleAddDefaultCompareStores}
-      />
-
-      {/* Floating Sticky Compare Pill */}
-      {compareIds.length > 0 && !isCompareOpen && (
-        <div className="fixed bottom-4 right-4 sm:right-6 z-40 animate-fade-in">
-          <button
-            onClick={() => setIsCompareOpen(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-[#141414] hover:bg-[#E21F26] text-white font-black text-xs uppercase rounded-full shadow-2xl border-2 border-white/20 transition-all cursor-pointer group"
-          >
-            <Layers className="w-4 h-4 text-[#E21F26] group-hover:text-white transition-colors" />
-            <span>門市比對</span>
-            <span className="px-2 py-0.5 bg-[#E21F26] group-hover:bg-white group-hover:text-[#141414] text-white font-black rounded-full text-[10px]">
-              {compareIds.length} / 4
-            </span>
-            <ChevronUp className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      )}
 
       {/* Toast Notification */}
       <Toast toast={toast} onDismiss={() => setToast(null)} />

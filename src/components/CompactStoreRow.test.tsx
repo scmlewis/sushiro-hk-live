@@ -37,11 +37,6 @@ describe('CompactStoreRow', () => {
     expect(screen.getByText('旺角店')).toBeInTheDocument();
   });
 
-  it('renders area badge', () => {
-    render(<CompactStoreRow {...defaultProps} />);
-    expect(screen.getByText('旺角')).toBeInTheDocument();
-  });
-
   it('renders wait time for open store', () => {
     render(<CompactStoreRow {...defaultProps} />);
     expect(screen.getByText('15分')).toBeInTheDocument();

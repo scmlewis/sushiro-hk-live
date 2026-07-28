@@ -46,16 +46,17 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           <div className="flex sm:hidden items-center gap-2">
             <div className="flex items-center gap-1 bg-black/20 px-2 py-1 rounded-full text-[11px] font-bold font-mono">
+              <span className="text-red-200">最後更新</span>
               <Clock className="w-3 h-3 text-red-200" />
               <span>{formattedTime}</span>
             </div>
             <button
               onClick={onGlobalRefresh}
               disabled={loading}
-              className="p-1.5 rounded-full bg-white text-[#E21F26] transition-all cursor-pointer disabled:opacity-60"
+              className="p-2 rounded-full bg-white text-[#E21F26] transition-all cursor-pointer disabled:opacity-60"
               title="更新數據"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             </button>
           </div>
         </div>
@@ -119,6 +120,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Right Status & Refresh Button */}
         <div className="hidden sm:flex items-center gap-3 shrink-0">
           <div className="flex items-center gap-1.5 bg-black/20 px-2.5 py-1 rounded-full text-xs font-bold font-mono">
+            <span className="text-red-200">最後更新</span>
             <Clock className="w-3.5 h-3.5 text-red-200" />
             <span>{formattedTime}</span>
           </div>
@@ -126,10 +128,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             onClick={onGlobalRefresh}
             disabled={loading}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white text-[#E21F26] font-black text-xs transition-all cursor-pointer disabled:opacity-60 hover:bg-red-50 shadow-sm"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-white text-[#E21F26] font-black text-xs transition-all cursor-pointer disabled:opacity-60 hover:bg-red-50 shadow-sm"
             title="重新讀取全港門市叫號數據"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             <span>{loading ? '更新中' : '更新數據'}</span>
           </button>
         </div>

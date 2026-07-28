@@ -54,7 +54,6 @@ describe('App integration flow', () => {
     vi.restoreAllMocks();
     localStorage.clear();
 
-    // @ts-expect-error mocking fetch globally
     global.fetch = vi.fn().mockImplementation((url: string) => {
       if (url.includes('/api/stores')) {
         return Promise.resolve({
@@ -179,8 +178,8 @@ describe('App integration flow', () => {
 
     // Click Large
     await user.click(screen.getByText('大'));
-    // The root div should have fontSize 17px
+    // The root div should have fontSize 19px
     const rootDiv = document.querySelector('.min-h-screen');
-    expect(rootDiv?.getAttribute('style')).toContain('17px');
+    expect(rootDiv?.getAttribute('style')).toContain('19px');
   });
 });
