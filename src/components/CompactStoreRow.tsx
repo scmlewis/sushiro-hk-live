@@ -54,7 +54,7 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
   return (
     <div className="group relative bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-3.5 sm:p-4 hover:border-neutral-400 dark:hover:border-neutral-600 transition-all shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 overflow-hidden">
       {/* Left Accent Bar */}
-      <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${accentColorClass}`} />
+      <div className={`absolute left-0 top-0 bottom-0 w-1 ${accentColorClass}`} />
 
       {/* Main Info (Left) */}
       <div className="flex-1 min-w-0 pl-2">
@@ -96,6 +96,9 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
             <MapPin className="w-3.5 h-3.5" />
           </a>
         </div>
+        {store.nameEn && (
+          <p className="text-[11px] font-semibold text-neutral-400 dark:text-neutral-500 truncate mt-0.5">{store.nameEn}</p>
+        )}
 
         {/* Live Calling numbers mini chip */}
         {(boothNum || counterNum) && (

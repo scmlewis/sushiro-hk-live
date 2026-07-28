@@ -28,11 +28,12 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   const [activeTab, setActiveTab] = useState<'all' | 'booth' | 'counter' | 'store' | 'reservation'>('all');
   const [viewMode, setViewMode] = useState<'live' | 'history'>(initialViewMode);
   const [liveSection, setLiveSection] = useState<'all' | 'calculator' | 'trend' | 'breakdown'>('all');
-  const [myTicket, setMyTicket] = useState<string>('200');
+  const [myTicket, setMyTicket] = useState<string>('');
 
-  // Sync view mode when modal opens
+  // Sync view mode and reset ticket when modal opens for a new store
   useEffect(() => {
     setViewMode(initialViewMode);
+    setMyTicket('');
   }, [initialViewMode, store?.id]);
 
   // State for date management in history table
@@ -167,7 +168,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
 
     const waitMins = baseGroups === 0 ? 0 : Math.max(3, Math.round(baseGroups * 1.25));
     const isAvailable = baseGroups > 0;
-    const ticketStr = isAvailable ? `ON / ${String(Math.min(999, ticketStart + Math.round(storeSeed))).padStart(3, '0')}` : 'ON / ---';
+    const ticketStr = isAvailable ? `${String(Math.min(999, ticketStart + Math.round(storeSeed))).padStart(3, '0')}` : '—';
 
     let densityCategory: 'offpeak' | 'medium' | 'peak' = 'offpeak';
     if (waitMins >= 30) densityCategory = 'peak';
@@ -411,10 +412,10 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                   </div>
 
                   {/* Entered Display */}
-                  <div className="mb-3 p-3 bg-white dark:bg-neutral-800 border-2 border-[#E21F26] rounded-lg text-center h-12 flex items-center justify-between px-4">
+                  <div className={`mb-3 p-3 bg-white dark:bg-neutral-800 border-2 rounded-lg text-center h-12 flex items-center justify-between px-4 ${myTicket ? 'border-[#E21F26]' : 'border-neutral-200 dark:border-neutral-700'}`}>
                     <span className="text-xs font-bold text-neutral-400">您輸入的籌號</span>
-                    <span className="text-2xl font-black text-[#E21F26] tracking-widest tabular-nums">
-                      {myTicket ? `#${myTicket}` : '----'}
+                    <span className={`text-2xl font-black tracking-widest tabular-nums ${myTicket ? 'text-[#E21F26]' : 'text-neutral-300 dark:text-neutral-600'}`}>
+                      {myTicket ? `#${myTicket}` : '---'}
                     </span>
                   </div>
 
@@ -424,7 +425,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                       <button
                         key={k}
                         onClick={() => handleNumpad(k)}
-                        className={`py-3 sm:py-2.5 rounded-md border text-center transition-all cursor-pointer font-black text-sm sm:text-base active:scale-95 active:bg-neutral-300 dark:active:bg-neutral-600 ${
+                        className={`py-2 sm:py-2 rounded-md border text-center transition-all cursor-pointer font-black text-sm sm:text-base active:scale-95 active:bg-neutral-300 dark:active:bg-neutral-600 ${
                           k === 'del' || k === 'clear'
                             ? 'bg-neutral-100 dark:bg-neutral-800 border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200'
                             : 'bg-neutral-50 dark:bg-neutral-800/80 border-neutral-200 dark:border-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-800 dark:text-white'
@@ -734,7 +735,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                     <th className="py-3 px-4 text-center">人流狀態</th>
                     <th className="py-3 px-4 text-center">等候組數</th>
                     <th className="py-3 px-4 text-center">平均等候</th>
-                    <th className="py-3 px-4 text-right">取票 / 最後號碼</th>
+                    <th className="py-3 px-4 text-right">籌號</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800 font-medium">
@@ -758,7 +759,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                             ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
                             : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
                         }`}>
-                          {row.densityCategory === 'peak' ? '🔴 繁忙 Peak' : row.densityCategory === 'medium' ? '🟡 中等 Moderate' : '🟢 順暢 Smooth'}
+                          {row.densityCategory === 'peak' ? '🔴 繁忙' : row.densityCategory === 'medium' ? '🟡 中等' : '🟢 順暢'}
                         </span>
                       </td>
                       <td className="py-2.5 px-4 text-center font-bold text-neutral-700 dark:text-neutral-300">
