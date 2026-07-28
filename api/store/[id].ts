@@ -1,6 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getStoresData, getQueueData } from '../_lib/cache.js';
-import { recordSnapshot } from '../_lib/history.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -20,10 +19,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const storesResult = await getStoresData(false);
     const store = storesResult.data.find((s: any) => String(s.id) === String(storeId));
     const queueResult = await getQueueData(storeId, force);
-
-    if (!queueResult.cached) {
-      await recordSnapshot(storeId, store, queueResult.data);
-    }
 
     return res.json({
       success: true,

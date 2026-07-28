@@ -34,11 +34,6 @@ Compare 2–4 stores side-by-side with automatic fastest/least-crowded badges.
 
 Enter your ticket number to calculate groups ahead and estimated wait based on live calling progress.
 
-### 歷史模擬 / Simulated Traffic Patterns
-按日期及時段顯示各門市之典型人流模式（基於時段估算，非真實歷史紀錄）。
-
-View typical traffic patterns by date and time slot (estimated, not real historical data).
-
 ### GPS 定位排序 / GPS Distance Sorting
 授權地理位置後，自動計算各門市與您之直線距離，支援「距離最近」排序。
 
