@@ -47,56 +47,53 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
   const isOpen = store.storeStatus === 'OPEN';
 
   return (
-    <div className="group relative bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 px-2.5 py-2 hover:border-neutral-400 dark:hover:border-neutral-600 transition-all shadow-xs flex items-center gap-2 sm:gap-3 overflow-hidden">
+    <div className="group relative bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 hover:border-neutral-400 dark:hover:border-neutral-600 transition-all shadow-xs overflow-hidden">
       {/* Left Accent Bar */}
       <div className={`absolute left-0 top-0 bottom-0 w-1 ${accentColorClass}`} />
 
-      {/* Area Badge */}
-      <span className="px-1.5 py-0.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 font-black text-[9px] uppercase tracking-wider shrink-0 ml-1">
-        {store.area}
-      </span>
+      {/* Row 1: Status — area, name, wait time, group count */}
+      <div className="flex items-center gap-2 px-3 py-2.5 ml-1">
+        <span className="px-1.5 py-0.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 font-black text-[9px] uppercase tracking-wider shrink-0">
+          {store.area}
+        </span>
 
-      {/* Store Name */}
-      <div className="flex items-center gap-1 min-w-0 flex-1">
         <h4
           onClick={() => onSelectStore(store)}
-          className="text-sm font-black text-neutral-900 dark:text-white truncate cursor-pointer hover:text-[#E21F26] transition-colors"
+          className="text-sm font-black text-neutral-900 dark:text-white truncate cursor-pointer hover:text-[#E21F26] transition-colors min-w-0 flex-1"
         >
           {store.name}
         </h4>
+
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-1">
+            <Clock className="w-3 h-3 text-[#E21F26]" />
+            <span className={`text-sm font-black tabular-nums whitespace-nowrap ${isOpen ? waitColorClass : 'text-neutral-400'}`}>
+              {isOpen ? `${store.wait}分` : '休息'}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <Users className="w-3 h-3 text-sky-500" />
+            <span className="text-sm font-black text-neutral-900 dark:text-white tabular-nums whitespace-nowrap">
+              {isOpen ? `${store.waitingGroup}組` : '--'}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Row 2: Actions — maps, refresh, bookmark, compare, details */}
+      <div className="flex items-center gap-1 px-3 py-1.5 ml-1 border-t border-neutral-100 dark:border-neutral-800">
         <a
           href={mapsUrl}
           target="_blank"
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
-          className="text-neutral-400 hover:text-[#E21F26] transition-colors p-0.5 shrink-0"
+          className="text-neutral-400 hover:text-[#E21F26] transition-colors p-1 shrink-0"
           title="Google 地圖"
         >
-          <MapPin className="w-3 h-3" />
+          <MapPin className="w-3.5 h-3.5" />
         </a>
-      </div>
 
-      {/* Wait Time */}
-      <div className="flex items-center gap-1 shrink-0">
-        <Clock className="w-3 h-3 text-[#E21F26]" />
-        <span className={`text-sm font-black tabular-nums whitespace-nowrap ${isOpen ? waitColorClass : 'text-neutral-400'}`}>
-          {isOpen ? `${store.wait}分` : '休息'}
-        </span>
-      </div>
-
-      {/* Separator */}
-      <div className="h-5 w-px bg-neutral-200 dark:bg-neutral-700 shrink-0" />
-
-      {/* Group Count */}
-      <div className="flex items-center gap-1 shrink-0">
-        <Users className="w-3 h-3 text-sky-500" />
-        <span className="text-sm font-black text-neutral-900 dark:text-white tabular-nums whitespace-nowrap">
-          {isOpen ? `${store.waitingGroup}組` : '--'}
-        </span>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex items-center gap-1 shrink-0">
         <button
           onClick={() => onRefreshQueue(store.id, store.name)}
           disabled={queueLoading}
@@ -130,9 +127,11 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
           {isComparing ? <Check className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
         </button>
 
+        <div className="flex-1" />
+
         <button
           onClick={() => onSelectStore(store, 'live')}
-          className="flex items-center gap-0.5 px-2 py-1 bg-[#E21F26] hover:bg-red-700 text-white text-[10px] font-black uppercase transition-all cursor-pointer rounded"
+          className="flex items-center gap-0.5 px-2.5 py-1 bg-[#E21F26] hover:bg-red-700 text-white text-[10px] font-black uppercase transition-all cursor-pointer rounded"
         >
           <span>詳情</span>
           <ChevronRight className="w-3 h-3" />
