@@ -26,7 +26,7 @@ export const Toast: React.FC<ToastProps> = ({ toast, onDismiss }) => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 max-w-sm w-full animate-bounce-short">
+    <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-sm z-50 animate-bounce-short">
       <div className="bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-800 dark:border-slate-200">
         {iconMap[toast.type || 'info']}
         <span className="text-sm font-medium flex-1">{toast.text}</span>

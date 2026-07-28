@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import { SushiroStore, StoreQueueMap, SortOption, ToastMessage } from './types';
 import { calculateDistanceKm, getCurrentPosition } from './utils/geolocation';
 import { getStoreRegion } from './utils/status';
@@ -14,8 +15,21 @@ import { AlertCircle, Layers, ChevronUp } from 'lucide-react';
 import noStoresFoundImg from './assets/images/no_stores_found_1785143279312.jpg';
 
 const BOOKMARKS_STORAGE_KEY = 'sushiro_hk_bookmarks_v1';
+const TEXT_SIZE_KEY = 'sushiro_hk_text_size';
+type TextSize = 'S' | 'M' | 'L';
+const TEXT_SIZE_MAP: Record<TextSize, string> = { S: '13px', M: '15px', L: '17px' };
 
 export default function App() {
+  const [textSize, setTextSize] = useState<TextSize>(() => {
+    try {
+      const saved = localStorage.getItem(TEXT_SIZE_KEY);
+      return (saved as TextSize) || 'M';
+    } catch { return 'M'; }
+  });
+
+  useEffect(() => {
+    try { localStorage.setItem(TEXT_SIZE_KEY, textSize); } catch {}
+  }, [textSize]);
   const [stores, setStores] = useState<SushiroStore[]>([]);
   const [queues, setQueues] = useState<StoreQueueMap>({});
   const [loadingStores, setLoadingStores] = useState<boolean>(true);
@@ -421,7 +435,7 @@ export default function App() {
   }, [stores]);
 
   return (
-    <div className="min-h-screen bg-slate-100/70 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-red-500 selection:text-white transition-colors pb-16">
+    <div className="min-h-screen bg-slate-100/70 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-red-500 selection:text-white transition-colors pb-16" style={{ fontSize: TEXT_SIZE_MAP[textSize] }}>
       {/* Unified Sticky Top Navbar */}
       <Navbar
         lastUpdated={lastUpdated}
@@ -470,31 +484,40 @@ export default function App() {
           </div>
         )}
 
-        {/* About Section View Tab */}
-        {activeMainTab === 'about' && <AboutSection />}
+        {/* Tab Content with Transition */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeMainTab}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+          >
+            {/* About Section View Tab */}
+            {activeMainTab === 'about' && <AboutSection textSize={textSize} onTextSizeChange={setTextSize} />}
 
-        {/* Bookmarked Stores View Tab */}
-        {activeMainTab === 'bookmarks' && (
-          <BookmarksSection
-            bookmarkedStores={bookmarkedStores}
-            queues={queues}
-            compareList={compareIds}
-            autoRefreshTimer={autoRefreshTimer}
-            onToggleBookmark={handleToggleBookmark}
-            onToggleCompare={handleToggleCompare}
-            onRefreshQueue={handleManualStoreRefresh}
-            onSelectStore={handleSelectStoreModal}
-            onGoToAllStores={() => setActiveMainTab('all')}
-            onCompareAllBookmarks={handleCompareAllBookmarks}
-            onClearAllBookmarks={handleClearAllBookmarks}
-          />
-        )}
+            {/* Bookmarked Stores View Tab */}
+            {activeMainTab === 'bookmarks' && (
+              <BookmarksSection
+                bookmarkedStores={bookmarkedStores}
+                queues={queues}
+                compareList={compareIds}
+                autoRefreshTimer={autoRefreshTimer}
+                onToggleBookmark={handleToggleBookmark}
+                onToggleCompare={handleToggleCompare}
+                onRefreshQueue={handleManualStoreRefresh}
+                onSelectStore={handleSelectStoreModal}
+                onGoToAllStores={() => setActiveMainTab('all')}
+                onCompareAllBookmarks={handleCompareAllBookmarks}
+                onClearAllBookmarks={handleClearAllBookmarks}
+              />
+            )}
 
-        {/* All Stores View Tab (Isolated View) */}
-        {(activeMainTab === 'all' || activeMainTab === 'compare') && (
-          <>
-            {/* District Filter & Floating Search & Sort Bar */}
-            <DistrictFilterBar
+            {/* All Stores View Tab (Isolated View) */}
+            {(activeMainTab === 'all' || activeMainTab === 'compare') && (
+              <>
+                {/* District Filter & Floating Search & Sort Bar */}
+                <DistrictFilterBar
               regionCounts={regionCounts}
               selectedArea={selectedArea}
               searchQuery={searchQuery}
@@ -584,8 +607,9 @@ export default function App() {
                 </div>
               </div>
             )}
-          </>
-        )}
+          </>)}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       {/* Bold Typography Theme Footer */}

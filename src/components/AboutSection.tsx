@@ -1,9 +1,14 @@
 import React from 'react';
-import { Store, Heart, Layers, Calculator, WifiOff, Clock, Sparkles, CheckCircle2, ExternalLink, Github } from 'lucide-react';
+import { Store, Heart, Layers, Calculator, WifiOff, Clock, Sparkles, CheckCircle2, ExternalLink, Github, Type } from 'lucide-react';
 
 const SUSHIRO_HK_URL = 'https://www.sushiro.com.hk/';
 
-export const AboutSection: React.FC = () => {
+interface AboutSectionProps {
+  textSize: 'S' | 'M' | 'L';
+  onTextSizeChange: (size: 'S' | 'M' | 'L') => void;
+}
+
+export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSizeChange }) => {
   return (
     <div className="max-w-4xl mx-auto space-y-6 mb-12 animate-fade-in">
       {/* Intro Banner */}
@@ -103,6 +108,29 @@ export const AboutSection: React.FC = () => {
             <span><strong>離線與弱網快取：</strong>系統已配備 Service Worker 快取，在乘搭港鐵或訊號不穩定時，仍可閱讀最新一次載入的門市資料與模擬估算數據。</span>
           </li>
         </ul>
+      </div>
+
+      {/* Text Size Setting */}
+      <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-5 rounded-2xl shadow-sm space-y-3">
+        <h3 className="text-sm font-black text-neutral-900 dark:text-white flex items-center gap-2">
+          <Type className="w-4 h-4 text-[#E21F26]" />
+          <span>文字大小</span>
+        </h3>
+        <div className="flex items-center gap-2">
+          {(['S', 'M', 'L'] as const).map((size) => (
+            <button
+              key={size}
+              onClick={() => onTextSizeChange(size)}
+              className={`px-4 py-2 rounded-lg font-black text-xs transition-all cursor-pointer ${
+                textSize === size
+                  ? 'bg-[#E21F26] text-white shadow-md'
+                  : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700'
+              }`}
+            >
+              {size === 'S' ? '細' : size === 'M' ? '中（預設）' : '大'}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Project Links */}
