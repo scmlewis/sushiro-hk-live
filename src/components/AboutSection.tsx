@@ -98,7 +98,7 @@ export const AboutSection: React.FC = () => {
           </li>
           <li className="flex items-start gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-            <span><strong>離線與弱網快取：</strong>系統已配備 Service Worker 快取，在乘搭港鐵或訊號不穩定時，仍可閱讀最新一次載入的門市與歷史資料。</span>
+            <span><strong>離線與弱網快取：</strong>系統已配備 Service Worker 快取，在乘搭港鐵或訊號不穩定時，仍可閱讀最新一次載入的門市資料與模擬估算數據。</span>
           </li>
           <li className="flex items-start gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />

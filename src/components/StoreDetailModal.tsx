@@ -320,7 +320,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
             }`}
           >
             <Calendar className="w-4 h-4" />
-            <span>歷史紀錄</span>
+            <span>歷史模擬</span>
           </button>
         </div>
 
@@ -476,7 +476,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <h3 className="text-sm font-black tracking-tight uppercase text-neutral-900 dark:text-white flex items-center gap-1.5">
-                    <span>過去1小時人流趨勢</span>
+                    <span>近期人流趨勢（估算）</span>
                     <span className="text-[10px] text-neutral-400 font-bold uppercase">(BUSY TREND)</span>
                   </h3>
                 </div>
@@ -667,8 +667,14 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
             </div>
           </>
         ) : (
-          /* VIEW MODE 2: HISTORICAL RECORDS TABLE (Matching Screencap 2 with Working Dates & Badges) */
+          /* VIEW MODE 2: SIMULATED HISTORICAL DATA (Estimated based on time-of-day patterns) */
           <div className="p-6 sm:p-8">
+            {/* Disclaimer Banner */}
+            <div className="mb-4 p-3 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 text-xs font-bold text-amber-800 dark:text-amber-300 flex items-center gap-2">
+              <Info className="w-4 h-4 shrink-0" />
+              <span>以下數據為基於時段與星期類型之模擬估算，並非真實歷史紀錄。僅供參考 typical traffic pattern。</span>
+            </div>
+
             {/* Date Picker Header */}
             <div className="flex items-center justify-between mb-3 bg-neutral-50 dark:bg-neutral-800/80 p-3 rounded-lg border border-neutral-200 dark:border-neutral-700">
               <button
