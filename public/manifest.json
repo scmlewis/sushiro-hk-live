@@ -1,0 +1,16 @@
+{
+  "short_name": "壽司郎 HK",
+  "name": "壽司郎 HK Live Queue",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#141414",
+  "theme_color": "#E21F26",
+  "display": "standalone",
+  "orientation": "portrait"
+}

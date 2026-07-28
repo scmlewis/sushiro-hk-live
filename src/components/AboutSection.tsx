@@ -1,0 +1,111 @@
+import React from 'react';
+import { Store, Heart, Layers, Calculator, WifiOff, Clock, Sparkles, CheckCircle2 } from 'lucide-react';
+
+export const AboutSection: React.FC = () => {
+  return (
+    <div className="max-w-4xl mx-auto space-y-6 mb-12 animate-fade-in">
+      {/* Intro Banner */}
+      <div className="bg-neutral-900 text-white p-6 sm:p-8 rounded-2xl border-l-4 border-[#E21F26] shadow-xl relative overflow-hidden">
+        <div className="flex items-center gap-3 mb-3">
+          <span className="px-2.5 py-0.5 bg-[#E21F26] text-white text-[10px] font-black uppercase tracking-widest rounded">
+            ABOUT SYSTEM
+          </span>
+          <span className="text-xs font-bold text-neutral-400">
+            香港壽司郎即時籌號追蹤看板
+          </span>
+        </div>
+        <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white mb-2">
+          關於系統與使用說明
+        </h2>
+        <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed font-medium">
+          本系統專為香港壽司郎食客設計，即時連結全港 44 間分店之籌號發放狀態、預估等候時間及現場叫號進度。透過智慧連線機制，助您迅速掌握現場人流，節省現場等候時間。
+        </p>
+      </div>
+
+      {/* Grid of Key Features */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Feature 1: Store Directory & Search */}
+        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-5 rounded-2xl shadow-sm space-y-2.5">
+          <div className="flex items-center gap-2.5 text-[#E21F26]">
+            <div className="p-2 rounded-lg bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900/50">
+              <Store className="w-5 h-5" />
+            </div>
+            <h3 className="text-base font-black text-neutral-900 dark:text-white">
+              全港門市即時列表
+            </h3>
+          </div>
+          <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-medium">
+            收錄全港地區所有營業中分店，支援按港島、九龍、新界地區篩選，或關鍵字搜尋。列表隨時顯示現場是否派籌中、目前叫號進度及預估等候時間。
+          </p>
+        </div>
+
+        {/* Feature 2: Bookmarking & Auto Poll */}
+        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-5 rounded-2xl shadow-sm space-y-2.5">
+          <div className="flex items-center gap-2.5 text-[#E21F26]">
+            <div className="p-2 rounded-lg bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900/50">
+              <Heart className="w-5 h-5 fill-[#E21F26]" />
+            </div>
+            <h3 className="text-base font-black text-neutral-900 dark:text-white">
+              我的關注門市 (高頻同步)
+            </h3>
+          </div>
+          <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-medium">
+            點擊門市卡片或列表上的 ❤️ 即可加入「我的關注」。關注門市享每 10 秒高頻背景自動同步叫號，讓您在前往餐廳途中即時掌握號碼變化。
+          </p>
+        </div>
+
+        {/* Feature 3: Store Comparison */}
+        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-5 rounded-2xl shadow-sm space-y-2.5">
+          <div className="flex items-center gap-2.5 text-[#E21F26]">
+            <div className="p-2 rounded-lg bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900/50">
+              <Layers className="w-5 h-5" />
+            </div>
+            <h3 className="text-base font-black text-neutral-900 dark:text-white">
+              門市比對 (橫向比對等候)
+            </h3>
+          </div>
+          <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-medium">
+            同時選擇 2 至 4 間相鄰分店（例如：馬鞍山店 vs 沙田店），即時橫向對比預估等候時間與現場輪候組數，幫助您決定前往最快入座的分店。
+          </p>
+        </div>
+
+        {/* Feature 4: Ticket Calculator */}
+        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-5 rounded-2xl shadow-sm space-y-2.5">
+          <div className="flex items-center gap-2.5 text-[#E21F26]">
+            <div className="p-2 rounded-lg bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900/50">
+              <Calculator className="w-5 h-5" />
+            </div>
+            <h3 className="text-base font-black text-neutral-900 dark:text-white">
+              籌號進度估算
+            </h3>
+          </div>
+          <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-medium">
+            在門市詳情視圖中，輸入您手上的籌號（例如 #200），系統會根據現場最新叫號與各類別進度（單人、桌席、現場籌），自動算出身前剩餘組數與到號提示。
+          </p>
+        </div>
+      </div>
+
+      {/* Performance & Offline Guide */}
+      <div className="bg-neutral-100 dark:bg-neutral-800/80 p-5 rounded-2xl border border-neutral-200 dark:border-neutral-700 space-y-3">
+        <h3 className="text-sm font-black text-neutral-900 dark:text-white flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-amber-500" />
+          <span>效能與自動連線機制</span>
+        </h3>
+        <ul className="text-xs text-neutral-600 dark:text-neutral-300 space-y-2 font-medium">
+          <li className="flex items-start gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+            <span><strong>頁面靜置/切換分頁時：</strong>自動暫停背景讀取以節省手機電力與數據流量，回頭檢視時自動連線更新。</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+            <span><strong>離線與弱網快取：</strong>系統已配備 Service Worker 快取，在乘搭港鐵或訊號不穩定時，仍可閱讀最新一次載入的門市與歷史資料。</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+            <span><strong>離店防過號提示：</strong>如估算離到號剩餘少於 5 組，建議即時返回門市等候叫號。</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  );
+};
