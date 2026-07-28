@@ -2,7 +2,7 @@
 <html lang="zh-HK">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
     <title>壽司郎 HK Live - 即時籌號與等候時間追蹤</title>
     <meta name="description" content="即時追蹤香港全港 44 間壽司郎門市之籌號發放狀態、輪候組數與預估等候時間。支援門市比對、籌號計算器、歷史人流趨勢及 GPS 定位排序。" />
@@ -64,8 +64,17 @@
     }
     </script>
   </head>
-  <body>
+  <body style="background-color:#141414">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Keep theme-color synced so Safari bottom bar stays dark
+      const updateThemeColor = () => {
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', '#141414');
+      };
+      document.addEventListener('DOMContentLoaded', updateThemeColor);
+      window.addEventListener('scroll', updateThemeColor);
+    </script>
   </body>
 </html>

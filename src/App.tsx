@@ -29,6 +29,8 @@ export default function App() {
 
   useEffect(() => {
     try { localStorage.setItem(TEXT_SIZE_KEY, textSize); } catch {}
+    // Set root font-size so rem-based Tailwind utilities scale
+    document.documentElement.style.fontSize = TEXT_SIZE_MAP[textSize];
   }, [textSize]);
   const [stores, setStores] = useState<SushiroStore[]>([]);
   const [queues, setQueues] = useState<StoreQueueMap>({});
@@ -653,16 +655,20 @@ export default function App() {
       </footer>
 
       {/* Store Detail Modal */}
-      <StoreDetailModal
-        store={selectedStoreModal}
-        queue={selectedStoreModal ? queues[selectedStoreModal.id]?.queue || null : null}
-        loading={selectedStoreModal ? queues[selectedStoreModal.id]?.loading || false : false}
-        isBookmarked={selectedStoreModal ? bookmarkedIds.includes(selectedStoreModal.id) : false}
-        initialViewMode={modalInitialMode}
-        onClose={() => setSelectedStoreModal(null)}
-        onRefreshQueue={handleManualStoreRefresh}
-        onToggleBookmark={handleToggleBookmark}
-      />
+      <AnimatePresence>
+        {selectedStoreModal && (
+          <StoreDetailModal
+            store={selectedStoreModal}
+            queue={selectedStoreModal ? queues[selectedStoreModal.id]?.queue || null : null}
+            loading={selectedStoreModal ? queues[selectedStoreModal.id]?.loading || false : false}
+            isBookmarked={selectedStoreModal ? bookmarkedIds.includes(selectedStoreModal.id) : false}
+            initialViewMode={modalInitialMode}
+            onClose={() => setSelectedStoreModal(null)}
+            onRefreshQueue={handleManualStoreRefresh}
+            onToggleBookmark={handleToggleBookmark}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Toast Notification */}
       <Toast toast={toast} onDismiss={() => setToast(null)} />

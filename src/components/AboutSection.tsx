@@ -1,7 +1,7 @@
 import React from 'react';
 import { Store, Heart, Layers, Calculator, WifiOff, Clock, Sparkles, CheckCircle2, ExternalLink, Github, Type } from 'lucide-react';
 
-const SUSHIRO_HK_URL = 'https://www.sushiro.com.hk/';
+const SUSHIRO_HK_URL = 'https://sushirohk.com.hk/';
 
 interface AboutSectionProps {
   textSize: 'S' | 'M' | 'L';

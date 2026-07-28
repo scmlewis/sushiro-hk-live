@@ -56,7 +56,7 @@ describe('AboutSection', () => {
   it('renders Sushiro official website link', () => {
     render(<AboutSection {...defaultProps} />);
     const link = screen.getByText('壽司郎官方網站').closest('a');
-    expect(link).toHaveAttribute('href', 'https://www.sushiro.com.hk/');
+    expect(link).toHaveAttribute('href', 'https://sushirohk.com.hk/');
     expect(link).toHaveAttribute('target', '_blank');
   });
 

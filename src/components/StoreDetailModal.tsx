@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { SushiroStore, GroupQueue } from '../types';
 import { getStoreStatusInfo, getTicketStatusInfo, formatGoogleMapsUrl } from '../utils/status';
 import { X, RefreshCw, Heart, MapPin, ExternalLink, Ticket, Info, TrendingUp, TrendingDown, Minus, Calculator, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -246,8 +247,20 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-2xl max-h-[92vh] flex flex-col bg-white dark:bg-neutral-900 shadow-2xl overflow-hidden border-2 border-neutral-800 rounded-2xl my-auto">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md"
+    >
+      <motion.div
+        initial={{ scale: 0.92, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.92, opacity: 0, y: 20 }}
+        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+        className="relative w-full max-w-2xl max-h-[92vh] flex flex-col bg-white dark:bg-neutral-900 shadow-2xl overflow-hidden border-2 border-neutral-800 rounded-2xl my-auto"
+      >
         {/* Fixed Header */}
         <div className="shrink-0 p-4 sm:p-6 bg-[#141414] text-white relative border-b-4 border-[#E21F26]">
           <button
@@ -791,8 +804,8 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
           </div>
           <span className="text-[11px] text-neutral-500 font-mono">壽司郎即時數據</span>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
