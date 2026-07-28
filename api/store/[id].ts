@@ -22,7 +22,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const queueResult = await getQueueData(storeId, force);
 
     if (!queueResult.cached) {
-      recordSnapshot(storeId, store, queueResult.data);
+      await recordSnapshot(storeId, store, queueResult.data);
     }
 
     return res.json({

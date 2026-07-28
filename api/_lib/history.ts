@@ -23,9 +23,10 @@ export async function recordSnapshot(
       waitingGroup: store?.waitingGroup ?? 0,
       booth: (queue?.boothQueue || []).slice(-3),
     });
-    await redis.rpush(key, snapshot);
+    const len = await redis.rpush(key, snapshot);
     await redis.expire(key, 60 * 60 * 24 * 30);
     await redis.ltrim(key, -576, -1);
+    console.log(`[History] Snapshot written storeId=${storeId} key=${key} len=${len}`);
   } catch (err: any) {
     console.error(`[History Write Error storeId=${storeId}]`, err.message || err);
   }
