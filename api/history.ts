@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getHistory } from './_lib/history.js';
+import { redis } from './_lib/redis.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -16,6 +17,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const date = (req.query.date as string) || undefined;
 
+  // Debug: test Redis connectivity on first request
+  let redisDebug: any = null;
+  try {
+    const pong = await redis.ping();
+    const testKey = 'sushiro:debug:ping';
+    await redis.set(testKey, 'ok');
+    const val = await redis.get(testKey);
+    await redis.del(testKey);
+    redisDebug = { pong, val, urlSet: !!process.env.UPSTASH_REDIS_REST_URL, tokenSet: !!process.env.UPSTASH_REDIS_REST_TOKEN };
+  } catch (err: any) {
+    redisDebug = { error: err.message, urlSet: !!process.env.UPSTASH_REDIS_REST_URL, tokenSet: !!process.env.UPSTASH_REDIS_REST_TOKEN };
+  }
+
   try {
     const records = await getHistory(storeId, date);
     return res.json({
@@ -28,6 +42,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         day: '2-digit',
       }).format(new Date()),
       records,
+      _debug: redisDebug,
     });
   } catch (err: any) {
     return res.status(500).json({ success: false, error: err.message });
