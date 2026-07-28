@@ -30,13 +30,27 @@ export function getStoreStatusInfo(status: string): StatusBadge {
   };
 }
 
+export function isLocalTicketingOff(localTicketingStatus: string): boolean {
+  return (localTicketingStatus || '').toUpperCase() === 'OFF';
+}
+
 export function isStoreIssuing(netTicketStatus: string, storeStatus: string): boolean {
   if (storeStatus !== 'OPEN') return false;
   const statusUpper = (netTicketStatus || '').toUpperCase();
   return statusUpper === 'MANUAL' || statusUpper === 'ONLINE' || statusUpper === 'OPEN';
 }
 
-export function getTicketStatusInfo(netTicketStatus: string, storeStatus: string): StatusBadge {
+export function getTicketStatusInfo(netTicketStatus: string, storeStatus: string, localTicketingStatus = 'ON'): StatusBadge {
+  if ((localTicketingStatus || '').toUpperCase() === 'OFF') {
+    return {
+      label: '停止 walk in',
+      bgColor: 'bg-rose-500/10',
+      textColor: 'text-rose-700 dark:text-rose-400',
+      borderColor: 'border-rose-500/20',
+      dotColor: 'bg-rose-500',
+    };
+  }
+
   if (storeStatus !== 'OPEN') {
     return {
       label: '暫停派籌',

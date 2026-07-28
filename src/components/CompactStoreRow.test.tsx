@@ -16,6 +16,7 @@ const mockStore: SushiroStore = {
   waitingGroup: 8,
   storeStatus: 'OPEN',
   netTicketStatus: 'ONLINE',
+  localTicketingStatus: 'ON',
   waitTimeCap: 60,
 };
 
@@ -45,6 +46,11 @@ describe('CompactStoreRow', () => {
   it('renders 休息 for closed store', () => {
     render(<CompactStoreRow {...defaultProps} store={{ ...mockStore, storeStatus: 'CLOSED' }} />);
     expect(screen.getByText('休息')).toBeInTheDocument();
+  });
+
+  it('renders 停飛 when localTicketingStatus is OFF', () => {
+    render(<CompactStoreRow {...defaultProps} store={{ ...mockStore, localTicketingStatus: 'OFF' }} />);
+    expect(screen.getByText('停飛')).toBeInTheDocument();
   });
 
   it('renders group count for open store', () => {

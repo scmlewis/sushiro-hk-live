@@ -17,6 +17,7 @@ const mockStores: SushiroStore[] = [
     waitingGroup: 8,
     storeStatus: 'OPEN',
     netTicketStatus: 'ONLINE',
+    localTicketingStatus: 'ON',
     waitTimeCap: 60,
   },
   {
@@ -31,6 +32,7 @@ const mockStores: SushiroStore[] = [
     waitingGroup: 3,
     storeStatus: 'OPEN',
     netTicketStatus: 'MANUAL',
+    localTicketingStatus: 'ON',
     waitTimeCap: 60,
   },
   {
@@ -45,6 +47,7 @@ const mockStores: SushiroStore[] = [
     waitingGroup: 0,
     storeStatus: 'OPEN',
     netTicketStatus: 'ONLINE',
+    localTicketingStatus: 'ON',
     waitTimeCap: 60,
   },
 ];

@@ -16,6 +16,7 @@ const mockStore: SushiroStore = {
   waitingGroup: 8,
   storeStatus: 'OPEN',
   netTicketStatus: 'ONLINE',
+  localTicketingStatus: 'ON',
   waitTimeCap: 60,
 };
 

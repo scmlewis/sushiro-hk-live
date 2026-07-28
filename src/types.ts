@@ -10,6 +10,7 @@ export interface SushiroStore {
   waitingGroup: number;     // number of groups waiting
   storeStatus: string;      // "OPEN" / "CLOSED" / etc.
   netTicketStatus: string;  // e.g. "ONLINE", "OFFLINE_MANUAL", "MANUAL"
+  localTicketingStatus: string; // "ON" / "OFF" — walk-in ticketing status
   waitTimeCap: number;
   distanceKm?: number;      // Calculated client-side if geolocation enabled
 }

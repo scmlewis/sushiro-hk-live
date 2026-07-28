@@ -1,7 +1,7 @@
 import React from 'react';
 import { SushiroStore, StoreQueueMap } from '../types';
 import { Layers, Clock, Users, Trash2, RefreshCw, Zap, ExternalLink, Sparkles } from 'lucide-react';
-import { getStoreStatusInfo, getTicketStatusInfo } from '../utils/status';
+import { getStoreStatusInfo, getTicketStatusInfo, isLocalTicketingOff } from '../utils/status';
 
 interface CompareViewProps {
   stores: SushiroStore[];
@@ -84,7 +84,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {sortedStores.map((store) => {
           const storeStatusInfo = getStoreStatusInfo(store.storeStatus);
-          const ticketStatusInfo = getTicketStatusInfo(store.netTicketStatus, store.storeStatus);
+          const ticketStatusInfo = getTicketStatusInfo(store.netTicketStatus, store.storeStatus, store.localTicketingStatus);
           const qData = queues[store.id];
           const q = qData?.queue;
           const booth = q?.boothQueue?.[0] || q?.storeBoothQueue?.[0];
@@ -126,7 +126,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
                       <Clock className="w-3 h-3 text-[#E21F26]" />等候
                     </span>
                     <span className="font-black text-[#E21F26] text-sm tabular-nums">
-                      {store.storeStatus === 'OPEN' ? `${store.wait} 分鐘` : '休息中'}
+                      {isLocalTicketingOff(store.localTicketingStatus) ? '停飛' : store.storeStatus === 'OPEN' ? `${store.wait} 分鐘` : '休息中'}
                     </span>
                   </div>
                   <div className="w-px h-4 bg-neutral-300 dark:bg-neutral-600" />

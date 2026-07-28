@@ -6,6 +6,7 @@ import {
   getStoreRegion,
   formatGoogleMapsUrl,
   isStoreIssuing,
+  isLocalTicketingOff,
 } from './status';
 
 describe('getStoreStatusInfo', () => {
@@ -24,6 +25,28 @@ describe('getStoreStatusInfo', () => {
   it('returns gray badge for any non-OPEN status', () => {
     const result = getStoreStatusInfo('MAINTENANCE');
     expect(result.label).toBe('休息中 / 閉店');
+  });
+});
+
+describe('isLocalTicketingOff', () => {
+  it('returns true for OFF', () => {
+    expect(isLocalTicketingOff('OFF')).toBe(true);
+  });
+
+  it('returns true for off (lowercase)', () => {
+    expect(isLocalTicketingOff('off')).toBe(true);
+  });
+
+  it('returns false for ON', () => {
+    expect(isLocalTicketingOff('ON')).toBe(false);
+  });
+
+  it('returns false for empty string', () => {
+    expect(isLocalTicketingOff('')).toBe(false);
+  });
+
+  it('returns false for null-like value', () => {
+    expect(isLocalTicketingOff(null as unknown as string)).toBe(false);
   });
 });
 
@@ -89,6 +112,27 @@ describe('getTicketStatusInfo', () => {
   it('returns 停止線上派籌 for null-like ticket status when store is OPEN', () => {
     const result = getTicketStatusInfo(null as unknown as string, 'OPEN');
     expect(result.label).toBe('停止線上派籌');
+  });
+
+  it('returns 停止 walk in when localTicketingStatus is OFF (highest priority)', () => {
+    const result = getTicketStatusInfo('ONLINE', 'OPEN', 'OFF');
+    expect(result.label).toBe('停止 walk in');
+    expect(result.dotColor).toContain('rose');
+  });
+
+  it('returns 停止 walk in when localTicketingStatus is OFF even if store is CLOSED', () => {
+    const result = getTicketStatusInfo('ONLINE', 'CLOSED', 'OFF');
+    expect(result.label).toBe('停止 walk in');
+  });
+
+  it('returns 派籌中 when localTicketingStatus is ON', () => {
+    const result = getTicketStatusInfo('ONLINE', 'OPEN', 'ON');
+    expect(result.label).toBe('派籌中');
+  });
+
+  it('defaults localTicketingStatus to ON when not provided', () => {
+    const result = getTicketStatusInfo('ONLINE', 'OPEN');
+    expect(result.label).toBe('派籌中');
   });
 });
 

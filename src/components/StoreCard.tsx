@@ -27,7 +27,7 @@ export const StoreCard: React.FC<StoreCardProps> = ({
   onSelectStore,
 }) => {
   const storeStatusInfo = getStoreStatusInfo(store.storeStatus);
-  const ticketStatusInfo = getTicketStatusInfo(store.netTicketStatus, store.storeStatus);
+  const ticketStatusInfo = getTicketStatusInfo(store.netTicketStatus, store.storeStatus, store.localTicketingStatus);
   const mapsUrl = formatGoogleMapsUrl(store.latitude, store.longitude, store.address, store.name);
 
   // Determine left border accent color based on wait time & status

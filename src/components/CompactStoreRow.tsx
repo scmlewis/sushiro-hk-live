@@ -1,6 +1,6 @@
 import React from 'react';
 import { SushiroStore, GroupQueue } from '../types';
-import { formatGoogleMapsUrl } from '../utils/status';
+import { formatGoogleMapsUrl, isLocalTicketingOff } from '../utils/status';
 import { Heart, MapPin, RefreshCw, ChevronRight, Plus, Check, Clock, Users } from 'lucide-react';
 
 interface CompactStoreRowProps {
@@ -51,6 +51,7 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
   }
 
   const isOpen = store.storeStatus === 'OPEN';
+  const isStopFly = isLocalTicketingOff(store.localTicketingStatus);
 
   return (
     <div className="group relative bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 hover:border-neutral-400 dark:hover:border-neutral-600 transition-all shadow-xs overflow-hidden">
@@ -69,8 +70,8 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
         <div className="flex items-center gap-3 shrink-0">
           <div className="flex items-center gap-1">
             <Clock className="w-3 h-3 text-[#E21F26]" />
-            <span className={`text-sm font-black tabular-nums whitespace-nowrap ${isOpen ? waitColorClass : 'text-neutral-400'}`}>
-              {isOpen ? `${store.wait}分` : '休息'}
+            <span className={`text-sm font-black tabular-nums whitespace-nowrap ${isOpen && !isStopFly ? waitColorClass : isStopFly ? 'text-rose-600 dark:text-rose-400' : 'text-neutral-400'}`}>
+              {isStopFly ? '停飛' : isOpen ? `${store.wait}分` : '休息'}
             </span>
           </div>
 

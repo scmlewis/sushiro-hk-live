@@ -57,7 +57,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   if (!store) return null;
 
   const storeStatusInfo = getStoreStatusInfo(store.storeStatus);
-  const ticketStatusInfo = getTicketStatusInfo(store.netTicketStatus, store.storeStatus);
+  const ticketStatusInfo = getTicketStatusInfo(store.netTicketStatus, store.storeStatus, store.localTicketingStatus);
   const mapsUrl = formatGoogleMapsUrl(store.latitude, store.longitude, store.address, store.name);
 
   const boothNumbers = queue?.boothQueue || queue?.storeBoothQueue || [];
