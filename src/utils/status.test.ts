@@ -116,20 +116,42 @@ describe('getWaitTimeTier', () => {
     expect(result.tier).toBe('short');
   });
 
-  it('returns long tier for wait >= 15 minutes', () => {
+  it('returns medium tier for 15 minutes wait', () => {
     const result = getWaitTimeTier(15);
+    expect(result.tier).toBe('medium');
+    expect(result.title).toBe('中等輪候');
+  });
+
+  it('returns medium tier for 29 minutes wait', () => {
+    const result = getWaitTimeTier(29);
+    expect(result.tier).toBe('medium');
+  });
+
+  it('returns long tier for 30 minutes wait', () => {
+    const result = getWaitTimeTier(30);
     expect(result.tier).toBe('long');
     expect(result.title).toBe('輪候較久');
   });
 
-  it('returns long tier for large wait times', () => {
-    const result = getWaitTimeTier(60);
+  it('returns long tier for 59 minutes wait', () => {
+    const result = getWaitTimeTier(59);
     expect(result.tier).toBe('long');
+  });
+
+  it('returns very_long tier for 60 minutes wait', () => {
+    const result = getWaitTimeTier(60);
+    expect(result.tier).toBe('very_long');
+    expect(result.title).toBe('長時間輪候');
+  });
+
+  it('returns very_long tier for large wait times', () => {
+    const result = getWaitTimeTier(155);
+    expect(result.tier).toBe('very_long');
   });
 
   it('defaults to OPEN store status when not provided', () => {
     const result = getWaitTimeTier(20);
-    expect(result.tier).toBe('long');
+    expect(result.tier).toBe('medium');
   });
 });
 

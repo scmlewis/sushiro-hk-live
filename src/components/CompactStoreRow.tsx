@@ -38,9 +38,15 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
     } else if (store.wait < 15) {
       accentColorClass = 'bg-amber-500';
       waitColorClass = 'text-amber-600 dark:text-amber-400';
+    } else if (store.wait < 30) {
+      accentColorClass = 'bg-orange-500';
+      waitColorClass = 'text-orange-600 dark:text-orange-400';
+    } else if (store.wait < 60) {
+      accentColorClass = 'bg-rose-500';
+      waitColorClass = 'text-rose-600 dark:text-rose-400';
     } else {
-      accentColorClass = 'bg-[#E21F26]';
-      waitColorClass = 'text-[#E21F26]';
+      accentColorClass = 'bg-red-700';
+      waitColorClass = 'text-red-700 dark:text-red-400';
     }
   }
 

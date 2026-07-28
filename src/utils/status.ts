@@ -67,7 +67,7 @@ export function getTicketStatusInfo(netTicketStatus: string, storeStatus: string
 }
 
 export interface WaitTimeTier {
-  tier: 'none' | 'short' | 'long';
+  tier: 'none' | 'short' | 'medium' | 'long' | 'very_long';
   title: string;
   badgeBg: string;
   badgeText: string;
@@ -109,13 +109,35 @@ export function getWaitTimeTier(waitMinutes: number, storeStatus = 'OPEN'): Wait
     };
   }
 
+  if (waitMinutes < 30) {
+    return {
+      tier: 'medium',
+      title: '中等輪候',
+      badgeBg: 'bg-orange-50 dark:bg-orange-950/40',
+      badgeText: 'text-orange-800 dark:text-orange-300',
+      borderAccent: 'border-orange-300 dark:border-orange-800',
+      cardHighlight: 'border-l-4 border-l-orange-500',
+    };
+  }
+
+  if (waitMinutes < 60) {
+    return {
+      tier: 'long',
+      title: '輪候較久',
+      badgeBg: 'bg-rose-50 dark:bg-rose-950/40',
+      badgeText: 'text-rose-800 dark:text-rose-300',
+      borderAccent: 'border-rose-300 dark:border-rose-800',
+      cardHighlight: 'border-l-4 border-l-rose-500',
+    };
+  }
+
   return {
-    tier: 'long',
-    title: '輪候較久',
-    badgeBg: 'bg-rose-50 dark:bg-rose-950/40',
-    badgeText: 'text-rose-800 dark:text-rose-300',
-    borderAccent: 'border-rose-300 dark:border-rose-800',
-    cardHighlight: 'border-l-4 border-l-red-600',
+    tier: 'very_long',
+    title: '長時間輪候',
+    badgeBg: 'bg-red-50 dark:bg-red-950/40',
+    badgeText: 'text-red-800 dark:text-red-300',
+    borderAccent: 'border-red-400 dark:border-red-700',
+    cardHighlight: 'border-l-4 border-l-red-700',
   };
 }
 
