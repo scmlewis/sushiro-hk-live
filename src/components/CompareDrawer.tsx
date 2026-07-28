@@ -163,7 +163,7 @@ export const CompareDrawer: React.FC<CompareDrawerProps> = ({
                             <span>預計等候</span>
                           </span>
                           <span className="font-black text-[#E21F26] text-base tabular-nums">
-                            {store.storeStatus === 'OPEN' ? `${store.wait} MINS` : '休息中'}
+                            {store.storeStatus === 'OPEN' ? `${store.wait} 分鐘` : '休息中'}
                           </span>
                         </div>
 

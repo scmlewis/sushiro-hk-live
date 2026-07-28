@@ -1,5 +1,5 @@
 import React from 'react';
-import { Store, Heart, Layers, Calculator, WifiOff, Clock, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Store, Heart, Layers, Calculator, WifiOff, Clock, Sparkles, CheckCircle2, ExternalLink, Github } from 'lucide-react';
 
 export const AboutSection: React.FC = () => {
   return (
@@ -8,7 +8,7 @@ export const AboutSection: React.FC = () => {
       <div className="bg-neutral-900 text-white p-6 sm:p-8 rounded-2xl border-l-4 border-[#E21F26] shadow-xl relative overflow-hidden">
         <div className="flex items-center gap-3 mb-3">
           <span className="px-2.5 py-0.5 bg-[#E21F26] text-white text-[10px] font-black uppercase tracking-widest rounded">
-            ABOUT SYSTEM
+            關於系統
           </span>
           <span className="text-xs font-bold text-neutral-400">
             香港壽司郎即時籌號追蹤看板
@@ -18,7 +18,7 @@ export const AboutSection: React.FC = () => {
           關於系統與使用說明
         </h2>
         <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed font-medium">
-          本系統專為香港壽司郎食客設計，即時連結全港 44 間分店之籌號發放狀態、預估等候時間及現場叫號進度。透過智慧連線機制，助您迅速掌握現場人流，節省現場等候時間。
+          本系統連結全港 44 間壽司郎分店之籌號發放狀態、預估等候時間及現場叫號進度。透過智慧連線機制，助您迅速掌握現場人流，節省現場等候時間。
         </p>
       </div>
 
@@ -46,11 +46,11 @@ export const AboutSection: React.FC = () => {
               <Heart className="w-5 h-5 fill-[#E21F26]" />
             </div>
             <h3 className="text-base font-black text-neutral-900 dark:text-white">
-              我的關注門市 (高頻同步)
+              我的關注門市
             </h3>
           </div>
           <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-medium">
-            點擊門市卡片或列表上的 ❤️ 即可加入「我的關注」。關注門市享每 10 秒高頻背景自動同步叫號，讓您在前往餐廳途中即時掌握號碼變化。
+            點擊門市卡片或列表上的 ♥ 即可加入「我的關注」。關注門市享每 10 秒高頻背景自動同步叫號，讓您在前往餐廳途中即時掌握號碼變化。
           </p>
         </div>
 
@@ -61,7 +61,7 @@ export const AboutSection: React.FC = () => {
               <Layers className="w-5 h-5" />
             </div>
             <h3 className="text-base font-black text-neutral-900 dark:text-white">
-              門市比對 (橫向比對等候)
+              門市比對
             </h3>
           </div>
           <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-medium">
@@ -80,7 +80,7 @@ export const AboutSection: React.FC = () => {
             </h3>
           </div>
           <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-medium">
-            在門市詳情視圖中，輸入您手上的籌號（例如 #200），系統會根據現場最新叫號與各類別進度（單人、桌席、現場籌），自動算出身前剩餘組數與到號提示。
+            在門市詳情視圖中，輸入您手上的籌號（例如 #200），系統會根據現場最新叫號與各類別進度（桌席、吧台、現場籌），自動算出身前剩餘組數與預估等候時間。
           </p>
         </div>
       </div>
@@ -100,11 +100,34 @@ export const AboutSection: React.FC = () => {
             <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
             <span><strong>離線與弱網快取：</strong>系統已配備 Service Worker 快取，在乘搭港鐵或訊號不穩定時，仍可閱讀最新一次載入的門市資料與模擬估算數據。</span>
           </li>
-          <li className="flex items-start gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-            <span><strong>離店防過號提示：</strong>如估算離到號剩餘少於 5 組，建議即時返回門市等候叫號。</span>
-          </li>
         </ul>
+      </div>
+
+      {/* Project Links */}
+      <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-5 rounded-2xl shadow-sm space-y-3">
+        <h3 className="text-sm font-black text-neutral-900 dark:text-white flex items-center gap-2">
+          <ExternalLink className="w-4 h-4 text-[#E21F26]" />
+          <span>相關連結</span>
+        </h3>
+        <div className="flex flex-wrap gap-2">
+          <a
+            href="https://github.com/scmlewis/sushiro-hk-live"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-xs font-bold text-neutral-700 dark:text-neutral-300 rounded-lg transition-colors"
+          >
+            <Github className="w-3.5 h-3.5" />
+            <span>GitHub Repo</span>
+          </a>
+          <a
+            href="https://github.com/scmlewis"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-xs font-bold text-neutral-700 dark:text-neutral-300 rounded-lg transition-colors"
+          >
+            <span>@scmlewis</span>
+          </a>
+        </div>
       </div>
     </div>
   );

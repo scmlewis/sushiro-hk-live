@@ -445,7 +445,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                       : 'bg-white dark:bg-neutral-800 border-[#E21F26]'
                   }`}>
                     <span className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-1">
-                      輪候進度 (QUEUE POSITION)
+                      輪候進度
                     </span>
                     <span className="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white">
                       {ticketValidationState === 'empty'
@@ -458,7 +458,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
 
                   <div className="bg-white dark:bg-neutral-800 border-2 border-neutral-200 dark:border-neutral-700 rounded-lg p-4 text-center flex-1 flex flex-col items-center justify-center min-h-[90px]">
                     <span className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-1">
-                      預估等候時間 (ESTIMATED WAIT)
+                      預估等候時間
                     </span>
                     <span className="text-2xl sm:text-3xl font-black text-[#E21F26]">
                       {ticketValidationState === 'empty'
@@ -478,7 +478,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                 <div>
                   <h3 className="text-sm font-black tracking-tight uppercase text-neutral-900 dark:text-white flex items-center gap-1.5">
                     <span>近期人流趨勢（估算）</span>
-                    <span className="text-[10px] text-neutral-400 font-bold uppercase">(BUSY TREND)</span>
+                    <span className="text-[10px] text-neutral-400 font-bold uppercase">(人流趨勢)</span>
                   </h3>
                 </div>
 
@@ -786,7 +786,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
             <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>即時數據已同步</span>
           </div>
-          <span className="text-[11px] text-neutral-500 font-mono">SUSHIRO LIVE DATA</span>
+          <span className="text-[11px] text-neutral-500 font-mono">壽司郎即時數據</span>
         </div>
       </div>
     </div>

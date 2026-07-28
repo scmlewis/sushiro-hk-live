@@ -151,7 +151,7 @@ export const StoreCard: React.FC<StoreCardProps> = ({
                     <span className={`text-5xl sm:text-6xl lg:text-7xl font-black tracking-tighter tabular-nums leading-none ${waitTextColor}`}>
                       {store.wait}
                     </span>
-                    <span className="text-lg sm:text-xl font-black opacity-40 uppercase">MINS</span>
+                    <span className="text-lg sm:text-xl font-black opacity-40 uppercase">分鐘</span>
                   </>
                 ) : (
                   <span className="text-2xl font-black text-neutral-400">非營業時間</span>

@@ -61,7 +61,7 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
     (sortBy !== 'wait-asc' ? 1 : 0);
 
   return (
-    <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 mb-6 space-y-3 shadow-sm transition-all rounded-xl">
+    <div className="sticky top-14 z-30 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 mb-4 space-y-3 shadow-sm transition-all rounded-xl">
       {/* Top Main Row: Search Input + Mobile Filter Toggle Button */}
       <div className="flex items-center gap-2">
         {/* Search Input */}
@@ -119,7 +119,7 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
               <option value="wait-asc">⏱️ 等候時間最短</option>
               <option value="wait-desc">⏳ 等候時間最長</option>
               <option value="groups-desc">👥 輪候組數最多</option>
-              {userLocation && <option value="distance-asc">📍 距離最近 (GPS)</option>}
+              {userLocation && <option value="distance-asc">📍 距離最近（GPS）</option>}
               <option value="area-asc">🗺️ 地區名稱排序</option>
               <option value="name-asc">🔤 門市名稱排序</option>
             </select>

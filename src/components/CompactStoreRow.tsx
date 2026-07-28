@@ -52,22 +52,22 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
   const counterNum = queue?.counterQueue?.[0] || queue?.storeCounterQueue?.[0];
 
   return (
-    <div className="group relative bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-3.5 sm:p-4 hover:border-neutral-400 dark:hover:border-neutral-600 transition-all shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 overflow-hidden">
+    <div className="group relative bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-2.5 sm:p-3 hover:border-neutral-400 dark:hover:border-neutral-600 transition-all shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 overflow-hidden">
       {/* Left Accent Bar */}
       <div className={`absolute left-0 top-0 bottom-0 w-1 ${accentColorClass}`} />
 
       {/* Main Info (Left) */}
       <div className="flex-1 min-w-0 pl-2">
-        <div className="flex items-center gap-2 mb-1 flex-wrap">
-          <span className="px-2 py-0.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 font-black text-[10px] uppercase tracking-wider">
+        <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+          <span className="px-1.5 py-0.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 font-black text-[9px] uppercase tracking-wider">
             {store.area}
           </span>
 
-          <span className={`px-2 py-0.5 text-[10px] font-black uppercase tracking-wider border ${storeStatusInfo.bgColor} ${storeStatusInfo.textColor} ${storeStatusInfo.borderColor}`}>
+          <span className={`px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider border ${storeStatusInfo.bgColor} ${storeStatusInfo.textColor} ${storeStatusInfo.borderColor}`}>
             {storeStatusInfo.label}
           </span>
 
-          <span className={`px-2 py-0.5 text-[10px] font-black uppercase tracking-wider border ${ticketStatusInfo.bgColor} ${ticketStatusInfo.textColor} ${ticketStatusInfo.borderColor}`}>
+          <span className={`px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider border ${ticketStatusInfo.bgColor} ${ticketStatusInfo.textColor} ${ticketStatusInfo.borderColor}`}>
             {ticketStatusInfo.label}
           </span>
 
@@ -81,7 +81,7 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
         <div className="flex items-center gap-2">
           <h4
             onClick={() => onSelectStore(store)}
-            className="text-base sm:text-lg font-black text-neutral-900 dark:text-white truncate cursor-pointer hover:text-[#E21F26] transition-colors"
+            className="text-sm sm:text-base font-black text-neutral-900 dark:text-white truncate cursor-pointer hover:text-[#E21F26] transition-colors"
           >
             {store.name}
           </h4>
@@ -97,7 +97,7 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
           </a>
         </div>
         {store.nameEn && (
-          <p className="text-[11px] font-semibold text-neutral-400 dark:text-neutral-500 truncate mt-0.5">{store.nameEn}</p>
+          <p className="text-[10px] font-semibold text-neutral-400 dark:text-neutral-500 truncate">{store.nameEn}</p>
         )}
 
         {/* Live Calling numbers mini chip */}
@@ -121,28 +121,28 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
       </div>
 
       {/* Center/Right: Wait Time, Group Stats & Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-6 w-full sm:w-auto border-t sm:border-t-0 border-neutral-100 dark:border-neutral-800/80 pt-2.5 sm:pt-0">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 w-full sm:w-auto border-t sm:border-t-0 border-neutral-100 dark:border-neutral-800/80 pt-2 sm:pt-0">
         {/* Wait Time & Group Stats */}
         <div className="flex items-center justify-between sm:justify-start gap-4 text-left sm:text-right">
           <div className="flex items-center gap-3 sm:gap-4">
             <div>
-              <div className="text-[10px] font-black text-neutral-400 uppercase tracking-wider flex items-center gap-1 whitespace-nowrap">
+              <div className="text-[9px] font-black text-neutral-400 uppercase tracking-wider flex items-center gap-1 whitespace-nowrap">
                 <Clock className="w-3 h-3 text-[#E21F26]" />
                 <span>預計等候</span>
               </div>
-              <div className={`text-base sm:text-xl font-black tabular-nums whitespace-nowrap ${waitColorClass}`}>
-                {store.storeStatus === 'OPEN' ? `${store.wait} MINS` : '休息中'}
+              <div className={`text-sm sm:text-lg font-black tabular-nums whitespace-nowrap ${waitColorClass}`}>
+                {store.storeStatus === 'OPEN' ? `${store.wait} 分鐘` : '休息中'}
               </div>
             </div>
 
             <div className="h-7 w-px bg-neutral-200 dark:bg-neutral-800 shrink-0" />
 
             <div>
-              <div className="text-[10px] font-black text-neutral-400 uppercase tracking-wider flex items-center gap-1 whitespace-nowrap">
+              <div className="text-[9px] font-black text-neutral-400 uppercase tracking-wider flex items-center gap-1 whitespace-nowrap">
                 <Users className="w-3 h-3 text-sky-500" />
                 <span>輪候組數</span>
               </div>
-              <div className="text-base sm:text-xl font-black text-neutral-900 dark:text-white tabular-nums whitespace-nowrap">
+              <div className="text-sm sm:text-lg font-black text-neutral-900 dark:text-white tabular-nums whitespace-nowrap">
                 {store.storeStatus === 'OPEN' ? `${store.waitingGroup} 組` : '--'}
               </div>
             </div>

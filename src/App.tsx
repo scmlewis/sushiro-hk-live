@@ -440,7 +440,7 @@ export default function App() {
       />
 
       {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6">
+              <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4">
         {/* Service Worker Offline Cache Notice */}
         {isOffline && (
           <div className="mb-6 p-4 bg-[#E21F26] text-white font-black text-xs uppercase tracking-wider flex items-center justify-between shadow-xl border-2 border-white/20 animate-pulse rounded-xl">
@@ -449,7 +449,7 @@ export default function App() {
               <span>目前網路連線不穩定/離線：已啟用 Service Worker 載入近期的門市離線快取資料</span>
             </div>
             <span className="hidden sm:inline-block bg-black/40 px-3 py-1 text-[10px] uppercase font-mono rounded">
-              SW OFFLINE MODE
+              離線模式
             </span>
           </div>
         )}
@@ -563,7 +563,7 @@ export default function App() {
                   </span>
                 </div>
 
-                <div className="flex flex-col space-y-2.5">
+                <div className="flex flex-col space-y-2">
                   {processedStores.map((store) => {
                     const qData = queues[store.id];
                     return (
@@ -593,15 +593,15 @@ export default function App() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-[11px] font-black tracking-[0.2em] uppercase gap-3 text-neutral-400">
           <div>
             <span>數據來源: </span>
-            <span className="text-white">SUSHI-PASS INTERNAL API (HK)</span>
+            <span className="text-white">SUSHI-PASS API (HK)</span>
           </div>
           <div>
             <span>免責聲明: </span>
-            <span className="text-neutral-300">本網站為個人開發學習，與壽司郎官方無關</span>
+            <span className="text-neutral-300">本網站與壽司郎官方無關</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[#E21F26] animate-ping" />
-            <span className="text-white">POLLING INTERVAL: 10S</span>
+            <span className="text-white">輪詢間隔: 10秒</span>
           </div>
         </div>
       </footer>
