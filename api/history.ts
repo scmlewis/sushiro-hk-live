@@ -45,16 +45,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const records = await getHistory(storeId, date);
+    
+    // Also raw-read to compare
+    const dateKey2 = date || new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Hong_Kong', year: 'numeric', month: '2-digit', day: '2-digit',
+    }).format(new Date());
+    const rawKey = `sushiro:hist:${storeId}:${dateKey2}`;
+    const rawItems = await redis.lrange(rawKey, 0, -1);
+    
     return res.json({
       success: true,
       storeId,
-      date: date || new Intl.DateTimeFormat('en-CA', {
-        timeZone: 'Asia/Hong_Kong',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      }).format(new Date()),
+      date: dateKey2,
       records,
+      rawLen: rawItems.length,
+      rawSample: rawItems.slice(0, 2),
       _debug: redisDebug,
     });
   } catch (err: any) {
