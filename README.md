@@ -4,7 +4,7 @@
 
 **即時追蹤香港全港 44 間壽司郎門市之籌號發放、輪候組數與預估等候時間**
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/YOUR_USERNAME/sushiro-hk-live)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/scmlewis/sushiro-hk-live)
 
 </div>
 
