@@ -18,11 +18,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const force = req.query.force === 'true';
     const result = await getQueueData(storeId, force);
-    console.log(`[Queue] storeId=${storeId} cached=${result.cached} stale=${result.stale || false}`);
     if (!result.cached) {
-      console.log(`[Queue] Calling recordSnapshot for storeId=${storeId}`);
       await recordSnapshot(storeId, null, result.data);
-      console.log(`[Queue] recordSnapshot completed for storeId=${storeId}`);
     }
     return res.json({
       success: true,

@@ -26,7 +26,6 @@ export async function recordSnapshot(
     const len = await redis.rpush(key, snapshot);
     await redis.expire(key, 60 * 60 * 24 * 30);
     await redis.ltrim(key, -576, -1);
-    console.log(`[History] Snapshot written storeId=${storeId} key=${key} len=${len}`);
   } catch (err: any) {
     console.error(`[History Write Error storeId=${storeId}]`, err.message || err);
   }
@@ -39,15 +38,17 @@ export async function getHistory(
   const dateKey = date || getHkDateKey();
   const key = `sushiro:hist:${storeId}:${dateKey}`;
   try {
-    const raw = await redis.lrange<string>(key, 0, -1);
-    if (!raw || raw.length === 0) return [];
+    const raw = await redis.lrange(key, 0, -1);
+    if (!raw || !Array.isArray(raw) || raw.length === 0) return [];
     return raw.map((item) => {
       try {
-        return JSON.parse(item);
+        if (typeof item === 'string') return JSON.parse(item);
+        if (typeof item === 'object' && item !== null) return item;
+        return null;
       } catch {
         return null;
       }
-    }).filter(Boolean);
+    }).filter(Boolean) as any;
   } catch (err: any) {
     console.error(`[History Read Error storeId=${storeId}]`, err.message || err);
     return [];
