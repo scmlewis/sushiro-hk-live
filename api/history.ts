@@ -17,17 +17,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const date = (req.query.date as string) || undefined;
 
-  // Debug: test Redis connectivity
+  // Debug: test Redis write with same key format as recordSnapshot
   let redisDebug: any = null;
   try {
     const pong = await redis.ping();
-    const testKey = `sushiro:debug:${storeId}`;
-    await redis.rpush(testKey, JSON.stringify({ t: Date.now(), test: true }));
-    const testRead = await redis.lrange(testKey, 0, -1);
-    await redis.del(testKey);
-    redisDebug = { pong, testWrite: true, testReadLen: testRead.length, urlSet: !!process.env.UPSTASH_REDIS_REST_URL, tokenSet: !!process.env.UPSTASH_REDIS_REST_TOKEN };
+    const dateKey = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Hong_Kong', year: 'numeric', month: '2-digit', day: '2-digit',
+    }).format(new Date());
+    const histKey = `sushiro:hist:${storeId}:${dateKey}`;
+    const existingLen = await redis.lrange(histKey, 0, -1);
+    
+    // Try a direct write to the same key format
+    const testSnap = JSON.stringify({ t: Date.now(), wait: 0, waitingGroup: 0, booth: [], _test: true });
+    const newLen = await redis.rpush(histKey, testSnap);
+    const afterWrite = await redis.lrange(histKey, 0, -1);
+    
+    // Clean up test entry
+    await redis.ltrim(histKey, 0, -2);
+    
+    redisDebug = { 
+      pong, urlSet: !!process.env.UPSTASH_REDIS_REST_URL, tokenSet: !!process.env.UPSTASH_REDIS_REST_TOKEN,
+      histKey, existingLen: existingLen.length, newLen, afterWriteLen: afterWrite.length,
+    };
   } catch (err: any) {
-    redisDebug = { error: err.message, urlSet: !!process.env.UPSTASH_REDIS_REST_URL, tokenSet: !!process.env.UPSTASH_REDIS_REST_TOKEN };
+    redisDebug = { error: err.message, stack: err.stack?.split('\n').slice(0,3), urlSet: !!process.env.UPSTASH_REDIS_REST_URL, tokenSet: !!process.env.UPSTASH_REDIS_REST_TOKEN };
   }
 
   try {
