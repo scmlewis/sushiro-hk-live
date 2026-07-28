@@ -17,15 +17,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const date = (req.query.date as string) || undefined;
 
-  // Debug: test Redis connectivity on first request
+  // Debug: test Redis connectivity
   let redisDebug: any = null;
   try {
     const pong = await redis.ping();
-    const testKey = 'sushiro:debug:ping';
-    await redis.set(testKey, 'ok');
-    const val = await redis.get(testKey);
+    const testKey = `sushiro:debug:${storeId}`;
+    await redis.rpush(testKey, JSON.stringify({ t: Date.now(), test: true }));
+    const testRead = await redis.lrange(testKey, 0, -1);
     await redis.del(testKey);
-    redisDebug = { pong, val, urlSet: !!process.env.UPSTASH_REDIS_REST_URL, tokenSet: !!process.env.UPSTASH_REDIS_REST_TOKEN };
+    redisDebug = { pong, testWrite: true, testReadLen: testRead.length, urlSet: !!process.env.UPSTASH_REDIS_REST_URL, tokenSet: !!process.env.UPSTASH_REDIS_REST_TOKEN };
   } catch (err: any) {
     redisDebug = { error: err.message, urlSet: !!process.env.UPSTASH_REDIS_REST_URL, tokenSet: !!process.env.UPSTASH_REDIS_REST_TOKEN };
   }
