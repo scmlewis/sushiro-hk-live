@@ -133,7 +133,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
     validationMessage = `籌號 #${myTicketNum} 距離目前最新叫號 (#${minCalledNum}) 相差較遠 (${groupsAhead} 組)，請核對票號是否正確。`;
   } else {
     ticketValidationState = 'valid';
-    groupsAhead = Math.min(myTicketNum - minCalledNum, 120);
+    groupsAhead = myTicketNum - minCalledNum;
     estimatedMins = Math.max(2, Math.round(groupsAhead * 1.35));
     validationMessage = `正常輪候中：前面尚有 ${groupsAhead} 組，預估等待時間約 ${estimatedMins} 分鐘。`;
   }

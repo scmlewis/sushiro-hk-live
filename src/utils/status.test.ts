@@ -5,6 +5,7 @@ import {
   getWaitTimeTier,
   getStoreRegion,
   formatGoogleMapsUrl,
+  isStoreIssuing,
 } from './status';
 
 describe('getStoreStatusInfo', () => {
@@ -23,6 +24,32 @@ describe('getStoreStatusInfo', () => {
   it('returns gray badge for any non-OPEN status', () => {
     const result = getStoreStatusInfo('MAINTENANCE');
     expect(result.label).toBe('休息中 / 閉店');
+  });
+});
+
+describe('isStoreIssuing', () => {
+  it('returns true for ONLINE when store is OPEN', () => {
+    expect(isStoreIssuing('ONLINE', 'OPEN')).toBe(true);
+  });
+
+  it('returns true for MANUAL when store is OPEN', () => {
+    expect(isStoreIssuing('MANUAL', 'OPEN')).toBe(true);
+  });
+
+  it('returns true for OPEN when store is OPEN', () => {
+    expect(isStoreIssuing('OPEN', 'OPEN')).toBe(true);
+  });
+
+  it('returns false for OFFLINE_MANUAL when store is OPEN', () => {
+    expect(isStoreIssuing('OFFLINE_MANUAL', 'OPEN')).toBe(false);
+  });
+
+  it('returns false when store is not OPEN', () => {
+    expect(isStoreIssuing('ONLINE', 'CLOSED')).toBe(false);
+  });
+
+  it('returns false for empty ticket status', () => {
+    expect(isStoreIssuing('', 'OPEN')).toBe(false);
   });
 });
 
@@ -49,9 +76,9 @@ describe('getTicketStatusInfo', () => {
     expect(result.label).toBe('派籌中');
   });
 
-  it('returns 派籌中 for OFFLINE_MANUAL when store is OPEN (contains MANUAL)', () => {
+  it('returns 停止線上派籌 for OFFLINE_MANUAL when store is OPEN (not online issuing)', () => {
     const result = getTicketStatusInfo('OFFLINE_MANUAL', 'OPEN');
-    expect(result.label).toBe('派籌中');
+    expect(result.label).toBe('停止線上派籌');
   });
 
   it('returns 停止線上派籌 for empty ticket status when store is OPEN', () => {

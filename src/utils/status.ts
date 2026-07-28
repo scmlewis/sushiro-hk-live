@@ -30,6 +30,12 @@ export function getStoreStatusInfo(status: string): StatusBadge {
   };
 }
 
+export function isStoreIssuing(netTicketStatus: string, storeStatus: string): boolean {
+  if (storeStatus !== 'OPEN') return false;
+  const statusUpper = (netTicketStatus || '').toUpperCase();
+  return statusUpper === 'MANUAL' || statusUpper === 'ONLINE' || statusUpper === 'OPEN';
+}
+
 export function getTicketStatusInfo(netTicketStatus: string, storeStatus: string): StatusBadge {
   if (storeStatus !== 'OPEN') {
     return {
@@ -41,10 +47,7 @@ export function getTicketStatusInfo(netTicketStatus: string, storeStatus: string
     };
   }
 
-  const statusUpper = (netTicketStatus || '').toUpperCase();
-  const isIssuing = statusUpper.includes('MANUAL') || statusUpper.includes('ONLINE') || statusUpper === 'OPEN';
-
-  if (isIssuing) {
+  if (isStoreIssuing(netTicketStatus, storeStatus)) {
     return {
       label: '派籌中',
       bgColor: 'bg-amber-500/10',

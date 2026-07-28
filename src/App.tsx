@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { SushiroStore, StoreQueueMap, SortOption, ToastMessage } from './types';
 import { calculateDistanceKm, getCurrentPosition } from './utils/geolocation';
-import { getStoreRegion } from './utils/status';
+import { getStoreRegion, isStoreIssuing } from './utils/status';
 import { Navbar } from './components/Navbar';
 import { BookmarksSection } from './components/BookmarksSection';
 import { DistrictFilterBar } from './components/DistrictFilterBar';
@@ -375,11 +375,7 @@ export default function App() {
 
     // Only issuing tickets filter
     if (onlyIssuingTickets) {
-      list = list.filter((s) => {
-        if (s.storeStatus !== 'OPEN') return false;
-        const net = (s.netTicketStatus || '').toUpperCase();
-        return net.includes('MANUAL') || net.includes('ONLINE') || net === 'OPEN';
-      });
+      list = list.filter((s) => isStoreIssuing(s.netTicketStatus, s.storeStatus));
     }
 
     // Sorting
@@ -440,10 +436,7 @@ export default function App() {
       }
     });
 
-    const issuingCount = openStores.filter((s) => {
-      const net = (s.netTicketStatus || '').toUpperCase();
-      return net.includes('MANUAL') || net.includes('ONLINE') || net === 'OPEN';
-    }).length;
+    const issuingCount = openStores.filter((s) => isStoreIssuing(s.netTicketStatus, s.storeStatus)).length;
 
     return { openCount: openStores.length, avgWait, maxWaitStore, issuingCount };
   }, [stores]);
