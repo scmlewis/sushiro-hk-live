@@ -1,6 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getQueueData } from './_lib/cache.js';
-import { recordSnapshot } from './_lib/history.js';
+import { getHistory } from './_lib/history.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -15,25 +14,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ success: false, error: '缺少 storeid 參數' });
   }
 
+  const date = (req.query.date as string) || undefined;
+
   try {
-    const force = req.query.force === 'true';
-    const result = await getQueueData(storeId, force);
-    if (!result.cached) {
-      recordSnapshot(storeId, null, result.data);
-    }
+    const records = await getHistory(storeId, date);
     return res.json({
       success: true,
       storeId,
-      cached: result.cached,
-      stale: result.stale || false,
-      timestamp: result.timestamp,
-      queue: result.data,
+      date: date || new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Hong_Kong',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }).format(new Date()),
+      records,
     });
   } catch (err: any) {
-    return res.status(502).json({
-      success: false,
-      error: '無法取得該門市籌號資訊',
-      details: err.message,
-    });
+    return res.status(500).json({ success: false, error: err.message });
   }
 }

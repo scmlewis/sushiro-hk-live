@@ -38,9 +38,41 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   }, [initialViewMode, store?.id]);
 
   // State for date management in history table
-  const [currentDateObj, setCurrentDateObj] = useState<Date>(new Date(2026, 6, 27)); // Default 2026-07-27
+  const [currentDateObj, setCurrentDateObj] = useState<Date>(new Date());
   const daysOfWeek = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
   const dayNamesFull = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+
+  // History records state
+  const [historyRecords, setHistoryRecords] = useState<{ t: number; wait: number; waitingGroup: number; booth: string[] }[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+
+  const fetchHistory = async (storeId: number, dateStr: string) => {
+    setHistoryLoading(true);
+    try {
+      const res = await fetch(`/api/history?storeid=${storeId}&date=${dateStr}`);
+      const data = await res.json();
+      setHistoryRecords(data.success ? data.records : []);
+    } catch {
+      setHistoryRecords([]);
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+
+  // Format date as yyyy-mm-dd for API
+  const formatDateKey = (d: Date) => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  };
+
+  // Fetch history when date changes or store changes
+  useEffect(() => {
+    if (viewMode === 'history' && store) {
+      fetchHistory(store.id, formatDateKey(currentDateObj));
+    }
+  }, [currentDateObj, store?.id, viewMode]);
 
   // Derived date selection day of week
   const selectedDayIdx = currentDateObj.getDay();
@@ -141,89 +173,22 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   // Dynamic Historical Records Data Generator based on selected date & store
   const isWeekend = selectedDayIdx === 0 || selectedDayIdx === 6;
   const isFriday = selectedDayIdx === 5;
-  const dayMultiplier = isWeekend ? 1.5 : isFriday ? 1.2 : 0.85;
-  const storeSeed = (store.id * 19) % 25;
 
-  const times = [
-    '11:00', '11:20', '11:40', '12:00', '12:20', '12:40',
-    '13:00', '13:20', '13:40', '14:00', '14:20', '14:40',
-    '15:00', '15:20', '15:40', '16:00', '16:20', '16:40',
-    '17:00', '17:20', '17:40', '18:00', '18:20', '18:40',
-    '19:00', '19:20', '19:40', '20:00', '20:20', '20:40'
-  ];
-
-  const historyTimeSlots = times.map((t, idx) => {
-    // Base traffic curve
-    let baseGroups = 0;
-    let ticketStart = 10 + idx * 9;
-
-    if (t >= '12:00' && t <= '13:40') { // Lunch peak
-      baseGroups = Math.round((20 + (idx - 3) * 4 + storeSeed) * dayMultiplier);
-    } else if (t >= '14:00' && t <= '16:40') { // Afternoon off-peak
-      baseGroups = Math.max(0, Math.round((5 - (idx - 9) * 1) * dayMultiplier));
-    } else if (t >= '17:20' && t <= '19:40') { // Dinner peak
-      baseGroups = Math.round((18 + (idx - 20) * 5 + storeSeed * 1.2) * dayMultiplier);
-    } else if (t >= '20:00') { // Late evening
-      baseGroups = Math.max(0, Math.round((15 - (idx - 27) * 4) * dayMultiplier));
-    }
-
-    const waitMins = baseGroups === 0 ? 0 : Math.max(3, Math.round(baseGroups * 1.25));
-    const isAvailable = baseGroups > 0;
-    const ticketStr = isAvailable ? `${String(Math.min(999, ticketStart + Math.round(storeSeed))).padStart(3, '0')}` : '—';
-
-    let densityCategory: 'offpeak' | 'medium' | 'peak' = 'offpeak';
-    if (waitMins >= 30) densityCategory = 'peak';
-    else if (waitMins >= 10) densityCategory = 'medium';
-
-    return {
-      time: t,
-      groups: baseGroups,
-      wait: `${waitMins}分`,
-      waitNum: waitMins,
-      ticket: ticketStr,
-      densityCategory,
-    };
-  });
-
-  // Generate 1-hour busy trend data
+  // 1-Hour Busy Trend derived from real history records
   const isClosed = store.storeStatus !== 'OPEN';
-  const seed = (store.id * 37) % 100;
-  const trendType = seed % 3;
 
-  let p60 = store.wait;
-  let p45 = store.wait;
-  let p30 = store.wait;
-  let p15 = store.wait;
+  // Build trend data from last 5 history records (most recent = now)
+  const last5 = historyRecords.slice(-5);
+  const trendData = last5.length > 0
+    ? last5.map((r, i) => ({
+        time: i === last5.length - 1 ? '現在' : `-${(last5.length - 1 - i) * 15}m`,
+        wait: r.wait,
+      }))
+    : [{ time: '現在', wait: isClosed ? 0 : store.wait }];
 
-  if (!isClosed) {
-    if (trendType === 0) {
-      p60 = Math.max(0, store.wait - Math.floor(10 + (seed % 12)));
-      p45 = Math.max(0, store.wait - Math.floor(7 + (seed % 8)));
-      p30 = Math.max(0, store.wait - Math.floor(4 + (seed % 5)));
-      p15 = Math.max(0, store.wait - Math.floor(2 + (seed % 3)));
-    } else if (trendType === 1) {
-      p60 = store.wait + Math.floor(12 + (seed % 10));
-      p45 = store.wait + Math.floor(8 + (seed % 6));
-      p30 = store.wait + Math.floor(5 + (seed % 4));
-      p15 = store.wait + Math.floor(2 + (seed % 3));
-    } else {
-      const delta = (seed % 5) - 2;
-      p60 = Math.max(0, store.wait + delta);
-      p45 = Math.max(0, store.wait - delta);
-      p30 = Math.max(0, store.wait + Math.floor(delta / 2));
-      p15 = Math.max(0, store.wait - Math.floor(delta / 2));
-    }
-  }
-
-  const trendData = [
-    { time: '-60m', wait: isClosed ? 0 : p60 },
-    { time: '-45m', wait: isClosed ? 0 : p45 },
-    { time: '-30m', wait: isClosed ? 0 : p30 },
-    { time: '-15m', wait: isClosed ? 0 : p15 },
-    { time: '現在', wait: isClosed ? 0 : store.wait },
-  ];
-
+  const p60 = trendData.length > 1 ? trendData[0].wait : store.wait;
   const diff = store.wait - p60;
+
   let trendBadge = {
     label: '趨勢平穩',
     icon: <Minus className="w-3.5 h-3.5" />,
@@ -334,7 +299,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
             }`}
           >
             <Calendar className="w-4 h-4" />
-            <span>歷史模擬</span>
+            <span>歷史紀錄</span>
           </button>
         </div>
 
@@ -493,7 +458,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <h3 className="text-sm font-black tracking-tight uppercase text-neutral-900 dark:text-white flex items-center gap-1.5">
-                    <span>近期人流趨勢（估算）</span>
+                    <span>近期人流趨勢</span>
                     <span className="text-[10px] text-neutral-400 font-bold uppercase">(人流趨勢)</span>
                   </h3>
                 </div>
@@ -684,14 +649,8 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
             </div>
           </>
         ) : (
-          /* VIEW MODE 2: SIMULATED HISTORICAL DATA (Estimated based on time-of-day patterns) */
+          /* VIEW MODE 2: REAL HISTORICAL DATA (collected passively from live API) */
           <div className="p-6 sm:p-8">
-            {/* Disclaimer Banner */}
-            <div className="mb-4 p-3 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 text-xs font-bold text-amber-800 dark:text-amber-300 flex items-center gap-2">
-              <Info className="w-4 h-4 shrink-0" />
-              <span>以下數據為基於時段與星期類型之模擬估算，並非真實歷史紀錄。僅供參考 typical traffic pattern。</span>
-            </div>
-
             {/* Date Picker Header */}
             <div className="flex items-center justify-between mb-3 bg-neutral-50 dark:bg-neutral-800/80 p-3 rounded-lg border border-neutral-200 dark:border-neutral-700">
               <button
@@ -744,53 +703,67 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
 
             {/* Historical Log Table */}
             <div className="max-h-[380px] overflow-y-auto border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-xs">
-              <table className="w-full text-left text-xs sm:text-sm">
-                <thead className="bg-neutral-100 dark:bg-neutral-800 text-neutral-500 font-bold sticky top-0 border-b border-neutral-200 dark:border-neutral-700 z-10">
-                  <tr>
-                    <th className="py-3 px-4">時間</th>
-                    <th className="py-3 px-4 text-center">人流狀態</th>
-                    <th className="py-3 px-4 text-center">等候組數</th>
-                    <th className="py-3 px-4 text-center">平均等候</th>
-                    <th className="py-3 px-4 text-right">籌號</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800 font-medium">
-                  {historyTimeSlots.map((row, i) => (
-                    <tr
-                      key={i}
-                      className={`transition-colors ${
-                        row.densityCategory === 'peak'
-                          ? 'bg-red-50/40 dark:bg-red-950/20 hover:bg-red-50 dark:hover:bg-red-950/40'
-                          : 'hover:bg-neutral-50 dark:hover:bg-neutral-800/50'
-                      }`}
-                    >
-                      <td className="py-2.5 px-4 font-mono font-bold text-neutral-900 dark:text-white">
-                        {row.time}
-                      </td>
-                      <td className="py-2.5 px-4 text-center">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${
-                          row.densityCategory === 'peak'
-                            ? 'bg-red-100 text-[#E21F26] dark:bg-red-950 dark:text-red-300'
-                            : row.densityCategory === 'medium'
-                            ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
-                            : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
-                        }`}>
-                          {row.densityCategory === 'peak' ? '🔴 繁忙' : row.densityCategory === 'medium' ? '🟡 中等' : '🟢 順暢'}
-                        </span>
-                      </td>
-                      <td className="py-2.5 px-4 text-center font-bold text-neutral-700 dark:text-neutral-300">
-                        {row.groups > 0 ? `${row.groups} 組` : '0 組'}
-                      </td>
-                      <td className={`py-2.5 px-4 text-center font-black ${row.waitNum > 0 ? 'text-[#E21F26]' : 'text-emerald-600 dark:text-emerald-400'}`}>
-                        {row.wait}
-                      </td>
-                      <td className="py-2.5 px-4 text-right font-mono text-neutral-600 dark:text-neutral-400">
-                        {row.ticket}
-                      </td>
+              {historyLoading ? (
+                <div className="flex items-center justify-center py-12 text-neutral-400">
+                  <RefreshCw className="w-5 h-5 animate-spin mr-2" />
+                  <span className="text-sm font-bold">載入中...</span>
+                </div>
+              ) : historyRecords.length === 0 ? (
+                <div className="text-center py-12 px-6">
+                  <Info className="w-8 h-8 mx-auto text-neutral-400 mb-2" />
+                  <p className="text-neutral-800 dark:text-neutral-200 font-bold text-sm">
+                    暫無歷史紀錄（資料於用家查閱時自動收集）
+                  </p>
+                </div>
+              ) : (
+                <table className="w-full text-left text-xs sm:text-sm">
+                  <thead className="bg-neutral-100 dark:bg-neutral-800 text-neutral-500 font-bold sticky top-0 border-b border-neutral-200 dark:border-neutral-700 z-10">
+                    <tr>
+                      <th className="py-3 px-4">時間</th>
+                      <th className="py-3 px-4 text-center">等候組數</th>
+                      <th className="py-3 px-4 text-center">等候時間</th>
+                      <th className="py-3 px-4 text-right">最新籌號</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800 font-medium">
+                    {historyRecords.map((row, i) => {
+                      const waitMins = row.wait;
+                      let densityCategory: 'offpeak' | 'medium' | 'peak' = 'offpeak';
+                      if (waitMins >= 30) densityCategory = 'peak';
+                      else if (waitMins >= 10) densityCategory = 'medium';
+                      const timeStr = new Date(row.t).toLocaleTimeString('en-HK', {
+                        timeZone: 'Asia/Hong_Kong',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false,
+                      });
+                      return (
+                        <tr
+                          key={i}
+                          className={`transition-colors ${
+                            densityCategory === 'peak'
+                              ? 'bg-red-50/40 dark:bg-red-950/20 hover:bg-red-50 dark:hover:bg-red-950/40'
+                              : 'hover:bg-neutral-50 dark:hover:bg-neutral-800/50'
+                          }`}
+                        >
+                          <td className="py-2.5 px-4 font-mono font-bold text-neutral-900 dark:text-white">
+                            {timeStr}
+                          </td>
+                          <td className="py-2.5 px-4 text-center font-bold text-neutral-700 dark:text-neutral-300">
+                            {row.waitingGroup > 0 ? `${row.waitingGroup} 組` : '0 組'}
+                          </td>
+                          <td className={`py-2.5 px-4 text-center font-black ${waitMins > 0 ? 'text-[#E21F26]' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                            {waitMins > 0 ? `${waitMins}分` : '0分'}
+                          </td>
+                          <td className="py-2.5 px-4 text-right font-mono text-neutral-600 dark:text-neutral-400">
+                            {row.booth && row.booth.length > 0 ? row.booth.map((b) => `#${b}`).join(' ') : '—'}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
             </div>
           </div>
         )}
