@@ -1,6 +1,4 @@
-/**
- * Helpers for store status, ticketing status, and wait time tiering
- */
+import { SushiroStore } from '../types';
 
 export interface StatusBadge {
   label: string;
@@ -40,16 +38,16 @@ export function isStoreIssuing(netTicketStatus: string, storeStatus: string): bo
   return statusUpper === 'MANUAL' || statusUpper === 'ONLINE' || statusUpper === 'OPEN';
 }
 
-export function getTicketStatusInfo(netTicketStatus: string, storeStatus: string, localTicketingStatus = 'ON'): StatusBadge {
-  if ((localTicketingStatus || '').toUpperCase() === 'OFF') {
-    return {
-      label: '停止 walk in',
-      bgColor: 'bg-rose-500/10',
-      textColor: 'text-rose-700 dark:text-rose-400',
-      borderColor: 'border-rose-500/20',
-      dotColor: 'bg-rose-500',
-    };
-  }
+export function getTicketStatusInfo(
+  netTicketStatus: string,
+  storeStatus: string,
+  localTicketingStatus = 'ON',
+  wait = 0,
+  waitingGroup = 0
+): StatusBadge {
+  const isOffline = !isStoreIssuing(netTicketStatus, storeStatus);
+  const isStopFly = isLocalTicketingOff(localTicketingStatus);
+  const isFinished = storeStatus === 'OPEN' && isOffline && isStopFly && wait === 0 && waitingGroup === 0;
 
   if (storeStatus !== 'OPEN') {
     return {
@@ -58,6 +56,26 @@ export function getTicketStatusInfo(netTicketStatus: string, storeStatus: string
       textColor: 'text-slate-500',
       borderColor: 'border-slate-500/20',
       dotColor: 'bg-slate-400',
+    };
+  }
+
+  if (isFinished) {
+    return {
+      label: '停止線上派籌',
+      bgColor: 'bg-[#E21F26]/10',
+      textColor: 'text-[#E21F26] dark:text-red-400',
+      borderColor: 'border-[#E21F26]/20',
+      dotColor: 'bg-[#E21F26]',
+    };
+  }
+
+  if (isStopFly) {
+    return {
+      label: '停止 walk in',
+      bgColor: 'bg-rose-500/10',
+      textColor: 'text-rose-700 dark:text-rose-400',
+      borderColor: 'border-rose-500/20',
+      dotColor: 'bg-rose-500',
     };
   }
 
@@ -80,78 +98,85 @@ export function getTicketStatusInfo(netTicketStatus: string, storeStatus: string
   };
 }
 
-export interface WaitTimeTier {
-  tier: 'none' | 'short' | 'medium' | 'long' | 'very_long';
-  title: string;
-  badgeBg: string;
-  badgeText: string;
-  borderAccent: string;
-  cardHighlight: string;
+export interface StoreDisplayStatus {
+  waitText: string;        // "休息" | "收工" | "停飛" | "X分"
+  groupText: string;       // "--" | "X組"
+  isClosed: boolean;       // true if store is not servicing
+  accentColor: string;     // 'emerald' | 'amber' | 'violet' | 'orange' | 'red' | 'neutral'
 }
 
-export function getWaitTimeTier(waitMinutes: number, storeStatus = 'OPEN'): WaitTimeTier {
-  if (storeStatus !== 'OPEN') {
+export function isStoreServicing(store: SushiroStore): boolean {
+  if (store.storeStatus !== 'OPEN') return false;
+  const isOffline = !isStoreIssuing(store.netTicketStatus, store.storeStatus);
+  const isStopFly = isLocalTicketingOff(store.localTicketingStatus);
+  
+  // 收工 (Finished)
+  if (isOffline && isStopFly && store.wait === 0 && store.waitingGroup === 0) {
+    return false;
+  }
+  
+  // 停飛 (Walk-in stopped)
+  if (isStopFly) {
+    return false;
+  }
+  
+  return true;
+}
+
+export function getStoreDisplayStatus(store: SushiroStore): StoreDisplayStatus {
+  const isOpen = store.storeStatus === 'OPEN';
+  const isOffline = !isStoreIssuing(store.netTicketStatus, store.storeStatus);
+  const isStopFly = isLocalTicketingOff(store.localTicketingStatus);
+
+  // 1. 休息 (Closed)
+  if (!isOpen) {
     return {
-      tier: 'none',
-      title: '非營業時間',
-      badgeBg: 'bg-slate-100 dark:bg-slate-800',
-      badgeText: 'text-slate-600 dark:text-slate-400',
-      borderAccent: 'border-slate-200 dark:border-slate-800',
-      cardHighlight: 'border-l-4 border-l-slate-400',
+      waitText: '休息',
+      groupText: '--',
+      isClosed: true,
+      accentColor: 'neutral',
     };
   }
 
-  if (waitMinutes <= 0) {
+  // 2. 收工 (Finished)
+  if (isOffline && isStopFly && store.wait === 0 && store.waitingGroup === 0) {
     return {
-      tier: 'none',
-      title: '即時入座 / 無需輪候',
-      badgeBg: 'bg-emerald-50 dark:bg-emerald-950/40',
-      badgeText: 'text-emerald-700 dark:text-emerald-300',
-      borderAccent: 'border-emerald-300 dark:border-emerald-800',
-      cardHighlight: 'border-l-4 border-l-emerald-500',
+      waitText: '收工',
+      groupText: '--',
+      isClosed: true,
+      accentColor: 'neutral',
     };
   }
 
-  if (waitMinutes < 15) {
+  // 3. 停飛 (Walk-in stopped)
+  if (isStopFly) {
     return {
-      tier: 'short',
-      title: '等候時間短',
-      badgeBg: 'bg-amber-50 dark:bg-amber-950/40',
-      badgeText: 'text-amber-800 dark:text-amber-300',
-      borderAccent: 'border-amber-300 dark:border-amber-800',
-      cardHighlight: 'border-l-4 border-l-amber-500',
+      waitText: '停飛',
+      groupText: `${store.waitingGroup}組`,
+      isClosed: true,
+      accentColor: 'red',
     };
   }
 
-  if (waitMinutes < 30) {
-    return {
-      tier: 'medium',
-      title: '中等輪候',
-      badgeBg: 'bg-violet-50 dark:bg-violet-950/40',
-      badgeText: 'text-violet-800 dark:text-violet-300',
-      borderAccent: 'border-violet-300 dark:border-violet-800',
-      cardHighlight: 'border-l-4 border-l-violet-500',
-    };
-  }
-
-  if (waitMinutes < 60) {
-    return {
-      tier: 'long',
-      title: '輪候較久',
-      badgeBg: 'bg-orange-50 dark:bg-orange-950/40',
-      badgeText: 'text-orange-800 dark:text-orange-300',
-      borderAccent: 'border-orange-300 dark:border-orange-800',
-      cardHighlight: 'border-l-4 border-l-orange-500',
-    };
+  // 4. Normal queue
+  let accentColor = 'neutral';
+  if (store.wait <= 0) {
+    accentColor = 'emerald';
+  } else if (store.wait < 15) {
+    accentColor = 'amber';
+  } else if (store.wait < 30) {
+    accentColor = 'violet';
+  } else if (store.wait < 60) {
+    accentColor = 'orange';
+  } else {
+    accentColor = 'red';
   }
 
   return {
-    tier: 'very_long',
-    title: '長時間輪候',
-    badgeBg: 'bg-red-50 dark:bg-red-950/40',
-    badgeText: 'text-red-800 dark:text-red-300',
-    borderAccent: 'border-red-400 dark:border-red-700',
-    cardHighlight: 'border-l-4 border-l-red-700',
+    waitText: `${store.wait}分`,
+    groupText: `${store.waitingGroup}組`,
+    isClosed: false,
+    accentColor,
   };
 }
 

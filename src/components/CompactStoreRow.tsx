@@ -1,6 +1,6 @@
 import React from 'react';
 import { SushiroStore, GroupQueue } from '../types';
-import { formatGoogleMapsUrl, isLocalTicketingOff } from '../utils/status';
+import { formatGoogleMapsUrl, getStoreDisplayStatus } from '../utils/status';
 import { Heart, MapPin, RefreshCw, ChevronRight, Plus, Check, Clock, Users } from 'lucide-react';
 
 interface CompactStoreRowProps {
@@ -28,30 +28,30 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
 }) => {
   const mapsUrl = formatGoogleMapsUrl(store.latitude, store.longitude, store.address, store.name);
 
-  let accentColorClass = 'bg-neutral-300 dark:bg-neutral-700';
-  let waitColorClass = 'text-neutral-900 dark:text-white';
+  const displayStatus = getStoreDisplayStatus(store);
 
-  if (store.storeStatus === 'OPEN') {
-    if (store.wait <= 0) {
-      accentColorClass = 'bg-emerald-500';
-      waitColorClass = 'text-emerald-600 dark:text-emerald-400';
-    } else if (store.wait < 15) {
-      accentColorClass = 'bg-amber-500';
-      waitColorClass = 'text-amber-600 dark:text-amber-400';
-    } else if (store.wait < 30) {
-      accentColorClass = 'bg-violet-500';
-      waitColorClass = 'text-violet-600 dark:text-violet-400';
-    } else if (store.wait < 60) {
-      accentColorClass = 'bg-orange-500';
-      waitColorClass = 'text-orange-600 dark:text-orange-400';
-    } else {
-      accentColorClass = 'bg-red-700';
-      waitColorClass = 'text-red-700 dark:text-red-400';
-    }
-  }
+  const bgMap: Record<string, string> = {
+    emerald: 'bg-emerald-500',
+    amber: 'bg-amber-500',
+    violet: 'bg-violet-500',
+    orange: 'bg-orange-500',
+    red: 'bg-red-700',
+    neutral: 'bg-neutral-300 dark:bg-neutral-700',
+  };
+  const accentColorClass = bgMap[displayStatus.accentColor] || bgMap.neutral;
 
-  const isOpen = store.storeStatus === 'OPEN';
-  const isStopFly = isLocalTicketingOff(store.localTicketingStatus);
+  const textMap: Record<string, string> = {
+    emerald: 'text-emerald-600 dark:text-emerald-400',
+    amber: 'text-amber-600 dark:text-amber-400',
+    violet: 'text-violet-600 dark:text-violet-400',
+    orange: 'text-orange-600 dark:text-orange-400',
+    red: 'text-red-700 dark:text-red-400',
+    neutral: 'text-neutral-400',
+  };
+
+  const waitColorClass = displayStatus.waitText === '停飛'
+    ? 'text-rose-600 dark:text-rose-400'
+    : textMap[displayStatus.accentColor] || 'text-neutral-900 dark:text-white';
 
   return (
     <div className="group relative bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 hover:border-neutral-400 dark:hover:border-neutral-600 transition-all shadow-xs overflow-hidden">
@@ -70,15 +70,15 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
         <div className="flex items-center gap-3 shrink-0">
           <div className="flex items-center gap-1">
             <Clock className="w-3 h-3 text-[#E21F26]" />
-            <span className={`text-sm font-black tabular-nums whitespace-nowrap ${isOpen && !isStopFly ? waitColorClass : isStopFly ? 'text-rose-600 dark:text-rose-400' : 'text-neutral-400'}`}>
-              {isStopFly ? '停飛' : isOpen ? `${store.wait}分` : '休息'}
+            <span className={`text-sm font-black tabular-nums whitespace-nowrap ${waitColorClass}`}>
+              {displayStatus.waitText}
             </span>
           </div>
 
           <div className="flex items-center gap-1">
             <Users className="w-3 h-3 text-sky-500" />
             <span className="text-sm font-black text-neutral-900 dark:text-white tabular-nums whitespace-nowrap">
-              {isOpen ? `${store.waitingGroup}組` : '--'}
+              {displayStatus.groupText}
             </span>
           </div>
         </div>

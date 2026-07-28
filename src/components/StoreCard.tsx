@@ -1,6 +1,6 @@
 import React from 'react';
 import { SushiroStore, GroupQueue } from '../types';
-import { getStoreStatusInfo, getTicketStatusInfo, formatGoogleMapsUrl } from '../utils/status';
+import { getStoreStatusInfo, getTicketStatusInfo, formatGoogleMapsUrl, getStoreDisplayStatus } from '../utils/status';
 import { Heart, MapPin, RefreshCw, ChevronRight, Plus, Check } from 'lucide-react';
 
 interface StoreCardProps {
@@ -27,28 +27,32 @@ export const StoreCard: React.FC<StoreCardProps> = ({
   onSelectStore,
 }) => {
   const storeStatusInfo = getStoreStatusInfo(store.storeStatus);
-  const ticketStatusInfo = getTicketStatusInfo(store.netTicketStatus, store.storeStatus, store.localTicketingStatus);
+  const ticketStatusInfo = getTicketStatusInfo(store.netTicketStatus, store.storeStatus, store.localTicketingStatus, store.wait, store.waitingGroup);
   const mapsUrl = formatGoogleMapsUrl(store.latitude, store.longitude, store.address, store.name);
 
-  // Determine left border accent color based on wait time & status
-  let borderLeftColor = 'border-l-8 border-neutral-300 dark:border-l-8 dark:border-neutral-700';
-  let waitTextColor = 'text-neutral-900 dark:text-white';
+  const displayStatus = getStoreDisplayStatus(store);
 
-  if (store.storeStatus === 'OPEN') {
-    if (store.wait <= 0) {
-      borderLeftColor = 'border-l-8 border-emerald-500';
-      waitTextColor = 'text-emerald-600 dark:text-emerald-400';
-    } else if (store.wait < 15) {
-      borderLeftColor = 'border-l-8 border-amber-500';
-      waitTextColor = 'text-amber-600 dark:text-amber-400';
-    } else if (store.wait < 30) {
-      borderLeftColor = 'border-l-8 border-violet-500';
-      waitTextColor = 'text-violet-600 dark:text-violet-400';
-    } else {
-      borderLeftColor = 'border-l-8 border-[#E21F26]';
-      waitTextColor = 'text-[#E21F26]';
-    }
-  }
+  const borderMap: Record<string, string> = {
+    emerald: 'border-l-8 border-emerald-500',
+    amber: 'border-l-8 border-amber-500',
+    violet: 'border-l-8 border-violet-500',
+    orange: 'border-l-8 border-orange-500',
+    red: 'border-l-8 border-[#E21F26]',
+    neutral: 'border-l-8 border-neutral-300 dark:border-l-8 dark:border-neutral-700',
+  };
+  const borderLeftColor = borderMap[displayStatus.accentColor] || borderMap.neutral;
+
+  const textMap: Record<string, string> = {
+    emerald: 'text-emerald-600 dark:text-emerald-400',
+    amber: 'text-amber-600 dark:text-amber-400',
+    violet: 'text-violet-600 dark:text-violet-400',
+    orange: 'text-orange-600 dark:text-orange-400',
+    red: 'text-[#E21F26]',
+    neutral: 'text-neutral-400',
+  };
+  const waitTextColor = displayStatus.waitText === '停飛'
+    ? 'text-rose-600 dark:text-rose-400'
+    : textMap[displayStatus.accentColor] || 'text-[#141414] dark:text-white';
 
   // Helper to extract top / current queue numbers
   const getQueueSummary = () => {
@@ -149,15 +153,17 @@ export const StoreCard: React.FC<StoreCardProps> = ({
                 預估等候時間
               </span>
               <div className="flex items-baseline gap-1">
-                {store.storeStatus === 'OPEN' ? (
+                {displayStatus.isClosed ? (
+                  <span className={`text-3xl font-black ${waitTextColor}`}>
+                    {displayStatus.waitText}
+                  </span>
+                ) : (
                   <>
                     <span className={`text-5xl sm:text-6xl lg:text-7xl font-black tracking-tighter tabular-nums leading-none ${waitTextColor}`}>
                       {store.wait}
                     </span>
                     <span className="text-lg sm:text-xl font-black opacity-40 uppercase">分鐘</span>
                   </>
-                ) : (
-                  <span className="text-2xl font-black text-neutral-400">非營業時間</span>
                 )}
               </div>
             </div>
@@ -167,7 +173,7 @@ export const StoreCard: React.FC<StoreCardProps> = ({
                 輪候組數
               </span>
               <span className="text-3xl font-black text-[#141414] dark:text-white tabular-nums">
-                {store.storeStatus === 'OPEN' ? `${store.waitingGroup} 組` : '--'}
+                {displayStatus.groupText}
               </span>
             </div>
           </div>

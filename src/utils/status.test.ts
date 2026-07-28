@@ -2,12 +2,14 @@ import { describe, it, expect } from 'vitest';
 import {
   getStoreStatusInfo,
   getTicketStatusInfo,
-  getWaitTimeTier,
+  getStoreDisplayStatus,
+  isStoreServicing,
   getStoreRegion,
   formatGoogleMapsUrl,
   isStoreIssuing,
   isLocalTicketingOff,
 } from './status';
+import type { SushiroStore } from '../types';
 
 describe('getStoreStatusInfo', () => {
   it('returns green badge for OPEN', () => {
@@ -120,9 +122,14 @@ describe('getTicketStatusInfo', () => {
     expect(result.dotColor).toContain('rose');
   });
 
-  it('returns 停止 walk in when localTicketingStatus is OFF even if store is CLOSED', () => {
+  it('returns 暫停派籌 when store is CLOSED even if localTicketingStatus is OFF', () => {
     const result = getTicketStatusInfo('ONLINE', 'CLOSED', 'OFF');
-    expect(result.label).toBe('停止 walk in');
+    expect(result.label).toBe('暫停派籌');
+  });
+
+  it('returns 停止線上派籌 for finished store (收工) even if localTicketingStatus is OFF', () => {
+    const result = getTicketStatusInfo('OFFLINE_MANUAL', 'OPEN', 'OFF', 0, 0);
+    expect(result.label).toBe('停止線上派籌');
   });
 
   it('returns 派籌中 when localTicketingStatus is ON', () => {
@@ -136,66 +143,152 @@ describe('getTicketStatusInfo', () => {
   });
 });
 
-describe('getWaitTimeTier', () => {
-  it('returns none tier for closed store regardless of wait', () => {
-    const result = getWaitTimeTier(30, 'CLOSED');
-    expect(result.tier).toBe('none');
-    expect(result.title).toBe('非營業時間');
+describe('isStoreServicing', () => {
+  const baseStore: SushiroStore = {
+    id: 1,
+    name: 'Test',
+    nameEn: 'Test',
+    area: 'Kowloon',
+    address: 'Addr',
+    latitude: 0,
+    longitude: 0,
+    wait: 10,
+    waitingGroup: 2,
+    storeStatus: 'OPEN',
+    netTicketStatus: 'ONLINE',
+    localTicketingStatus: 'ON',
+    waitTimeCap: 120,
+  };
+
+  it('returns false for closed store', () => {
+    const store = { ...baseStore, storeStatus: 'CLOSED' };
+    expect(isStoreServicing(store)).toBe(false);
   });
 
-  it('returns none tier for 0 minutes wait', () => {
-    const result = getWaitTimeTier(0);
-    expect(result.tier).toBe('none');
-    expect(result.title).toContain('即時入座');
+  it('returns false for finished store (收工)', () => {
+    const store = {
+      ...baseStore,
+      storeStatus: 'OPEN',
+      netTicketStatus: 'OFFLINE_MANUAL',
+      localTicketingStatus: 'OFF',
+      wait: 0,
+      waitingGroup: 0,
+    };
+    expect(isStoreServicing(store)).toBe(false);
   });
 
-  it('returns short tier for wait < 15 minutes', () => {
-    const result = getWaitTimeTier(5);
-    expect(result.tier).toBe('short');
-    expect(result.title).toBe('等候時間短');
+  it('returns false for walk-in stopped store (停飛)', () => {
+    const store = {
+      ...baseStore,
+      storeStatus: 'OPEN',
+      netTicketStatus: 'ONLINE',
+      localTicketingStatus: 'OFF',
+      wait: 15,
+      waitingGroup: 3,
+    };
+    expect(isStoreServicing(store)).toBe(false);
   });
 
-  it('returns short tier for 14 minutes wait', () => {
-    const result = getWaitTimeTier(14);
-    expect(result.tier).toBe('short');
+  it('returns true for normal open store', () => {
+    expect(isStoreServicing(baseStore)).toBe(true);
   });
 
-  it('returns medium tier for 15 minutes wait', () => {
-    const result = getWaitTimeTier(15);
-    expect(result.tier).toBe('medium');
-    expect(result.title).toBe('中等輪候');
+  it('returns true for store with active queue even if ticketing is offline', () => {
+    const store = {
+      ...baseStore,
+      netTicketStatus: 'OFFLINE_MANUAL',
+      localTicketingStatus: 'ON',
+      wait: 10,
+      waitingGroup: 2,
+    };
+    expect(isStoreServicing(store)).toBe(true);
+  });
+});
+
+describe('getStoreDisplayStatus', () => {
+  const baseStore: SushiroStore = {
+    id: 1,
+    name: 'Test',
+    nameEn: 'Test',
+    area: 'Kowloon',
+    address: 'Addr',
+    latitude: 0,
+    longitude: 0,
+    wait: 0,
+    waitingGroup: 0,
+    storeStatus: 'CLOSED',
+    netTicketStatus: 'OFFLINE_MANUAL',
+    localTicketingStatus: 'OFF',
+    waitTimeCap: 120,
+  };
+
+  it('returns 休息 for non-OPEN store', () => {
+    const res = getStoreDisplayStatus({ ...baseStore, storeStatus: 'CLOSED' });
+    expect(res.waitText).toBe('休息');
+    expect(res.groupText).toBe('--');
+    expect(res.isClosed).toBe(true);
+    expect(res.accentColor).toBe('neutral');
   });
 
-  it('returns medium tier for 29 minutes wait', () => {
-    const result = getWaitTimeTier(29);
-    expect(result.tier).toBe('medium');
+  it('returns 收工 for OPEN + offline + local OFF + 0 wait + 0 group', () => {
+    const res = getStoreDisplayStatus({
+      ...baseStore,
+      storeStatus: 'OPEN',
+      netTicketStatus: 'OFFLINE_MANUAL',
+      localTicketingStatus: 'OFF',
+      wait: 0,
+      waitingGroup: 0,
+    });
+    expect(res.waitText).toBe('收工');
+    expect(res.groupText).toBe('--');
+    expect(res.isClosed).toBe(true);
+    expect(res.accentColor).toBe('neutral');
   });
 
-  it('returns long tier for 30 minutes wait', () => {
-    const result = getWaitTimeTier(30);
-    expect(result.tier).toBe('long');
-    expect(result.title).toBe('輪候較久');
+  it('returns 停飛 for local OFF when not closed or 收工', () => {
+    const res = getStoreDisplayStatus({
+      ...baseStore,
+      storeStatus: 'OPEN',
+      netTicketStatus: 'ONLINE',
+      localTicketingStatus: 'OFF',
+      wait: 10,
+      waitingGroup: 3,
+    });
+    expect(res.waitText).toBe('停飛');
+    expect(res.groupText).toBe('3組');
+    expect(res.isClosed).toBe(true);
+    expect(res.accentColor).toBe('red');
   });
 
-  it('returns long tier for 59 minutes wait', () => {
-    const result = getWaitTimeTier(59);
-    expect(result.tier).toBe('long');
+  it('returns normal queue wait time and groups', () => {
+    const res = getStoreDisplayStatus({
+      ...baseStore,
+      storeStatus: 'OPEN',
+      netTicketStatus: 'ONLINE',
+      localTicketingStatus: 'ON',
+      wait: 15,
+      waitingGroup: 4,
+    });
+    expect(res.waitText).toBe('15分');
+    expect(res.groupText).toBe('4組');
+    expect(res.isClosed).toBe(false);
   });
 
-  it('returns very_long tier for 60 minutes wait', () => {
-    const result = getWaitTimeTier(60);
-    expect(result.tier).toBe('very_long');
-    expect(result.title).toBe('長時間輪候');
-  });
+  it('maps accentColor correctly based on wait time', () => {
+    const getAccent = (wait: number) =>
+      getStoreDisplayStatus({
+        ...baseStore,
+        storeStatus: 'OPEN',
+        netTicketStatus: 'ONLINE',
+        localTicketingStatus: 'ON',
+        wait,
+      }).accentColor;
 
-  it('returns very_long tier for large wait times', () => {
-    const result = getWaitTimeTier(155);
-    expect(result.tier).toBe('very_long');
-  });
-
-  it('defaults to OPEN store status when not provided', () => {
-    const result = getWaitTimeTier(20);
-    expect(result.tier).toBe('medium');
+    expect(getAccent(0)).toBe('emerald');
+    expect(getAccent(5)).toBe('amber');
+    expect(getAccent(20)).toBe('violet');
+    expect(getAccent(45)).toBe('orange');
+    expect(getAccent(75)).toBe('red');
   });
 });
 

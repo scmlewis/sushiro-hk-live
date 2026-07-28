@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { SushiroStore, GroupQueue } from '../types';
-import { getStoreStatusInfo, getTicketStatusInfo, formatGoogleMapsUrl } from '../utils/status';
+import { getStoreStatusInfo, getTicketStatusInfo, formatGoogleMapsUrl, isStoreServicing, getStoreDisplayStatus } from '../utils/status';
 import { X, RefreshCw, Heart, MapPin, ExternalLink, Ticket, Info, Calculator } from 'lucide-react';
 
 interface StoreDetailModalProps {
@@ -57,7 +57,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   if (!store) return null;
 
   const storeStatusInfo = getStoreStatusInfo(store.storeStatus);
-  const ticketStatusInfo = getTicketStatusInfo(store.netTicketStatus, store.storeStatus, store.localTicketingStatus);
+  const ticketStatusInfo = getTicketStatusInfo(store.netTicketStatus, store.storeStatus, store.localTicketingStatus, store.wait, store.waitingGroup);
   const mapsUrl = formatGoogleMapsUrl(store.latitude, store.longitude, store.address, store.name);
 
   const boothNumbers = queue?.boothQueue || queue?.storeBoothQueue || [];
@@ -74,13 +74,21 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
 
   const minCalledNum = allCurrentNums.length > 0 ? Math.min(...allCurrentNums) : Math.max(1, (store.id * 10) % 150 + 50);
 
+  const isServicing = isStoreServicing(store);
+  const currentBooth = isServicing && boothNumbers.length > 0 ? boothNumbers[0] : '—';
+  const currentCounter = isServicing && counterNumbers.length > 0 ? counterNumbers[0] : '—';
+  const currentMixed = isServicing && storeNumbers.length > 0 ? storeNumbers[0] : '—';
+
   const myTicketNum = parseInt(myTicket, 10);
   let groupsAhead = 0;
   let estimatedMins = 0;
   let ticketValidationState: 'empty' | 'called' | 'valid' | 'far_future' = 'empty';
   let validationMessage = '';
 
-  if (!myTicket || isNaN(myTicketNum) || myTicketNum <= 0) {
+  if (!isServicing) {
+    ticketValidationState = 'empty';
+    validationMessage = '門市目前已收工，籌號計算器暫停使用';
+  } else if (!myTicket || isNaN(myTicketNum) || myTicketNum <= 0) {
     ticketValidationState = 'empty';
     validationMessage = '請使用下方數字鍵盤輸入您手中的籌號';
   } else if (myTicketNum <= minCalledNum) {
@@ -164,7 +172,6 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
         {/* Scrollable Modal Content Area */}
         <div className="flex-1 overflow-y-auto">
             {/* Calling Status Cards */}
-            {allCurrentNums.length > 0 && (
             <div className="p-5 border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-black text-neutral-800 dark:text-neutral-200 uppercase tracking-tight">
@@ -181,16 +188,26 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
               </div>
 
               <div className="grid grid-cols-3 gap-3">
-                {allCurrentNums.slice(0, 3).map((num, i) => (
-                  <div key={i} className="bg-white dark:bg-neutral-800 p-3 rounded-lg border border-neutral-200 dark:border-neutral-700 text-center shadow-xs">
-                    <span className="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white tabular-nums">
-                      {num}
-                    </span>
-                  </div>
-                ))}
+                <div className="bg-white dark:bg-neutral-800 p-3 rounded-lg border border-neutral-200 dark:border-neutral-700 text-center shadow-xs">
+                  <div className="text-[10px] font-bold text-neutral-400 uppercase mb-1">桌席</div>
+                  <span className="text-2xl sm:text-3xl font-black text-[#E21F26] tabular-nums">
+                    {currentBooth !== '—' ? `#${currentBooth}` : '—'}
+                  </span>
+                </div>
+                <div className="bg-white dark:bg-neutral-800 p-3 rounded-lg border border-neutral-200 dark:border-neutral-700 text-center shadow-xs">
+                  <div className="text-[10px] font-bold text-neutral-400 uppercase mb-1">吧台</div>
+                  <span className="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white tabular-nums">
+                    {currentCounter !== '—' ? `#${currentCounter}` : '—'}
+                  </span>
+                </div>
+                <div className="bg-white dark:bg-neutral-800 p-3 rounded-lg border border-neutral-200 dark:border-neutral-700 text-center shadow-xs">
+                  <div className="text-[10px] font-bold text-neutral-400 uppercase mb-1">現場/混合</div>
+                  <span className="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white tabular-nums">
+                    {currentMixed !== '—' ? `#${currentMixed}` : '—'}
+                  </span>
+                </div>
               </div>
             </div>
-            )}
 
             {/* Ticket Calculator Keypad */}
             <div className="p-5 sm:p-6 border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
@@ -199,7 +216,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                   <Calculator className="w-4 h-4 text-[#E21F26]" />
                   <span>籌號計算器</span>
                 </h3>
-                {allCurrentNums.length > 0 && (
+                {isServicing && allCurrentNums.length > 0 && (
                   <span className="text-xs text-neutral-400">目前最新號碼: <strong className="text-neutral-900 dark:text-white">#{minCalledNum}</strong></span>
                 )}
               </div>
@@ -232,20 +249,35 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                   <div className="flex items-center gap-1.5 mb-2 text-[11px]">
                     <span className="text-neutral-400 font-bold">快速輸入:</span>
                     <button
+                      disabled={!isServicing}
                       onClick={() => handleQuickPreset('called')}
-                      className="px-2 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 hover:bg-[#E21F26] hover:text-white transition-colors cursor-pointer font-bold"
+                      className={`px-2 py-0.5 rounded transition-colors font-bold ${
+                        !isServicing
+                          ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-400 cursor-not-allowed opacity-50'
+                          : 'bg-neutral-100 dark:bg-neutral-800 hover:bg-[#E21F26] hover:text-white cursor-pointer'
+                      }`}
                     >
                       #{minCalledNum} (叫號中)
                     </button>
                     <button
+                      disabled={!isServicing}
                       onClick={() => handleQuickPreset('next10')}
-                      className="px-2 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 hover:bg-[#E21F26] hover:text-white transition-colors cursor-pointer font-bold"
+                      className={`px-2 py-0.5 rounded transition-colors font-bold ${
+                        !isServicing
+                          ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-400 cursor-not-allowed opacity-50'
+                          : 'bg-neutral-100 dark:bg-neutral-800 hover:bg-[#E21F26] hover:text-white cursor-pointer'
+                      }`}
                     >
                       +#{minCalledNum + 10}
                     </button>
                     <button
+                      disabled={!isServicing}
                       onClick={() => handleQuickPreset('next25')}
-                      className="px-2 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 hover:bg-[#E21F26] hover:text-white transition-colors cursor-pointer font-bold"
+                      className={`px-2 py-0.5 rounded transition-colors font-bold ${
+                        !isServicing
+                          ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-400 cursor-not-allowed opacity-50'
+                          : 'bg-neutral-100 dark:bg-neutral-800 hover:bg-[#E21F26] hover:text-white cursor-pointer'
+                      }`}
                     >
                       +#{minCalledNum + 25}
                     </button>
@@ -262,11 +294,14 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                     {['7', '8', '9', '4', '5', '6', '1', '2', '3', 'clear', '0', 'del'].map((k) => (
                       <button
                         key={k}
+                        disabled={!isServicing}
                         onClick={() => handleNumpad(k)}
-                        className={`py-2 sm:py-2 rounded-md border text-center transition-all cursor-pointer font-black text-sm sm:text-base active:scale-95 active:bg-neutral-300 dark:active:bg-neutral-600 ${
-                          k === 'del' || k === 'clear'
-                            ? 'bg-neutral-100 dark:bg-neutral-800 border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200'
-                            : 'bg-neutral-50 dark:bg-neutral-800/80 border-neutral-200 dark:border-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-800 dark:text-white'
+                        className={`py-2 sm:py-2 rounded-md border text-center transition-all font-black text-sm sm:text-base ${
+                          !isServicing
+                            ? 'bg-neutral-50 dark:bg-neutral-800/40 border-neutral-200 dark:border-neutral-700 text-neutral-450 cursor-not-allowed opacity-50'
+                            : k === 'del' || k === 'clear'
+                            ? 'bg-neutral-100 dark:bg-neutral-800 border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 active:scale-95'
+                            : 'bg-neutral-50 dark:bg-neutral-800/80 border-neutral-200 dark:border-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-800 dark:text-white active:scale-95'
                         }`}
                       >
                         {k === 'del' ? '⌫ 刪除' : k === 'clear' ? 'C 清除' : k}
@@ -275,37 +310,54 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-3 justify-between">
-                  <div className={`border-2 rounded-lg p-4 text-center flex-1 flex flex-col items-center justify-center min-h-[90px] transition-all ${
-                    ticketValidationState === 'called'
-                      ? 'bg-red-50 border-red-300 dark:bg-red-950/40 dark:border-red-800'
-                      : 'bg-white dark:bg-neutral-800 border-[#E21F26]'
-                  }`}>
-                    <span className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-1">
-                      輪候進度
-                    </span>
-                    <span className="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white">
-                      {ticketValidationState === 'empty'
-                        ? '請輸入籌號'
-                        : ticketValidationState === 'called'
-                        ? '已過號 / 到您入座'
-                        : `尚有 ${groupsAhead} 組`}
-                    </span>
+                {!isServicing ? (
+                  <div className="flex flex-col gap-3 justify-between">
+                    <button
+                      disabled
+                      className="border-2 border-[#E21F26] text-[#E21F26] rounded-lg p-4 text-center flex-1 flex flex-col items-center justify-center min-h-[45px] font-black text-sm bg-transparent opacity-60 pointer-events-none"
+                    >
+                      收工
+                    </button>
+                    <button
+                      disabled
+                      className="border-2 border-[#E21F26] text-[#E21F26] rounded-lg p-4 text-center flex-1 flex flex-col items-center justify-center min-h-[45px] font-black text-sm bg-transparent opacity-60 pointer-events-none"
+                    >
+                      等開工
+                    </button>
                   </div>
+                ) : (
+                  <div className="flex flex-col gap-3 justify-between">
+                    <div className={`border-2 rounded-lg p-4 text-center flex-1 flex flex-col items-center justify-center min-h-[90px] transition-all ${
+                      ticketValidationState === 'called'
+                        ? 'bg-red-50 border-red-300 dark:bg-red-950/40 dark:border-red-800'
+                        : 'bg-white dark:bg-neutral-800 border-[#E21F26]'
+                    }`}>
+                      <span className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-1">
+                        輪候進度
+                      </span>
+                      <span className="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white">
+                        {ticketValidationState === 'empty'
+                          ? '請輸入籌號'
+                          : ticketValidationState === 'called'
+                          ? '已過號 / 到您入座'
+                          : `尚有 ${groupsAhead} 組`}
+                      </span>
+                    </div>
 
-                  <div className="bg-white dark:bg-neutral-800 border-2 border-neutral-200 dark:border-neutral-700 rounded-lg p-4 text-center flex-1 flex flex-col items-center justify-center min-h-[90px]">
-                    <span className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-1">
-                      預估等候時間
-                    </span>
-                    <span className="text-2xl sm:text-3xl font-black text-[#E21F26]">
-                      {ticketValidationState === 'empty'
-                        ? '-- 分鐘'
-                        : ticketValidationState === 'called'
-                        ? '即刻前往櫃檯'
-                        : `約 ${estimatedMins} 分鐘`}
-                    </span>
+                    <div className="bg-white dark:bg-neutral-800 border-2 border-neutral-200 dark:border-neutral-700 rounded-lg p-4 text-center flex-1 flex flex-col items-center justify-center min-h-[90px]">
+                      <span className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-1">
+                        預估等候時間
+                      </span>
+                      <span className="text-2xl sm:text-3xl font-black text-[#E21F26]">
+                        {ticketValidationState === 'empty'
+                          ? '-- 分鐘'
+                          : ticketValidationState === 'called'
+                          ? '即刻前往櫃檯'
+                          : `約 ${estimatedMins} 分鐘`}
+                      </span>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
 

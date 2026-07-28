@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { SushiroStore, StoreQueueMap, SortOption, ToastMessage } from './types';
 import { calculateDistanceKm, getCurrentPosition } from './utils/geolocation';
-import { getStoreRegion, isStoreIssuing } from './utils/status';
+import { getStoreRegion, isStoreIssuing, isStoreServicing } from './utils/status';
 import { Navbar } from './components/Navbar';
 import { BookmarksSection } from './components/BookmarksSection';
 import { DistrictFilterBar } from './components/DistrictFilterBar';
@@ -381,18 +381,24 @@ export default function App() {
     list.sort((a, b) => {
       // Always put OPEN stores before non-OPEN if sorting by wait/groups
       if (sortBy === 'wait-asc') {
-        if (a.storeStatus === 'OPEN' && b.storeStatus !== 'OPEN') return -1;
-        if (a.storeStatus !== 'OPEN' && b.storeStatus === 'OPEN') return 1;
+        const servA = isStoreServicing(a);
+        const servB = isStoreServicing(b);
+        if (servA && !servB) return -1;
+        if (!servA && servB) return 1;
         return a.wait - b.wait;
       }
       if (sortBy === 'wait-desc') {
-        if (a.storeStatus === 'OPEN' && b.storeStatus !== 'OPEN') return -1;
-        if (a.storeStatus !== 'OPEN' && b.storeStatus === 'OPEN') return 1;
+        const servA = isStoreServicing(a);
+        const servB = isStoreServicing(b);
+        if (servA && !servB) return -1;
+        if (!servA && servB) return 1;
         return b.wait - a.wait;
       }
       if (sortBy === 'groups-desc') {
-        if (a.storeStatus === 'OPEN' && b.storeStatus !== 'OPEN') return -1;
-        if (a.storeStatus !== 'OPEN' && b.storeStatus === 'OPEN') return 1;
+        const servA = isStoreServicing(a);
+        const servB = isStoreServicing(b);
+        if (servA && !servB) return -1;
+        if (!servA && servB) return 1;
         return b.waitingGroup - a.waitingGroup;
       }
       if (sortBy === 'distance-asc') {
