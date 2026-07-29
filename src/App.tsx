@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { SushiroStore, StoreQueueMap, SortOption, ToastMessage } from './types';
 import { calculateDistanceKm, getCurrentPosition } from './utils/geolocation';
-import { getStoreRegion, isStoreIssuing, isStoreServicing } from './utils/status';
+import { getStoreRegion, isStoreServicing } from './utils/status';
 import { Navbar } from './components/Navbar';
 import { BookmarksSection } from './components/BookmarksSection';
 import { DistrictFilterBar } from './components/DistrictFilterBar';
@@ -374,7 +374,7 @@ export default function App() {
 
     // Only issuing tickets filter
     if (onlyIssuingTickets) {
-      list = list.filter((s) => isStoreIssuing(s.netTicketStatus, s.storeStatus));
+      list = list.filter((s) => isStoreServicing(s));
     }
 
     // Sorting
@@ -441,7 +441,7 @@ export default function App() {
       }
     });
 
-    const issuingCount = openStores.filter((s) => isStoreIssuing(s.netTicketStatus, s.storeStatus)).length;
+    const issuingCount = openStores.filter((s) => isStoreServicing(s)).length;
 
     return { openCount: openStores.length, avgWait, maxWaitStore, issuingCount };
   }, [stores]);
