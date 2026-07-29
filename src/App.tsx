@@ -553,22 +553,20 @@ export default function App() {
             {activeMainTab === 'all' && (
               <>
                 {/* District Filter & Floating Search & Sort Bar */}
-                <DistrictFilterBar
-              regionCounts={regionCounts}
-              selectedArea={selectedArea}
-              searchQuery={searchQuery}
-              sortBy={sortBy}
-              onlyIssuingTickets={onlyIssuingTickets}
-              userLocation={userLocation}
-              locationLoading={locationLoading}
-              onSelectArea={setSelectedArea}
-              onSearchChange={setSearchQuery}
-              onSortChange={setSortBy}
-              onToggleOnlyIssuing={() => setOnlyIssuingTickets((prev) => !prev)}
-              onRequestLocation={handleRequestLocation}
-              viewMode={viewMode}
-              onViewModeChange={setViewMode}
-            />
+<DistrictFilterBar
+               regionCounts={regionCounts}
+               selectedArea={selectedArea}
+               searchQuery={searchQuery}
+               sortBy={sortBy}
+               onlyIssuingTickets={onlyIssuingTickets}
+               userLocation={userLocation}
+               locationLoading={locationLoading}
+               onSelectArea={setSelectedArea}
+               onSearchChange={setSearchQuery}
+               onSortChange={setSortBy}
+               onToggleOnlyIssuing={() => setOnlyIssuingTickets((prev) => !prev)}
+               onRequestLocation={handleRequestLocation}
+             />
 
             {/* Compact List / Skeleton Loading */}
             {loadingStores && stores.length === 0 ? (

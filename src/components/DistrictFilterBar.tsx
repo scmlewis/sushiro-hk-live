@@ -15,8 +15,6 @@ interface DistrictFilterBarProps {
   onSortChange: (sort: SortOption) => void;
   onToggleOnlyIssuing: () => void;
   onRequestLocation: () => void;
-  viewMode: 'list' | 'map';
-  onViewModeChange: (mode: 'list' | 'map') => void;
 }
 
 const FILTER_EXPANDED_KEY = 'sushiro_filter_bar_expanded';
@@ -34,8 +32,6 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
   onSortChange,
   onToggleOnlyIssuing,
   onRequestLocation,
-  viewMode,
-  onViewModeChange,
 }) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(() => {
     try {
@@ -78,30 +74,6 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
             placeholder="搜尋門市（如：旺角、葵芳、銅鑼灣）..."
             className="w-full pl-10 pr-4 py-2 rounded-full bg-neutral-100 dark:bg-neutral-800 border-2 border-transparent focus:border-[#aa151b] text-xs sm:text-sm font-bold text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none transition-all"
           />
-        </div>
-
-        {/* List / Map Toggle */}
-        <div className="flex items-center bg-neutral-100 dark:bg-neutral-800 rounded-full p-0.5 shrink-0 border border-neutral-200 dark:border-neutral-700">
-          <button
-            onClick={() => onViewModeChange('list')}
-            className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase transition-all cursor-pointer ${
-              viewMode === 'list'
-                ? 'bg-[#141414] text-white dark:bg-white dark:text-[#141414] shadow-xs'
-                : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
-            }`}
-          >
-            列表
-          </button>
-          <button
-            onClick={() => onViewModeChange('map')}
-            className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase transition-all cursor-pointer ${
-              viewMode === 'map'
-                ? 'bg-[#141414] text-white dark:bg-white dark:text-[#141414] shadow-xs'
-                : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
-            }`}
-          >
-            地圖
-          </button>
         </div>
 
         {/* Mobile Filter Options Expand Toggle Button (Visible on mobile, hidden on desktop md:hidden) */}
