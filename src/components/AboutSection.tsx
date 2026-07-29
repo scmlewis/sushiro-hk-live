@@ -12,9 +12,9 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
   return (
     <div className="max-w-4xl mx-auto space-y-6 mb-12 animate-fade-in">
       {/* Intro Banner */}
-      <div className="bg-neutral-900 text-white p-6 sm:p-8 rounded-2xl border-l-4 border-[#E21F26] shadow-xl relative overflow-hidden">
+      <div className="bg-neutral-900 text-white p-6 sm:p-8 rounded-2xl border-l-4 border-[#aa151b] shadow-xl relative overflow-hidden">
         <div className="flex items-center gap-3 mb-3">
-          <span className="px-2.5 py-0.5 bg-[#E21F26] text-white text-[10px] font-black uppercase tracking-widest rounded">
+          <span className="px-2.5 py-0.5 bg-[#aa151b] text-white text-[10px] font-black uppercase tracking-widest rounded">
             關於系統
           </span>
           <span className="text-xs font-bold text-neutral-400">
@@ -33,7 +33,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Feature 1: Store Directory & Search */}
         <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-5 rounded-2xl shadow-sm space-y-2.5">
-          <div className="flex items-center gap-2.5 text-[#E21F26]">
+          <div className="flex items-center gap-2.5 text-[#aa151b]">
             <div className="p-2 rounded-lg bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900/50">
               <Store className="w-5 h-5" />
             </div>
@@ -48,9 +48,9 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
 
         {/* Feature 2: Bookmarking & Auto Poll */}
         <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-5 rounded-2xl shadow-sm space-y-2.5">
-          <div className="flex items-center gap-2.5 text-[#E21F26]">
+          <div className="flex items-center gap-2.5 text-[#aa151b]">
             <div className="p-2 rounded-lg bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900/50">
-              <Heart className="w-5 h-5 fill-[#E21F26]" />
+              <Heart className="w-5 h-5 fill-[#aa151b]" />
             </div>
             <h3 className="text-base font-black text-neutral-900 dark:text-white">
               我的關注門市
@@ -63,7 +63,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
 
         {/* Feature 3: Store Comparison */}
         <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-5 rounded-2xl shadow-sm space-y-2.5">
-          <div className="flex items-center gap-2.5 text-[#E21F26]">
+          <div className="flex items-center gap-2.5 text-[#aa151b]">
             <div className="p-2 rounded-lg bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900/50">
               <Layers className="w-5 h-5" />
             </div>
@@ -78,7 +78,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
 
         {/* Feature 4: Ticket Calculator */}
         <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-5 rounded-2xl shadow-sm space-y-2.5">
-          <div className="flex items-center gap-2.5 text-[#E21F26]">
+          <div className="flex items-center gap-2.5 text-[#aa151b]">
             <div className="p-2 rounded-lg bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900/50">
               <Calculator className="w-5 h-5" />
             </div>
@@ -113,7 +113,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
       {/* Text Size Setting */}
       <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-5 rounded-2xl shadow-sm space-y-3">
         <h3 className="text-sm font-black text-neutral-900 dark:text-white flex items-center gap-2">
-          <Type className="w-4 h-4 text-[#E21F26]" />
+          <Type className="w-4 h-4 text-[#aa151b]" />
           <span>文字大小</span>
         </h3>
         <div className="flex items-center gap-2">
@@ -123,7 +123,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
               onClick={() => onTextSizeChange(size)}
               className={`px-4 py-2 rounded-lg font-black text-xs transition-all cursor-pointer ${
                 textSize === size
-                  ? 'bg-[#E21F26] text-white shadow-md'
+                  ? 'bg-[#aa151b] text-white shadow-md'
                   : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700'
               }`}
             >
@@ -136,7 +136,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
       {/* Project Links */}
       <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-5 rounded-2xl shadow-sm space-y-3">
         <h3 className="text-sm font-black text-neutral-900 dark:text-white flex items-center gap-2">
-          <ExternalLink className="w-4 h-4 text-[#E21F26]" />
+          <ExternalLink className="w-4 h-4 text-[#aa151b]" />
           <span>相關連結</span>
         </h3>
         <div className="flex flex-wrap gap-2">
@@ -144,7 +144,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
             href={SUSHIRO_HK_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#E21F26] hover:bg-red-700 text-white text-xs font-bold rounded-lg transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#aa151b] hover:bg-red-700 text-white text-xs font-bold rounded-lg transition-colors"
           >
             <ExternalLink className="w-3.5 h-3.5" />
             <span>壽司郎官方網站</span>

@@ -31,7 +31,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     : '--:--:--';
 
   return (
-    <header className="sticky top-0 z-40 bg-[#E21F26] text-white shadow-lg backdrop-blur-md">
+    <header className="sticky top-0 z-40 bg-[#aa151b] text-white shadow-lg backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2 flex flex-col sm:flex-row items-center justify-between gap-2">
         {/* Brand & Clock */}
         <div className="flex items-center justify-between w-full sm:w-auto gap-3">
@@ -39,7 +39,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <h1 className="text-xl sm:text-2xl font-black tracking-tighter text-white">
               壽司郎 HK
             </h1>
-            <span className="bg-white text-[#E21F26] text-[10px] font-black px-1.5 py-0.5 rounded tracking-wider uppercase">
+            <span className="bg-white text-[#aa151b] text-[10px] font-black px-1.5 py-0.5 rounded tracking-wider uppercase">
               LIVE
             </span>
           </div>
@@ -53,7 +53,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={onGlobalRefresh}
               disabled={loading}
-              className="p-2 rounded-full bg-white text-[#E21F26] transition-all cursor-pointer disabled:opacity-60"
+              className="p-2 rounded-full bg-white text-[#aa151b] transition-all cursor-pointer disabled:opacity-60"
               title="更新數據"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -67,7 +67,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => onSelectTab('all')}
             className={`px-2.5 sm:px-3 py-1.5 rounded-full font-black text-xs transition-all cursor-pointer flex items-center gap-1 whitespace-nowrap shrink-0 ${
               activeMainTab === 'all'
-                ? 'bg-white text-[#E21F26] shadow-sm'
+                ? 'bg-white text-[#aa151b] shadow-sm'
                 : 'text-white hover:bg-white/10'
             }`}
           >
@@ -80,11 +80,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => onSelectTab('bookmarks')}
             className={`px-2.5 sm:px-3 py-1.5 rounded-full font-black text-xs transition-all cursor-pointer flex items-center gap-1 whitespace-nowrap shrink-0 ${
               activeMainTab === 'bookmarks'
-                ? 'bg-white text-[#E21F26] shadow-sm'
+                ? 'bg-white text-[#aa151b] shadow-sm'
                 : 'text-white hover:bg-white/10'
             }`}
           >
-            <Heart className={`w-3.5 h-3.5 ${activeMainTab === 'bookmarks' ? 'fill-[#E21F26]' : ''}`} />
+            <Heart className={`w-3.5 h-3.5 ${activeMainTab === 'bookmarks' ? 'fill-[#aa151b]' : ''}`} />
             <span className="hidden sm:inline">我的關注</span>
             <span className="sm:hidden">關注</span>
             <span>({bookmarkCount})</span>
@@ -94,7 +94,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => onSelectTab('compare')}
             className={`px-2.5 sm:px-3 py-1.5 rounded-full font-black text-xs transition-all cursor-pointer flex items-center gap-1 whitespace-nowrap shrink-0 ${
               activeMainTab === 'compare'
-                ? 'bg-white text-[#E21F26] shadow-sm'
+                ? 'bg-white text-[#aa151b] shadow-sm'
                 : 'text-white hover:bg-white/10'
             }`}
           >
@@ -108,7 +108,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => onSelectTab('about')}
             className={`px-2.5 sm:px-3 py-1.5 rounded-full font-black text-xs transition-all cursor-pointer flex items-center gap-1 whitespace-nowrap shrink-0 ${
               activeMainTab === 'about'
-                ? 'bg-white text-[#E21F26] shadow-sm'
+                ? 'bg-white text-[#aa151b] shadow-sm'
                 : 'text-white hover:bg-white/10'
             }`}
           >
@@ -128,7 +128,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             onClick={onGlobalRefresh}
             disabled={loading}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-white text-[#E21F26] font-black text-xs transition-all cursor-pointer disabled:opacity-60 hover:bg-red-50 shadow-sm"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-white text-[#aa151b] font-black text-xs transition-all cursor-pointer disabled:opacity-60 hover:bg-red-50 shadow-sm"
             title="重新讀取全港門市叫號數據"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />

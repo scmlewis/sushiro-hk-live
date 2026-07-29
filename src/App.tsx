@@ -466,7 +466,7 @@ export default function App() {
               <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-8 w-full">
         {/* Service Worker Offline Cache Notice */}
         {isOffline && (
-          <div className="mb-6 p-4 bg-[#E21F26] text-white font-black text-xs uppercase tracking-wider flex items-center justify-between shadow-xl border-2 border-white/20 animate-pulse rounded-xl">
+          <div className="mb-6 p-4 bg-[#aa151b] text-white font-black text-xs uppercase tracking-wider flex items-center justify-between shadow-xl border-2 border-white/20 animate-pulse rounded-xl">
             <div className="flex items-center gap-2.5">
               <AlertCircle className="w-5 h-5 shrink-0" />
               <span>目前網路連線不穩定/離線：已啟用 Service Worker 載入近期的門市離線快取資料</span>
@@ -592,7 +592,7 @@ export default function App() {
                     setSelectedArea('');
                     setOnlyIssuingTickets(false);
                   }}
-                  className="mt-6 px-6 py-2.5 rounded-full bg-[#E21F26] text-white font-black text-xs uppercase tracking-wider transition-all hover:bg-red-700 cursor-pointer shadow-md"
+                  className="mt-6 px-6 py-2.5 rounded-full bg-[#aa151b] text-white font-black text-xs uppercase tracking-wider transition-all hover:bg-red-700 cursor-pointer shadow-md"
                 >
                   重置所有篩選條件
                 </button>
@@ -635,7 +635,7 @@ export default function App() {
       </main>
 
       {/* Bold Typography Theme Footer */}
-      <footer className="bg-[#141414] text-white px-6 sm:px-8 py-6 border-t-4 border-[#E21F26]">
+      <footer className="bg-[#141414] text-white px-6 sm:px-8 py-6 border-t-4 border-[#aa151b]">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-[11px] font-black tracking-[0.2em] uppercase gap-3 text-neutral-400">
           <div>
             <span>數據來源: </span>
@@ -646,7 +646,7 @@ export default function App() {
             <span className="text-neutral-300">本網站與壽司郎官方無關</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-[#E21F26] animate-ping" />
+            <span className="w-2 h-2 rounded-full bg-[#aa151b] animate-ping" />
             <span className="text-white">輪詢間隔: 10秒</span>
           </div>
         </div>

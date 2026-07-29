@@ -50,7 +50,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
         {onAddDefaultStores && (
           <button
             onClick={onAddDefaultStores}
-            className="mt-6 px-6 py-2.5 rounded-full bg-[#E21F26] text-white font-black text-xs uppercase tracking-wider transition-all hover:bg-red-700 cursor-pointer shadow-sm inline-flex items-center gap-1.5"
+            className="mt-6 px-6 py-2.5 rounded-full bg-[#aa151b] text-white font-black text-xs uppercase tracking-wider transition-all hover:bg-red-700 cursor-pointer shadow-sm inline-flex items-center gap-1.5"
           >
             <Sparkles className="w-4 h-4" />
             <span>自動載入熱門門市比對</span>
@@ -64,17 +64,17 @@ export const CompareView: React.FC<CompareViewProps> = ({
     <div>
       <div className="flex items-center justify-between mb-4 px-1">
         <div className="flex items-center gap-2">
-          <Layers className="w-4 h-4 text-[#E21F26]" />
+          <Layers className="w-4 h-4 text-[#aa151b]" />
           <span className="text-sm font-black text-neutral-900 dark:text-white">
             門市即時比對
           </span>
-          <span className="px-2 py-0.5 bg-[#E21F26] text-white text-[10px] font-black rounded-full">
+          <span className="px-2 py-0.5 bg-[#aa151b] text-white text-[10px] font-black rounded-full">
             {stores.length} / 4
           </span>
         </div>
         <button
           onClick={onClearCompare}
-          className="text-xs font-black text-neutral-500 hover:text-[#E21F26] flex items-center gap-1 transition-colors cursor-pointer"
+          className="text-xs font-black text-neutral-500 hover:text-[#aa151b] flex items-center gap-1 transition-colors cursor-pointer"
         >
           <Trash2 className="w-3.5 h-3.5" />
           <span>清空</span>
@@ -114,7 +114,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
                       </span>
                     )}
                   </div>
-                  <button onClick={() => onRemoveFromCompare(store.id)} className="p-1 rounded-full text-neutral-400 hover:text-[#E21F26] transition-colors" title="移除此門市">
+                  <button onClick={() => onRemoveFromCompare(store.id)} className="p-1 rounded-full text-neutral-400 hover:text-[#aa151b] transition-colors" title="移除此門市">
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -124,9 +124,9 @@ export const CompareView: React.FC<CompareViewProps> = ({
                 <div className="flex items-center justify-between text-xs bg-neutral-50 dark:bg-neutral-900/80 p-2.5 rounded-lg border border-neutral-200/80 dark:border-neutral-700/60 mb-3">
                   <div className="flex items-center gap-1.5">
                     <span className="text-[10px] font-black text-neutral-400 uppercase flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-[#E21F26]" />等候
+                      <Clock className="w-3 h-3 text-[#aa151b]" />等候
                     </span>
-                    <span className="font-black text-[#E21F26] text-sm tabular-nums">
+                    <span className="font-black text-[#aa151b] text-sm tabular-nums">
                       {displayStatus.isClosed ? displayStatus.waitText : `${store.wait} 分鐘`}
                     </span>
                   </div>
@@ -144,14 +144,14 @@ export const CompareView: React.FC<CompareViewProps> = ({
                 <div className="bg-neutral-50 dark:bg-neutral-900/80 p-2 rounded-lg border border-neutral-200/80 dark:border-neutral-700/60 text-xs mb-3">
                   <div className="flex items-center justify-between mb-1 text-[10px] font-black uppercase text-neutral-400">
                     <span>即時叫號</span>
-                    <button onClick={() => onRefreshQueue(store.id, store.name)} className="text-[#E21F26] hover:underline flex items-center gap-0.5 cursor-pointer">
+                    <button onClick={() => onRefreshQueue(store.id, store.name)} className="text-[#aa151b] hover:underline flex items-center gap-0.5 cursor-pointer">
                       <RefreshCw className={`w-3 h-3 ${qData?.loading ? 'animate-spin' : ''}`} />更新
                     </button>
                   </div>
                   <div className="grid grid-cols-2 gap-1 text-center font-mono">
                     <div className="bg-white dark:bg-neutral-800 p-1 rounded border border-neutral-200/60 dark:border-neutral-700/60">
                       <div className="text-[9px] font-sans font-bold text-neutral-400 uppercase">桌席</div>
-                      <div className="font-black text-[#E21F26] text-xs tabular-nums">{booth ? `#${booth}` : '-'}</div>
+                      <div className="font-black text-[#aa151b] text-xs tabular-nums">{booth ? `#${booth}` : '-'}</div>
                     </div>
                     <div className="bg-white dark:bg-neutral-800 p-1 rounded border border-neutral-200/60 dark:border-neutral-700/60">
                       <div className="text-[9px] font-sans font-bold text-neutral-400 uppercase">吧台</div>
@@ -167,7 +167,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
                   <span className={`px-1.5 py-0.5 text-[9px] font-black uppercase rounded ${ticketStatusInfo.bgColor} ${ticketStatusInfo.textColor}`}>{ticketStatusInfo.label}</span>
                 </div>
                 {onSelectStore && (
-                  <button onClick={() => onSelectStore(store)} className="px-2 py-0.5 bg-[#141414] hover:bg-[#E21F26] text-white text-[10px] font-black rounded transition-colors cursor-pointer flex items-center gap-0.5 shrink-0">
+                  <button onClick={() => onSelectStore(store)} className="px-2 py-0.5 bg-[#141414] hover:bg-[#aa151b] text-white text-[10px] font-black rounded transition-colors cursor-pointer flex items-center gap-0.5 shrink-0">
                     <span>詳情</span><ExternalLink className="w-3 h-3" />
                   </button>
                 )}

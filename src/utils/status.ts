@@ -64,10 +64,10 @@ export function getTicketStatusInfo(
   if (isStopFly) {
     return {
       label: '現場停止派籌',
-      bgColor: 'bg-[#E21F26]/10',
-      textColor: 'text-[#E21F26] dark:text-red-400',
-      borderColor: 'border-[#E21F26]/20',
-      dotColor: 'bg-[#E21F26]',
+      bgColor: 'bg-[#aa151b]/10',
+      textColor: 'text-[#aa151b] dark:text-red-400',
+      borderColor: 'border-[#aa151b]/20',
+      dotColor: 'bg-[#aa151b]',
     };
   }
 

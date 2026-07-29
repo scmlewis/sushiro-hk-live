@@ -157,14 +157,14 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
         className="relative w-full max-w-2xl max-h-[92vh] flex flex-col bg-white dark:bg-neutral-900 shadow-2xl overflow-hidden border-2 border-neutral-800 rounded-2xl my-auto"
       >
         {/* Fixed Header */}
-        <div className="shrink-0 p-4 sm:p-6 bg-[#141414] text-white relative border-b-4 border-[#E21F26]">
+        <div className="shrink-0 p-4 sm:p-6 bg-[#141414] text-white relative border-b-4 border-[#aa151b]">
           <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
             <button
               onClick={() => onToggleBookmark(store)}
               className={`p-2 rounded-full transition-all cursor-pointer ${
                 isBookmarked
-                  ? 'bg-[#E21F26] text-white'
-                  : 'bg-neutral-800 text-neutral-400 hover:text-[#E21F26]'
+                  ? 'bg-[#aa151b] text-white'
+                  : 'bg-neutral-800 text-neutral-400 hover:text-[#aa151b]'
               }`}
               title={isBookmarked ? '已加入關注' : '加入關注'}
             >
@@ -172,7 +172,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
             </button>
             <button
               onClick={onClose}
-              className="p-2 rounded-full bg-neutral-800 hover:bg-[#E21F26] text-white transition-colors cursor-pointer"
+              className="p-2 rounded-full bg-neutral-800 hover:bg-[#aa151b] text-white transition-colors cursor-pointer"
               aria-label="關閉"
             >
               <X className="w-5 h-5" />
@@ -183,7 +183,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
           {store.nameEn && <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-2">{store.nameEn}</p>}
 
           <p className="text-xs text-neutral-300 font-semibold flex items-center gap-1.5 mb-3">
-            <MapPin className="w-3.5 h-3.5 text-[#E21F26] shrink-0" />
+            <MapPin className="w-3.5 h-3.5 text-[#aa151b] shrink-0" />
             <span className="truncate">{store.address}</span>
           </p>
 
@@ -200,7 +200,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
               href={mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-[11px] font-bold text-white hover:text-[#E21F26] bg-neutral-800 hover:bg-neutral-700 px-2.5 py-0.5 transition-colors"
+              className="inline-flex items-center gap-1 text-[11px] font-bold text-white hover:text-[#aa151b] bg-neutral-800 hover:bg-neutral-700 px-2.5 py-0.5 transition-colors"
             >
               <ExternalLink className="w-3 h-3" />
               <span>GOOGLE 地圖</span>
@@ -221,14 +221,14 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                   disabled={loading}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 text-[10px] font-black uppercase transition-colors cursor-pointer border border-neutral-200 dark:border-neutral-700"
                 >
-                  <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin text-[#E21F26]' : ''}`} />
+                  <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin text-[#aa151b]' : ''}`} />
                   <span>更新</span>
                 </button>
               </div>
 
               {loading ? (
                 <div className="flex items-center justify-center gap-2 py-3">
-                  <RefreshCw className="w-4 h-4 animate-spin text-[#E21F26]" />
+                  <RefreshCw className="w-4 h-4 animate-spin text-[#aa151b]" />
                   <span className="text-sm font-bold text-neutral-400">載入中...</span>
                 </div>
               ) : recentNumbers.length > 0 ? (
@@ -236,7 +236,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                   {recentNumbers.map((num, idx) => (
                     <div key={num.raw} className="flex items-center gap-3">
                       <span className={`text-2xl sm:text-3xl font-black tabular-nums ${
-                        idx === 0 ? 'text-[#E21F26]' : 'text-neutral-900 dark:text-white'
+                        idx === 0 ? 'text-[#aa151b]' : 'text-neutral-900 dark:text-white'
                       }`}>
                         #{num.raw}
                         {num.isReservation && (
@@ -260,7 +260,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
             <div className="p-5 sm:p-6 border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-                  <Calculator className="w-4 h-4 text-[#E21F26]" />
+                  <Calculator className="w-4 h-4 text-[#aa151b]" />
                   <span>籌號計算器</span>
                 </h3>
               </div>
@@ -290,9 +290,9 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <div className={`mb-3 p-3 bg-white dark:bg-neutral-800 border-2 rounded-lg text-center h-12 flex items-center justify-between px-4 ${myTicket ? 'border-[#E21F26]' : 'border-neutral-200 dark:border-neutral-700'}`}>
+                  <div className={`mb-3 p-3 bg-white dark:bg-neutral-800 border-2 rounded-lg text-center h-12 flex items-center justify-between px-4 ${myTicket ? 'border-[#aa151b]' : 'border-neutral-200 dark:border-neutral-700'}`}>
                     <span className="text-xs font-bold text-neutral-400">您輸入的籌號</span>
-                    <span className={`text-2xl font-black tracking-widest tabular-nums ${myTicket ? 'text-[#E21F26]' : 'text-neutral-300 dark:text-neutral-600'}`}>
+                    <span className={`text-2xl font-black tracking-widest tabular-nums ${myTicket ? 'text-[#aa151b]' : 'text-neutral-300 dark:text-neutral-600'}`}>
                       {myTicket ? `#${myTicket}` : '---'}
                     </span>
                   </div>
@@ -321,13 +321,13 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                   <div className="flex flex-col gap-3 justify-between">
                     <button
                       disabled
-                      className="border-2 border-[#E21F26] text-[#E21F26] rounded-lg p-4 text-center flex-1 flex flex-col items-center justify-center min-h-[45px] font-black text-sm bg-transparent opacity-60 pointer-events-none"
+                      className="border-2 border-[#aa151b] text-[#aa151b] rounded-lg p-4 text-center flex-1 flex flex-col items-center justify-center min-h-[45px] font-black text-sm bg-transparent opacity-60 pointer-events-none"
                     >
                       收工
                     </button>
                     <button
                       disabled
-                      className="border-2 border-[#E21F26] text-[#E21F26] rounded-lg p-4 text-center flex-1 flex flex-col items-center justify-center min-h-[45px] font-black text-sm bg-transparent opacity-60 pointer-events-none"
+                      className="border-2 border-[#aa151b] text-[#aa151b] rounded-lg p-4 text-center flex-1 flex flex-col items-center justify-center min-h-[45px] font-black text-sm bg-transparent opacity-60 pointer-events-none"
                     >
                       等開工
                     </button>
@@ -339,7 +339,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                         ? 'bg-red-50 border-red-300 dark:bg-red-950/40 dark:border-red-80'
                         : hasNoQueue && ticketValidationState === 'valid'
                         ? 'bg-emerald-50 border-emerald-300 dark:bg-emerald-950/40 dark:border-emerald-800'
-                        : 'bg-white dark:bg-neutral-800 border-[#E21F26]'
+                        : 'bg-white dark:bg-neutral-800 border-[#aa151b]'
                     }`}>
                       <span className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-1">
                         輪候進度
@@ -366,7 +366,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                       <span className={`text-2xl sm:text-3xl font-black ${
                         hasNoQueue && ticketValidationState === 'valid'
                           ? 'text-emerald-600 dark:text-emerald-400'
-                          : 'text-[#E21F26]'
+                          : 'text-[#aa151b]'
                       }`}>
                         {ticketValidationState === 'empty'
                           ? '-- 分鐘'

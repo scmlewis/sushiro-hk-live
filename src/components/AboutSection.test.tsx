@@ -50,7 +50,7 @@ describe('AboutSection', () => {
   it('highlights the active text size button', () => {
     render(<AboutSection {...defaultProps} textSize="L" />);
     const largeBtn = screen.getByText('大');
-    expect(largeBtn.className).toContain('bg-[#E21F26]');
+    expect(largeBtn.className).toContain('bg-[#aa151b]');
   });
 
   it('renders Sushiro official website link', () => {

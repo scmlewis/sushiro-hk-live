@@ -37,7 +37,7 @@ export const StoreCard: React.FC<StoreCardProps> = ({
     amber: 'border-l-8 border-amber-500',
     violet: 'border-l-8 border-violet-500',
     orange: 'border-l-8 border-orange-500',
-    red: 'border-l-8 border-[#E21F26]',
+    red: 'border-l-8 border-[#aa151b]',
     neutral: 'border-l-8 border-neutral-300 dark:border-l-8 dark:border-neutral-700',
   };
   const borderLeftColor = borderMap[displayStatus.accentColor] || borderMap.neutral;
@@ -47,7 +47,7 @@ export const StoreCard: React.FC<StoreCardProps> = ({
     amber: 'text-amber-600 dark:text-amber-400',
     violet: 'text-violet-600 dark:text-violet-400',
     orange: 'text-orange-600 dark:text-orange-400',
-    red: 'text-[#E21F26]',
+    red: 'text-[#aa151b]',
     neutral: 'text-neutral-400',
   };
   const waitTextColor = displayStatus.waitText === '停飛'
@@ -90,7 +90,7 @@ export const StoreCard: React.FC<StoreCardProps> = ({
 
             <h3
               onClick={() => onSelectStore(store)}
-              className="text-2xl sm:text-3xl font-black tracking-tight text-[#141414] dark:text-white truncate cursor-pointer hover:text-[#E21F26] transition-colors"
+              className="text-2xl sm:text-3xl font-black tracking-tight text-[#141414] dark:text-white truncate cursor-pointer hover:text-[#aa151b] transition-colors"
             >
               {store.name}
             </h3>
@@ -105,7 +105,7 @@ export const StoreCard: React.FC<StoreCardProps> = ({
               onClick={() => onToggleCompare(store)}
               className={`p-2 rounded-full transition-all cursor-pointer ${
                 isComparing
-                  ? 'bg-[#E21F26] text-white'
+                  ? 'bg-[#aa151b] text-white'
                   : 'text-neutral-400 hover:text-neutral-800 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800'
               }`}
               title={isComparing ? '已加入比對' : '加入比對'}
@@ -117,8 +117,8 @@ export const StoreCard: React.FC<StoreCardProps> = ({
               onClick={() => onToggleBookmark(store)}
               className={`p-2 rounded-full transition-all cursor-pointer ${
                 isBookmarked
-                  ? 'bg-[#E21F26] text-white'
-                  : 'text-neutral-400 hover:text-[#E21F26] hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                  ? 'bg-[#aa151b] text-white'
+                  : 'text-neutral-400 hover:text-[#aa151b] hover:bg-neutral-100 dark:hover:bg-neutral-800'
               }`}
               title={isBookmarked ? '取消關注' : '關注門市'}
             >
@@ -189,7 +189,7 @@ export const StoreCard: React.FC<StoreCardProps> = ({
               <button
                 onClick={() => onRefreshQueue(store.id, store.name)}
                 disabled={queueLoading}
-                className="text-[#E21F26] font-bold text-[11px] hover:underline flex items-center gap-1 cursor-pointer"
+                className="text-[#aa151b] font-bold text-[11px] hover:underline flex items-center gap-1 cursor-pointer"
               >
                 <RefreshCw className={`w-3 h-3 ${queueLoading ? 'animate-spin' : ''}`} />
                 <span>更新</span>
@@ -201,7 +201,7 @@ export const StoreCard: React.FC<StoreCardProps> = ({
                 {queueSummary.booth && (
                   <div className="bg-white dark:bg-neutral-900 p-2 rounded border border-neutral-200 dark:border-neutral-700">
                     <div className="text-[9px] font-bold text-neutral-400 uppercase">桌席 (B)</div>
-                    <div className="font-black text-[#E21F26] text-base tabular-nums">#{queueSummary.booth}</div>
+                    <div className="font-black text-[#aa151b] text-base tabular-nums">#{queueSummary.booth}</div>
                   </div>
                 )}
                 {queueSummary.counter && (
@@ -232,15 +232,15 @@ export const StoreCard: React.FC<StoreCardProps> = ({
           href={mapsUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-neutral-500 hover:text-[#E21F26] font-bold text-xs transition-colors flex items-center gap-1 mr-auto shrink-0"
+          className="text-neutral-500 hover:text-[#aa151b] font-bold text-xs transition-colors flex items-center gap-1 mr-auto shrink-0"
         >
-          <MapPin className="w-3.5 h-3.5 text-[#E21F26]" />
+          <MapPin className="w-3.5 h-3.5 text-[#aa151b]" />
           <span>地圖指引</span>
         </a>
 
         <button
           onClick={() => onSelectStore(store, 'live')}
-          className="font-black text-white bg-[#E21F26] hover:bg-red-700 px-3 py-1 rounded-full flex items-center gap-1 cursor-pointer text-xs transition-colors shadow-xs shrink-0"
+          className="font-black text-white bg-[#aa151b] hover:bg-red-700 px-3 py-1 rounded-full flex items-center gap-1 cursor-pointer text-xs transition-colors shadow-xs shrink-0"
         >
           <span>詳情</span>
           <ChevronRight className="w-3.5 h-3.5" />

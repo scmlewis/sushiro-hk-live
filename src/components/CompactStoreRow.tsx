@@ -62,14 +62,14 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
       <div className="flex items-center gap-2 px-3 py-2.5 ml-1">
         <h4
           onClick={() => onSelectStore(store)}
-          className="text-sm font-black text-neutral-900 dark:text-white truncate cursor-pointer hover:text-[#E21F26] transition-colors min-w-0 flex-1"
+          className="text-sm font-black text-neutral-900 dark:text-white truncate cursor-pointer hover:text-[#aa151b] transition-colors min-w-0 flex-1"
         >
           {store.name}
         </h4>
 
         <div className="flex items-center gap-3 shrink-0">
           <div className="flex items-center gap-1">
-            <Clock className="w-3 h-3 text-[#E21F26]" />
+            <Clock className="w-3 h-3 text-[#aa151b]" />
             <span className={`text-sm font-black tabular-nums whitespace-nowrap ${waitColorClass}`}>
               {displayStatus.waitText}
             </span>
@@ -91,7 +91,7 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
           target="_blank"
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
-          className="text-neutral-400 hover:text-[#E21F26] transition-colors p-1 shrink-0"
+          className="text-neutral-400 hover:text-[#aa151b] transition-colors p-1 shrink-0"
           title="Google 地圖"
         >
           <MapPin className="w-3.5 h-3.5" />
@@ -103,19 +103,19 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
           className="p-1.5 rounded text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-all cursor-pointer"
           title="更新叫號"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${queueLoading ? 'animate-spin text-[#E21F26]' : ''}`} />
+          <RefreshCw className={`w-3.5 h-3.5 ${queueLoading ? 'animate-spin text-[#aa151b]' : ''}`} />
         </button>
 
         <button
           onClick={() => onToggleBookmark(store)}
           className={`p-1.5 rounded transition-all cursor-pointer ${
             isBookmarked
-              ? 'text-[#E21F26]'
-              : 'text-neutral-500 hover:text-[#E21F26]'
+              ? 'text-[#aa151b]'
+              : 'text-neutral-500 hover:text-[#aa151b]'
           }`}
           title={isBookmarked ? '取消關注' : '加入關注'}
         >
-          <Heart className={`w-3.5 h-3.5 ${isBookmarked ? 'fill-[#E21F26]' : ''}`} />
+          <Heart className={`w-3.5 h-3.5 ${isBookmarked ? 'fill-[#aa151b]' : ''}`} />
         </button>
 
         <button
@@ -134,7 +134,7 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
 
         <button
           onClick={() => onSelectStore(store, 'live')}
-          className="flex items-center gap-0.5 px-2.5 py-1 bg-[#E21F26] hover:bg-red-700 text-white text-[10px] font-black uppercase transition-all cursor-pointer rounded"
+          className="flex items-center gap-0.5 px-2.5 py-1 bg-[#aa151b] hover:bg-red-700 text-white text-[10px] font-black uppercase transition-all cursor-pointer rounded"
         >
           <span>詳情</span>
           <ChevronRight className="w-3 h-3" />

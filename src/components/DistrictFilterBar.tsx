@@ -72,7 +72,7 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="搜尋門市（如：旺角、葵芳、銅鑼灣）..."
-            className="w-full pl-10 pr-4 py-2 rounded-full bg-neutral-100 dark:bg-neutral-800 border-2 border-transparent focus:border-[#E21F26] text-xs sm:text-sm font-bold text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none transition-all"
+            className="w-full pl-10 pr-4 py-2 rounded-full bg-neutral-100 dark:bg-neutral-800 border-2 border-transparent focus:border-[#aa151b] text-xs sm:text-sm font-bold text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none transition-all"
           />
         </div>
 
@@ -86,10 +86,10 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
           }`}
           title="切換篩選選項"
         >
-          <Filter className="w-3.5 h-3.5 text-[#E21F26]" />
+          <Filter className="w-3.5 h-3.5 text-[#aa151b]" />
           <span>篩選選項</span>
           {activeFiltersCount > 0 && (
-            <span className="w-4 h-4 rounded-full bg-[#E21F26] text-white text-[10px] font-black flex items-center justify-center shrink-0">
+            <span className="w-4 h-4 rounded-full bg-[#aa151b] text-white text-[10px] font-black flex items-center justify-center shrink-0">
               {activeFiltersCount}
             </span>
           )}
@@ -115,7 +115,7 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
             <select
               value={sortBy}
               onChange={(e) => onSortChange(e.target.value as SortOption)}
-              className="w-full pl-10 pr-8 py-2 rounded-full bg-neutral-100 dark:bg-neutral-800 border-2 border-transparent focus:border-[#E21F26] text-xs font-extrabold text-neutral-800 dark:text-neutral-200 focus:outline-none cursor-pointer appearance-none uppercase"
+              className="w-full pl-10 pr-8 py-2 rounded-full bg-neutral-100 dark:bg-neutral-800 border-2 border-transparent focus:border-[#aa151b] text-xs font-extrabold text-neutral-800 dark:text-neutral-200 focus:outline-none cursor-pointer appearance-none uppercase"
             >
               <option value="wait-asc">⏱️ 等候時間最短</option>
               <option value="wait-desc">⏳ 等候時間最長</option>
@@ -200,7 +200,7 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
             onClick={onToggleOnlyIssuing}
             className={`ml-auto px-3.5 py-1.5 rounded-full font-extrabold text-xs transition-all whitespace-nowrap cursor-pointer flex items-center gap-1 ${
               onlyIssuingTickets
-                ? 'bg-[#E21F26] text-white shadow-md'
+                ? 'bg-[#aa151b] text-white shadow-md'
                 : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200'
             }`}
           >

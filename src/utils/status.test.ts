@@ -119,7 +119,7 @@ describe('getTicketStatusInfo', () => {
   it('returns 現場停止派籌 when localTicketingStatus is OFF', () => {
     const result = getTicketStatusInfo('ONLINE', 'OPEN', 'OFF');
     expect(result.label).toBe('現場停止派籌');
-    expect(result.dotColor).toContain('E21F26');
+    expect(result.dotColor).toContain('aa151b');
   });
 
   it('returns 休息 when store is CLOSED even if localTicketingStatus is OFF', () => {
