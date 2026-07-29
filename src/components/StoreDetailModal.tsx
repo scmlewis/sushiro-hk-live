@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { SushiroStore, GroupQueue } from '../types';
 import { getStoreStatusInfo, getTicketStatusInfo, formatGoogleMapsUrl, isStoreServicing, getStoreDisplayStatus } from '../utils/status';
-import { X, RefreshCw, Heart, MapPin, ExternalLink, Ticket, Info, Calculator } from 'lucide-react';
+import { X, RefreshCw, Heart, MapPin, ExternalLink, Info, Calculator } from 'lucide-react';
 
 interface StoreDetailModalProps {
   store: SushiroStore | null;
@@ -23,7 +23,6 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   onRefreshQueue,
   onToggleBookmark,
 }) => {
-  const [activeTab, setActiveTab] = useState<'all' | 'booth' | 'counter' | 'store' | 'reservation'>('all');
   const [myTicket, setMyTicket] = useState<string>('');
 
   useEffect(() => {
@@ -63,10 +62,6 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   const boothNumbers = queue?.boothQueue || queue?.storeBoothQueue || [];
   const counterNumbers = queue?.counterQueue || queue?.storeCounterQueue || [];
   const storeNumbers = queue?.storeQueue || queue?.mixedQueue || [];
-  const reservationNumbers = queue?.reservationQueue || queue?.reservationBoothQueue || [];
-
-  const totalNumbersCount =
-    boothNumbers.length + counterNumbers.length + storeNumbers.length + reservationNumbers.length;
 
   const allCurrentNums = [...boothNumbers, ...counterNumbers, ...storeNumbers]
     .map((n) => parseInt(n.replace(/\D/g, ''), 10))
@@ -136,13 +131,26 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
       >
         {/* Fixed Header */}
         <div className="shrink-0 p-4 sm:p-6 bg-[#141414] text-white relative border-b-4 border-[#E21F26]">
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-full bg-neutral-800 hover:bg-[#E21F26] text-white transition-colors cursor-pointer z-10"
-            aria-label="關閉"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+            <button
+              onClick={() => onToggleBookmark(store)}
+              className={`p-2 rounded-full transition-all cursor-pointer ${
+                isBookmarked
+                  ? 'bg-[#E21F26] text-white'
+                  : 'bg-neutral-800 text-neutral-400 hover:text-[#E21F26]'
+              }`}
+              title={isBookmarked ? '已加入關注' : '加入關注'}
+            >
+              <Heart className={`w-5 h-5 ${isBookmarked ? 'fill-white' : ''}`} />
+            </button>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-full bg-neutral-800 hover:bg-[#E21F26] text-white transition-colors cursor-pointer"
+              aria-label="關閉"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
 
           <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest mb-1 pr-10">
             <span className="text-neutral-400">{store.area}</span>
@@ -386,135 +394,6 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
               </div>
             </div>
 
-            {/* Live Queue Breakdown */}
-            <div className="p-6 sm:p-8">
-              <div className="flex items-center justify-between mb-5">
-                <h3 className="text-xl font-black tracking-tight text-neutral-900 dark:text-white flex items-center gap-2">
-                  <Ticket className="w-5 h-5 text-[#E21F26]" />
-                  <span>即時叫號明細</span>
-                  {loading && <RefreshCw className="w-4 h-4 animate-spin text-[#E21F26]" />}
-                </h3>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => onRefreshQueue(store.id, store.name)}
-                    disabled={loading}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white text-xs font-black uppercase transition-colors cursor-pointer"
-                  >
-                    <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-                    <span>更新籌號</span>
-                  </button>
-
-                  <button
-                    onClick={() => onToggleBookmark(store)}
-                    className={`p-2 rounded-full transition-all cursor-pointer ${
-                      isBookmarked
-                        ? 'bg-[#E21F26] text-white'
-                        : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-400 hover:text-[#E21F26]'
-                    }`}
-                    title={isBookmarked ? '已加入關注' : '加入關注'}
-                  >
-                    <Heart className={`w-4 h-4 ${isBookmarked ? 'fill-white' : ''}`} />
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-1 text-xs no-scrollbar">
-                <button
-                  onClick={() => setActiveTab('all')}
-                  className={`px-4 py-2 rounded-full font-black text-xs transition-colors whitespace-nowrap cursor-pointer uppercase ${
-                    activeTab === 'all'
-                      ? 'bg-[#141414] text-white dark:bg-white dark:text-[#141414]'
-                      : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300'
-                  }`}
-                >
-                  全部 ({totalNumbersCount})
-                </button>
-                <button
-                  onClick={() => setActiveTab('booth')}
-                  className={`px-4 py-2 rounded-full font-black text-xs transition-colors whitespace-nowrap cursor-pointer uppercase ${
-                    activeTab === 'booth'
-                      ? 'bg-[#141414] text-white dark:bg-white dark:text-[#141414]'
-                      : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300'
-                  }`}
-                >
-                  桌席 ({boothNumbers.length})
-                </button>
-                <button
-                  onClick={() => setActiveTab('counter')}
-                  className={`px-4 py-2 rounded-full font-black text-xs transition-colors whitespace-nowrap cursor-pointer uppercase ${
-                    activeTab === 'counter'
-                      ? 'bg-[#141414] text-white dark:bg-white dark:text-[#141414]'
-                      : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300'
-                  }`}
-                >
-                  吧台 ({counterNumbers.length})
-                </button>
-                <button
-                  onClick={() => setActiveTab('store')}
-                  className={`px-4 py-2 rounded-full font-black text-xs transition-colors whitespace-nowrap cursor-pointer uppercase ${
-                    activeTab === 'store'
-                      ? 'bg-[#141414] text-white dark:bg-white dark:text-[#141414]'
-                      : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300'
-                  }`}
-                >
-                  現場/混合 ({storeNumbers.length})
-                </button>
-                <button
-                  onClick={() => setActiveTab('reservation')}
-                  className={`px-4 py-2 rounded-full font-black text-xs transition-colors whitespace-nowrap cursor-pointer uppercase ${
-                    activeTab === 'reservation'
-                      ? 'bg-[#141414] text-white dark:bg-white dark:text-[#141414]'
-                      : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300'
-                  }`}
-                >
-                  預約 ({reservationNumbers.length})
-                </button>
-              </div>
-
-              <div className="space-y-4 max-h-64 overflow-y-auto pr-1">
-                {(activeTab === 'all' || activeTab === 'booth') && (
-                  <QueueCategoryBlock
-                    title="桌席 (BOOTH QUEUE)"
-                    numbers={boothNumbers}
-                    badgeColor="bg-red-50 text-[#E21F26] border-[#E21F26]/30 dark:bg-red-950/40 dark:text-red-300"
-                  />
-                )}
-
-                {(activeTab === 'all' || activeTab === 'counter') && (
-                  <QueueCategoryBlock
-                    title="吧台 (COUNTER QUEUE)"
-                    numbers={counterNumbers}
-                    badgeColor="bg-sky-50 text-sky-700 border-sky-300 dark:bg-sky-950/40 dark:text-sky-300"
-                  />
-                )}
-
-                {(activeTab === 'all' || activeTab === 'store') && (
-                  <QueueCategoryBlock
-                    title="現場 / 混合 (STORE/MIXED QUEUE)"
-                    numbers={storeNumbers}
-                    badgeColor="bg-amber-50 text-amber-800 border-amber-300 dark:bg-amber-950/40 dark:text-amber-300"
-                  />
-                )}
-
-                {(activeTab === 'all' || activeTab === 'reservation') && (
-                  <QueueCategoryBlock
-                    title="預約 (RESERVATION QUEUE)"
-                    numbers={reservationNumbers}
-                    badgeColor="bg-emerald-50 text-emerald-800 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300"
-                  />
-                )}
-
-                {totalNumbersCount === 0 && (
-                  <div className="text-center py-8 bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-800 p-6">
-                    <Info className="w-8 h-8 mx-auto text-neutral-400 mb-2" />
-                    <p className="text-neutral-800 dark:text-neutral-200 font-bold text-sm">
-                      暫無籌號資訊 / 目前未有人輪候
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
         </div>
 
         {/* Fixed Modal Footer */}
@@ -527,36 +406,5 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
         </div>
       </motion.div>
     </motion.div>
-  );
-};
-
-interface QueueCategoryBlockProps {
-  title: string;
-  numbers: string[];
-  badgeColor: string;
-}
-
-const QueueCategoryBlock: React.FC<QueueCategoryBlockProps> = ({ title, numbers, badgeColor }) => {
-  if (!numbers || numbers.length === 0) return null;
-
-  return (
-    <div className="bg-neutral-50 dark:bg-neutral-800/60 p-4 border border-neutral-200 dark:border-neutral-800">
-      <div className="flex items-center justify-between mb-2.5">
-        <span className="text-xs font-black uppercase tracking-wider text-neutral-900 dark:text-white">{title}</span>
-        <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">共 {numbers.length} 組</span>
-      </div>
-      <div className="flex items-center gap-2 flex-wrap">
-        {numbers.map((num, idx) => (
-          <span
-            key={`${num}-${idx}`}
-            className={`px-3.5 py-1.5 font-mono text-xs font-black border shadow-xs ${badgeColor} ${
-              idx === 0 ? 'ring-2 ring-[#E21F26] scale-105' : ''
-            }`}
-          >
-            #{num} {idx === 0 && <span className="text-[10px] font-sans font-bold ml-1 text-[#E21F26] uppercase">(叫號中)</span>}
-          </span>
-        ))}
-      </div>
-    </div>
   );
 };
