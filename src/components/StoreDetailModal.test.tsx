@@ -43,12 +43,10 @@ describe('StoreDetailModal', () => {
     expect(screen.getByText('旺角店')).toBeInTheDocument();
     expect(screen.getByText('旺角彌敦道688號')).toBeInTheDocument();
     
-    // Check for the queue type labeled headers
-    expect(screen.getByText('桌席')).toBeInTheDocument();
-    expect(screen.getByText('吧台')).toBeInTheDocument();
-    expect(screen.getByText('現場/混合')).toBeInTheDocument();
+    // Check for the latest calling numbers section
+    expect(screen.getByText('最新叫號')).toBeInTheDocument();
 
-    // Check that active queue numbers are shown (numbers appear in badge spans with '#' prefix and possible '叫號中' child span)
+    // Check that recent queue numbers are shown (sorted: 88, 105, 201 — top 3)
     const [queue105] = screen.getAllByText((_, el) => el?.textContent?.includes('#105') ?? false);
     expect(queue105).toBeInTheDocument();
     const [queue88] = screen.getAllByText((_, el) => el?.textContent?.includes('#88') ?? false);
@@ -63,10 +61,6 @@ describe('StoreDetailModal', () => {
   it('renders non-servicing state when store is CLOSED', () => {
     const closedStore = { ...mockStore, storeStatus: 'CLOSED' };
     render(<StoreDetailModal {...defaultProps} store={closedStore} />);
-
-    // Placeholders are "—"
-    const placeholders = screen.getAllByText('—');
-    expect(placeholders.length).toBeGreaterThanOrEqual(3);
 
     // Shows finished validation warning message
     expect(screen.getByText('門市目前已收工，籌號計算器暫停使用')).toBeInTheDocument();

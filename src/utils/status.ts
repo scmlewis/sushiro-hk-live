@@ -20,7 +20,7 @@ export function getStoreStatusInfo(status: string): StatusBadge {
     };
   }
   return {
-    label: '休息中 / 閉店',
+    label: '休息',
     bgColor: 'bg-slate-500/10',
     textColor: 'text-slate-600 dark:text-slate-400',
     borderColor: 'border-slate-500/20',
@@ -45,13 +45,14 @@ export function getTicketStatusInfo(
   wait = 0,
   waitingGroup = 0
 ): StatusBadge {
-  const isOffline = !isStoreIssuing(netTicketStatus, storeStatus);
   const isStopFly = isLocalTicketingOff(localTicketingStatus);
+  const isOffline = !isStoreIssuing(netTicketStatus, storeStatus);
   const isFinished = storeStatus === 'OPEN' && isOffline && isStopFly && wait === 0 && waitingGroup === 0;
 
+  // 1. 門市休息
   if (storeStatus !== 'OPEN') {
     return {
-      label: '暫停派籌',
+      label: '休息',
       bgColor: 'bg-slate-500/10',
       textColor: 'text-slate-500',
       borderColor: 'border-slate-500/20',
@@ -59,9 +60,10 @@ export function getTicketStatusInfo(
     };
   }
 
-  if (isFinished) {
+  // 2. 停飛 (walk-in ticketing stopped — most critical for walk-in users)
+  if (isStopFly) {
     return {
-      label: '停止線上派籌',
+      label: '停飛',
       bgColor: 'bg-[#E21F26]/10',
       textColor: 'text-[#E21F26] dark:text-red-400',
       borderColor: 'border-[#E21F26]/20',
@@ -69,28 +71,31 @@ export function getTicketStatusInfo(
     };
   }
 
-  if (isStopFly) {
+  // 3. 收工 (fully stopped — no queues, no ticketing)
+  if (isFinished) {
     return {
-      label: '停止 walk in',
-      bgColor: 'bg-rose-500/10',
-      textColor: 'text-rose-700 dark:text-rose-400',
-      borderColor: 'border-rose-500/20',
-      dotColor: 'bg-rose-500',
+      label: '收工',
+      bgColor: 'bg-slate-500/10',
+      textColor: 'text-slate-500',
+      borderColor: 'border-slate-500/20',
+      dotColor: 'bg-slate-400',
     };
   }
 
+  // 4. 營業中 (issuing tickets normally)
   if (isStoreIssuing(netTicketStatus, storeStatus)) {
     return {
-      label: '派籌中',
-      bgColor: 'bg-amber-500/10',
-      textColor: 'text-amber-800 dark:text-amber-300',
-      borderColor: 'border-amber-500/20',
-      dotColor: 'bg-amber-500 animate-pulse',
+      label: '營業中',
+      bgColor: 'bg-emerald-500/10',
+      textColor: 'text-emerald-700 dark:text-emerald-400',
+      borderColor: 'border-emerald-500/20',
+      dotColor: 'bg-emerald-500 animate-pulse',
     };
   }
 
+  // 5. 停止派籌 (fallback — store is OPEN but not issuing)
   return {
-    label: '停止線上派籌',
+    label: '停止派籌',
     bgColor: 'bg-rose-500/10',
     textColor: 'text-rose-700 dark:text-rose-400',
     borderColor: 'border-rose-500/20',

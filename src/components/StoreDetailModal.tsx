@@ -71,9 +71,12 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   const hasNoQueue = allCurrentNums.length === 0;
 
   const isServicing = isStoreServicing(store);
-  const currentBooth = isServicing && boothNumbers.length > 0 ? boothNumbers[0] : '—';
-  const currentCounter = isServicing && counterNumbers.length > 0 ? counterNumbers[0] : '—';
-  const currentMixed = isServicing && storeNumbers.length > 0 ? storeNumbers[0] : '—';
+
+  // 3 most recent called numbers across all categories
+  const recentNumbers = allCurrentNums
+    .sort((a, b) => a - b)
+    .slice(-3)
+    .reverse();
 
   const myTicketNum = parseInt(myTicket, 10);
   let groupsAhead = 0;
@@ -152,13 +155,6 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
             </button>
           </div>
 
-          <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest mb-1 pr-10">
-            <span className="text-neutral-400">{store.area}</span>
-            {store.distanceKm !== undefined && store.distanceKm !== Infinity && (
-              <span className="text-neutral-500">· 距離 {store.distanceKm} KM</span>
-            )}
-          </div>
-
           <h2 className="text-2xl sm:text-4xl font-black tracking-tighter text-white">{store.name}</h2>
           {store.nameEn && <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-2">{store.nameEn}</p>}
 
@@ -190,11 +186,11 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
 
         {/* Scrollable Modal Content Area */}
         <div className="flex-1 overflow-y-auto">
-            {/* Calling Status Cards */}
+            {/* Latest Calling Numbers */}
             <div className="p-5 border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-black text-neutral-800 dark:text-neutral-200 uppercase tracking-tight">
-                  叫號狀況
+                  最新叫號
                 </span>
                 <button
                   onClick={() => onRefreshQueue(store.id, store.name)}
@@ -206,26 +202,26 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                 </button>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
-                <div className="bg-white dark:bg-neutral-800 p-3 rounded-lg border border-neutral-200 dark:border-neutral-700 text-center shadow-xs">
-                  <div className="text-[10px] font-bold text-neutral-400 uppercase mb-1">桌席</div>
-                  <span className="text-2xl sm:text-3xl font-black text-[#E21F26] tabular-nums">
-                    {currentBooth !== '—' ? `#${currentBooth}` : '—'}
-                  </span>
+              {recentNumbers.length > 0 ? (
+                <div className="flex items-center justify-center gap-3">
+                  {recentNumbers.map((num, idx) => (
+                    <div key={num} className="flex items-center gap-3">
+                      <span className={`text-2xl sm:text-3xl font-black tabular-nums ${
+                        idx === 0 ? 'text-[#E21F26]' : 'text-neutral-900 dark:text-white'
+                      }`}>
+                        #{num}
+                      </span>
+                      {idx < recentNumbers.length - 1 && (
+                        <span className="text-neutral-300 dark:text-neutral-600 text-lg">→</span>
+                      )}
+                    </div>
+                  ))}
                 </div>
-                <div className="bg-white dark:bg-neutral-800 p-3 rounded-lg border border-neutral-200 dark:border-neutral-700 text-center shadow-xs">
-                  <div className="text-[10px] font-bold text-neutral-400 uppercase mb-1">吧台</div>
-                  <span className="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white tabular-nums">
-                    {currentCounter !== '—' ? `#${currentCounter}` : '—'}
-                  </span>
+              ) : (
+                <div className="text-center text-neutral-400 font-bold text-sm py-2">
+                  {isServicing ? '暫無叫號資訊' : '門市已休息'}
                 </div>
-                <div className="bg-white dark:bg-neutral-800 p-3 rounded-lg border border-neutral-200 dark:border-neutral-700 text-center shadow-xs">
-                  <div className="text-[10px] font-bold text-neutral-400 uppercase mb-1">現場/混合</div>
-                  <span className="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white tabular-nums">
-                    {currentMixed !== '—' ? `#${currentMixed}` : '—'}
-                  </span>
-                </div>
-              </div>
+              )}
             </div>
 
             {/* Ticket Calculator Keypad */}
