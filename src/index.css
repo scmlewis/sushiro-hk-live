@@ -3,6 +3,8 @@
 html, body {
   background-color: #141414;
   min-height: -webkit-fill-available;
+  min-height: 100dvh;
+  overflow-x: hidden;
 }
 
 #root {
@@ -29,7 +31,7 @@ body {
   border: 1px solid #404040 !important;
   border-radius: 8px !important;
   padding: 6px 10px !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
   color: #e5e5e5 !important;
 }

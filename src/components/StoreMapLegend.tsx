@@ -6,6 +6,7 @@ const LEGEND_ITEMS = [
   { color: '#8b5cf6', label: '15-29分' },
   { color: '#f97316', label: '30-59分' },
   { color: '#aa151b', label: '≥60分' },
+  { color: '#ef4444', label: '停飛' },
   { color: '#6b7280', label: '休息/收工' },
 ];
 
@@ -15,10 +16,10 @@ export const StoreMapLegend: React.FC = () => {
       {LEGEND_ITEMS.map((item) => (
         <div key={item.label} className="flex items-center gap-2 py-0.5">
           <span
-            className="w-2.5 h-2.5 rounded-full shrink-0"
+            className="w-3 h-3 rounded-full shrink-0 border border-white/20"
             style={{ backgroundColor: item.color }}
           />
-          <span className="text-[10px] font-bold text-neutral-300 whitespace-nowrap">
+          <span className="text-[11px] font-bold text-neutral-300 whitespace-nowrap">
             {item.label}
           </span>
         </div>

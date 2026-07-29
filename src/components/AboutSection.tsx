@@ -1,5 +1,5 @@
 import React from 'react';
-import { Store, Heart, Layers, Calculator, WifiOff, Clock, Sparkles, CheckCircle2, ExternalLink, Github, Type } from 'lucide-react';
+import { Store, Heart, Layers, Calculator, WifiOff, Clock, Sparkles, CheckCircle2, ExternalLink, Github, Type,Facebook, Instagram } from 'lucide-react';
 
 const SUSHIRO_HK_URL = 'https://sushirohk.com.hk/';
 
@@ -133,6 +133,19 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
         </div>
       </div>
 
+      {/* PWA Install Guide */}
+      <div className="bg-neutral-100 dark:bg-neutral-800/80 p-5 rounded-2xl border border-neutral-200 dark:border-neutral-700 space-y-3">
+        <h3 className="text-sm font-black text-neutral-900 dark:text-white flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+          <span>將應用加入主畫面</span>
+        </h3>
+        <div className="text-xs text-neutral-600 dark:text-neutral-300 space-y-2 font-medium leading-relaxed">
+          <p><strong className="text-neutral-900 dark:text-white">Android：</strong>開啟瀏覽器 → 點擊右上角選單（三點）→ 選擇「加入主畫面」→ 確認「設定」→ 點擊「加入」。</p>
+          <p><strong className="text-neutral-900 dark:text-white">iOS：</strong>開啟 Safari → 點擊底部分享按鈕 → 向下滑動 → 點擊「加入主畫面」。</p>
+          <p className="text-neutral-400 dark:text-neutral-500">加入主畫面後即可如原生 App 使用，支援離線快取與背景自動更新叫號資料。</p>
+        </div>
+      </div>
+
       {/* Project Links */}
       <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-5 rounded-2xl shadow-sm space-y-3">
         <h3 className="text-sm font-black text-neutral-900 dark:text-white flex items-center gap-2">
@@ -150,13 +163,22 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
             <span>壽司郎官方網站</span>
           </a>
           <a
-            href="https://github.com/scmlewis/sushiro-hk-live"
+            href="https://www.facebook.com/SushiroHK"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-xs font-bold text-neutral-700 dark:text-neutral-300 rounded-lg transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#1877F2] hover:bg-[#166FE5] text-white text-xs font-bold rounded-lg transition-colors"
           >
-            <Github className="w-3.5 h-3.5" />
-            <span>GitHub Repo</span>
+            <Facebook className="w-3.5 h-3.5" />
+            <span>Facebook</span>
+          </a>
+          <a
+            href="https://www.instagram.com/sushiro.hk/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#F58529] via-[#DD2A7B] via-[#8134AF] to-[#515BD4] hover:opacity-80 text-white text-xs font-bold rounded-lg transition-colors"
+          >
+            <Instagram className="w-3.5 h-3.5" />
+            <span>Instagram</span>
           </a>
           <a
             href="https://github.com/scmlewis"
@@ -165,6 +187,15 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
             className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-xs font-bold text-neutral-700 dark:text-neutral-300 rounded-lg transition-colors"
           >
             <span>@scmlewis</span>
+          </a>
+          <a
+            href="https://github.com/scmlewis/sushiro-hk-live"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-xs font-bold text-neutral-700 dark:text-neutral-300 rounded-lg transition-colors"
+          >
+            <Github className="w-3.5 h-3.5" />
+            <span>GitHub Repo</span>
           </a>
         </div>
       </div>
