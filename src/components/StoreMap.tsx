@@ -15,7 +15,7 @@ interface StoreMapProps {
 }
 
 const HK_BOUNDS = L.latLngBounds(
-  [[22.45, 114.05], [22.65, 114.35]] as [[number, number], [number, number]]
+  [[22.15, 113.85], [22.65, 114.40]] as [[number, number], [number, number]]
 );
 
 function createMarkerIcon(store: SushiroStore, isPreview = false): L.DivIcon {
@@ -109,66 +109,22 @@ function ScrollLock() {
 
 function ZoomControls() {
    const map = useMap();
-   return (
-     <div className="absolute bottom-16 right-4 z-40 flex flex-col gap-1">
-       <button
-         onClick={() => map.setZoom(map.getZoom() - 1)}
-         className="w-10 h-10 flex items-center justify-center bg-white/90 hover:bg-white rounded-full shadow border border-neutral-200 text-neutral-800"
-       >
-         <span className="text-xl font-bold">−</span>
-       </button>
-       <button
-         onClick={() => map.setZoom(map.getZoom() + 1)}
-         className="w-10 h-10 flex items-center justify-center bg-white/90 hover:bg-white rounded-full shadow border border-neutral-200 text-neutral-800"
-       >
-         <span className="text-xl font-bold">+</span>
-       </button>
-     </div>
-   );
- }
-
-function SwipeZoom() {
-   const map = useMap();
-   const [active, setActive] = useState(false);
-   const startY = useRef(0);
-   const startX = useRef(0);
-   const startZoom = useRef(0);
-   const threshold = 10;
-
-   const onPointerDown = (e: React.PointerEvent) => {
-     startY.current = e.clientY;
-     startX.current = e.clientX;
-     startZoom.current = map.getZoom();
-     setActive(true);
-   };
-
-   const onPointerMove = (e: React.PointerEvent) => {
-     if (!active) return;
-     const deltaY = startY.current - e.clientY;
-     const deltaX = Math.abs(startX.current - e.clientX);
-     if (deltaY > threshold && Math.abs(deltaY) > deltaX) {
-       const newZoom = Math.min(18, Math.max(10, startZoom.current + deltaY * 0.01));
-       map.setZoom(newZoom);
-     }
-   };
-
-   const onPointerUp = () => setActive(false);
-
-   useEffect(() => {
-     const container = map.getContainer();
-     container.addEventListener('pointerdown', onPointerDown as unknown as EventListener);
-     container.addEventListener('pointermove', onPointerMove as unknown as EventListener);
-     container.addEventListener('pointerup', onPointerUp);
-     container.addEventListener('pointercancel', onPointerUp);
-     return () => {
-       container.removeEventListener('pointerdown', onPointerDown as unknown as EventListener);
-       container.removeEventListener('pointermove', onPointerMove as unknown as EventListener);
-       container.removeEventListener('pointerup', onPointerUp);
-       container.removeEventListener('pointercancel', onPointerUp);
-     };
-   }, [map]);
-
-   return null;
+return (
+      <div className="absolute top-4 left-4 z-40 flex flex-col gap-1">
+        <button
+          onClick={() => map.setZoom(map.getZoom() - 1)}
+          className="w-10 h-10 flex items-center justify-center bg-white/90 hover:bg-white rounded-full shadow border border-neutral-200 text-neutral-800"
+        >
+          <span className="text-xl font-bold">−</span>
+        </button>
+        <button
+          onClick={() => map.setZoom(map.getZoom() + 1)}
+          className="w-10 h-10 flex items-center justify-center bg-white/90 hover:bg-white rounded-full shadow border border-neutral-200 text-neutral-800"
+        >
+          <span className="text-xl font-bold">+</span>
+        </button>
+      </div>
+    );
  }
 
 function MapReinit({ stores }: { stores: SushiroStore[] }) {
@@ -244,9 +200,8 @@ export const StoreMap: React.FC<StoreMapProps> = ({
         />
         <MaxBounds />
         <FitBoundsOnce stores={stores} />
-        <MapReinit stores={stores} />
-        <SwipeZoom />
-{stores.map((store) => (
+<MapReinit stores={stores} />
+         {stores.map((store) => (
            <Marker
              key={store.id}
              position={[store.latitude, store.longitude]}
