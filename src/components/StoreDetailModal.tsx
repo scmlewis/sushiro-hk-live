@@ -103,7 +103,10 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   let ticketValidationState: 'empty' | 'called' | 'valid' | 'far_future' = 'empty';
   let validationMessage = '';
 
-  if (!isServicing) {
+  if (loading && !queue) {
+    ticketValidationState = 'empty';
+    validationMessage = '正在載入叫號資料...';
+  } else if (!isServicing) {
     ticketValidationState = 'empty';
     if (store.storeStatus !== 'OPEN') {
       validationMessage = '門市已休息，籌號計算器暫停使用';
@@ -223,7 +226,12 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                 </button>
               </div>
 
-              {recentNumbers.length > 0 ? (
+              {loading && !queue ? (
+                <div className="flex items-center justify-center gap-2 py-3">
+                  <RefreshCw className="w-4 h-4 animate-spin text-[#E21F26]" />
+                  <span className="text-sm font-bold text-neutral-400">載入中...</span>
+                </div>
+              ) : recentNumbers.length > 0 ? (
                 <div className="flex items-center justify-center gap-3 flex-wrap">
                   {recentNumbers.map((num, idx) => (
                     <div key={num.raw} className="flex items-center gap-3">
