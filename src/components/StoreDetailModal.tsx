@@ -103,7 +103,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   let ticketValidationState: 'empty' | 'called' | 'valid' | 'far_future' = 'empty';
   let validationMessage = '';
 
-  if (loading && !queue) {
+  if (!queue) {
     ticketValidationState = 'empty';
     validationMessage = '正在載入叫號資料...';
   } else if (!isServicing) {
@@ -226,7 +226,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                 </button>
               </div>
 
-              {loading && !queue ? (
+              {!queue ? (
                 <div className="flex items-center justify-center gap-2 py-3">
                   <RefreshCw className="w-4 h-4 animate-spin text-[#E21F26]" />
                   <span className="text-sm font-bold text-neutral-400">載入中...</span>
