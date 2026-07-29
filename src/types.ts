@@ -36,6 +36,8 @@ export type StoreQueueMap = Record<number, {
 
 export type SortOption = 'wait-asc' | 'wait-desc' | 'groups-desc' | 'distance-asc' | 'name-asc' | 'area-asc';
 
+export type ViewMode = 'list' | 'map';
+
 export interface ToastMessage {
   id: string;
   text: string;

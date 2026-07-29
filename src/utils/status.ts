@@ -194,3 +194,16 @@ export function formatGoogleMapsUrl(lat: number, lng: number, address: string, n
   }
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`壽司郎 ${name} ${address}`)}`;
 }
+
+const MARKER_COLORS: Record<string, string> = {
+  emerald: '#10b981',
+  amber: '#f59e0b',
+  violet: '#8b5cf6',
+  orange: '#f97316',
+  red: '#aa151b',
+  neutral: '#6b7280',
+};
+
+export function getMarkerColor(accentColor: string): string {
+  return MARKER_COLORS[accentColor] || MARKER_COLORS.neutral;
+}
