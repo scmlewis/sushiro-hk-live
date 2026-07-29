@@ -7,6 +7,7 @@ import { Navbar } from './components/Navbar';
 import { BookmarksSection } from './components/BookmarksSection';
 import { DistrictFilterBar } from './components/DistrictFilterBar';
 import { CompactStoreRow } from './components/CompactStoreRow';
+import { StoreMap } from './components/StoreMap';
 import { StoreDetailModal } from './components/StoreDetailModal';
 import { CompareView } from './components/CompareView';
 import { AboutSection } from './components/AboutSection';
@@ -46,6 +47,14 @@ export default function App() {
   const [selectedArea, setSelectedArea] = useState<string>('');
   const [sortBy, setSortBy] = useState<SortOption>('wait-asc');
   const [onlyIssuingTickets, setOnlyIssuingTickets] = useState<boolean>(false);
+
+  const [viewMode, setViewMode] = useState<'list' | 'map'>(() => {
+    try {
+      return (localStorage.getItem('sushiro_view_mode') as 'list' | 'map') || 'list';
+    } catch {
+      return 'list';
+    }
+  });
 
   // Bookmarks & Compare
   const [bookmarkedIds, setBookmarkedIds] = useState<number[]>(() => {
@@ -186,6 +195,11 @@ export default function App() {
       console.warn('Failed to save bookmarks', e);
     }
   }, [bookmarkedIds]);
+
+  // Persist viewMode to localStorage
+  useEffect(() => {
+    try { localStorage.setItem('sushiro_view_mode', viewMode); } catch {}
+  }, [viewMode]);
 
   // Fetch queues for bookmarked stores
   const refreshBookmarkedQueues = useCallback(() => {
@@ -552,6 +566,8 @@ export default function App() {
               onSortChange={setSortBy}
               onToggleOnlyIssuing={() => setOnlyIssuingTickets((prev) => !prev)}
               onRequestLocation={handleRequestLocation}
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
             />
 
             {/* Compact List / Skeleton Loading */}
@@ -608,25 +624,34 @@ export default function App() {
                   </span>
                 </div>
 
-                <div className="flex flex-col space-y-2">
-                  {processedStores.map((store) => {
-                    const qData = queues[store.id];
-                    return (
-                      <CompactStoreRow
-                        key={`compact-store-${store.id}`}
-                        store={store}
-                        queue={qData?.queue}
-                        queueLoading={qData?.loading}
-                        isBookmarked={bookmarkedIds.includes(store.id)}
-                        isComparing={compareIds.includes(store.id)}
-                        onToggleBookmark={handleToggleBookmark}
-                        onToggleCompare={handleToggleCompare}
-                        onRefreshQueue={handleManualStoreRefresh}
-                        onSelectStore={handleSelectStoreModal}
-                      />
-                    );
-                  })}
-                </div>
+                {viewMode === 'map' ? (
+                  <StoreMap
+                    stores={processedStores}
+                    queues={queues}
+                    userLocation={userLocation}
+                    onSelectStore={handleSelectStoreModal}
+                  />
+                ) : (
+                  <div className="flex flex-col space-y-2">
+                    {processedStores.map((store) => {
+                      const qData = queues[store.id];
+                      return (
+                        <CompactStoreRow
+                          key={`compact-store-${store.id}`}
+                          store={store}
+                          queue={qData?.queue}
+                          queueLoading={qData?.loading}
+                          isBookmarked={bookmarkedIds.includes(store.id)}
+                          isComparing={compareIds.includes(store.id)}
+                          onToggleBookmark={handleToggleBookmark}
+                          onToggleCompare={handleToggleCompare}
+                          onRefreshQueue={handleManualStoreRefresh}
+                          onSelectStore={handleSelectStoreModal}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             )}
           </>)}
