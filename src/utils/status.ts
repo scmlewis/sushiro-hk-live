@@ -82,24 +82,13 @@ export function getTicketStatusInfo(
     };
   }
 
-  // 4. 營業中 (issuing tickets normally)
-  if (isStoreIssuing(netTicketStatus, storeStatus)) {
-    return {
-      label: '營業中',
-      bgColor: 'bg-emerald-500/10',
-      textColor: 'text-emerald-700 dark:text-emerald-400',
-      borderColor: 'border-emerald-500/20',
-      dotColor: 'bg-emerald-500 animate-pulse',
-    };
-  }
-
-  // 5. 停止派籌 (fallback — store is OPEN but not issuing)
+  // 4. 營業中 (store is OPEN and not in any stopped state)
   return {
-    label: '停止派籌',
-    bgColor: 'bg-rose-500/10',
-    textColor: 'text-rose-700 dark:text-rose-400',
-    borderColor: 'border-rose-500/20',
-    dotColor: 'bg-rose-500',
+    label: '營業中',
+    bgColor: 'bg-emerald-500/10',
+    textColor: 'text-emerald-700 dark:text-emerald-400',
+    borderColor: 'border-emerald-500/20',
+    dotColor: 'bg-emerald-500 animate-pulse',
   };
 }
 
@@ -112,11 +101,10 @@ export interface StoreDisplayStatus {
 
 export function isStoreServicing(store: SushiroStore): boolean {
   if (store.storeStatus !== 'OPEN') return false;
-  const isOffline = !isStoreIssuing(store.netTicketStatus, store.storeStatus);
   const isStopFly = isLocalTicketingOff(store.localTicketingStatus);
   
-  // 收工 (Finished)
-  if (isOffline && isStopFly && store.wait === 0 && store.waitingGroup === 0) {
+  // 收工 (Finished) — walk-in stopped and no one waiting
+  if (isStopFly && store.wait === 0 && store.waitingGroup === 0) {
     return false;
   }
   
@@ -130,7 +118,6 @@ export function isStoreServicing(store: SushiroStore): boolean {
 
 export function getStoreDisplayStatus(store: SushiroStore): StoreDisplayStatus {
   const isOpen = store.storeStatus === 'OPEN';
-  const isOffline = !isStoreIssuing(store.netTicketStatus, store.storeStatus);
   const isStopFly = isLocalTicketingOff(store.localTicketingStatus);
 
   // 1. 休息 (Closed)
@@ -143,8 +130,8 @@ export function getStoreDisplayStatus(store: SushiroStore): StoreDisplayStatus {
     };
   }
 
-  // 2. 收工 (Finished)
-  if (isOffline && isStopFly && store.wait === 0 && store.waitingGroup === 0) {
+  // 2. 收工 (Finished) — walk-in stopped and no one waiting
+  if (isStopFly && store.wait === 0 && store.waitingGroup === 0) {
     return {
       waitText: '收工',
       groupText: '--',

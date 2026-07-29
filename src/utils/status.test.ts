@@ -101,19 +101,19 @@ describe('getTicketStatusInfo', () => {
     expect(result.label).toBe('營業中');
   });
 
-  it('returns 停止派籌 for OFFLINE_MANUAL when store is OPEN (not online issuing)', () => {
+  it('returns 營業中 for OFFLINE_MANUAL when store is OPEN (online status irrelevant for walk-in)', () => {
     const result = getTicketStatusInfo('OFFLINE_MANUAL', 'OPEN');
-    expect(result.label).toBe('停止派籌');
+    expect(result.label).toBe('營業中');
   });
 
-  it('returns 停止派籌 for empty ticket status when store is OPEN', () => {
+  it('returns 營業中 for empty ticket status when store is OPEN', () => {
     const result = getTicketStatusInfo('', 'OPEN');
-    expect(result.label).toBe('停止派籌');
+    expect(result.label).toBe('營業中');
   });
 
-  it('returns 停止派籌 for null-like ticket status when store is OPEN', () => {
+  it('returns 營業中 for null-like ticket status when store is OPEN', () => {
     const result = getTicketStatusInfo(null as unknown as string, 'OPEN');
-    expect(result.label).toBe('停止派籌');
+    expect(result.label).toBe('營業中');
   });
 
   it('returns 停飛 when localTicketingStatus is OFF', () => {

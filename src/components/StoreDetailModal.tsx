@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { SushiroStore, GroupQueue } from '../types';
-import { getStoreStatusInfo, getTicketStatusInfo, formatGoogleMapsUrl, isStoreServicing, getStoreDisplayStatus } from '../utils/status';
+import { getStoreStatusInfo, getTicketStatusInfo, formatGoogleMapsUrl, isStoreServicing, getStoreDisplayStatus, isLocalTicketingOff } from '../utils/status';
 import { X, RefreshCw, Heart, MapPin, ExternalLink, Info, Calculator } from 'lucide-react';
 
 interface StoreDetailModalProps {
@@ -59,13 +59,24 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   const ticketStatusInfo = getTicketStatusInfo(store.netTicketStatus, store.storeStatus, store.localTicketingStatus, store.wait, store.waitingGroup);
   const mapsUrl = formatGoogleMapsUrl(store.latitude, store.longitude, store.address, store.name);
 
-  const boothNumbers = queue?.boothQueue || queue?.storeBoothQueue || [];
-  const counterNumbers = queue?.counterQueue || queue?.storeCounterQueue || [];
-  const storeNumbers = queue?.storeQueue || queue?.mixedQueue || [];
+  const boothNumbers = [...new Set([
+    ...(queue?.boothQueue || []),
+    ...(queue?.storeBoothQueue || []),
+  ])];
+  const counterNumbers = [...new Set([
+    ...(queue?.counterQueue || []),
+    ...(queue?.storeCounterQueue || []),
+  ])];
+  const storeNumbers = [...new Set([
+    ...(queue?.storeQueue || []),
+    ...(queue?.mixedQueue || []),
+  ])];
 
-  const allCurrentNums = [...boothNumbers, ...counterNumbers, ...storeNumbers]
-    .map((n) => parseInt(n.replace(/\D/g, ''), 10))
-    .filter((n) => !isNaN(n));
+  const allCurrentNums = [...new Set(
+    [...boothNumbers, ...counterNumbers, ...storeNumbers]
+      .map((n) => parseInt(n.replace(/\D/g, ''), 10))
+      .filter((n) => !isNaN(n))
+  )];
 
   const minCalledNum = allCurrentNums.length > 0 ? Math.min(...allCurrentNums) : 0;
   const hasNoQueue = allCurrentNums.length === 0;
@@ -86,7 +97,14 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
 
   if (!isServicing) {
     ticketValidationState = 'empty';
-    validationMessage = '門市目前已收工，籌號計算器暫停使用';
+    if (store.storeStatus !== 'OPEN') {
+      validationMessage = '門市已休息，籌號計算器暫停使用';
+    } else {
+      const isFinished = isLocalTicketingOff(store.localTicketingStatus) && store.wait === 0 && store.waitingGroup === 0;
+      validationMessage = isFinished
+        ? '門市目前已收工，籌號計算器暫停使用'
+        : '門市目前已停飛，籌號計算器暫停使用';
+    }
   } else if (hasNoQueue) {
     if (!myTicket || isNaN(myTicketNum) || myTicketNum <= 0) {
       ticketValidationState = 'empty';
@@ -108,7 +126,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   } else if (myTicketNum - minCalledNum > 350) {
     ticketValidationState = 'far_future';
     groupsAhead = myTicketNum - minCalledNum;
-    estimatedMins = Math.round(groupsAhead * 1.3);
+    estimatedMins = Math.max(2, Math.round(groupsAhead * 1.3));
     validationMessage = `籌號 #${myTicketNum} 距離目前最新叫號 (#${minCalledNum}) 相差較遠 (${groupsAhead} 組)，請核對籌號是否正確。`;
   } else {
     ticketValidationState = 'valid';

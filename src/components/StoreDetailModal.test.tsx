@@ -63,7 +63,7 @@ describe('StoreDetailModal', () => {
     render(<StoreDetailModal {...defaultProps} store={closedStore} />);
 
     // Shows finished validation warning message
-    expect(screen.getByText('門市目前已收工，籌號計算器暫停使用')).toBeInTheDocument();
+    expect(screen.getByText('門市已休息，籌號計算器暫停使用')).toBeInTheDocument();
 
     // Stacked buttons "收工" and "等開工" are displayed
     expect(screen.getByText('收工')).toBeInTheDocument();
@@ -106,7 +106,7 @@ describe('StoreDetailModal', () => {
     };
     render(<StoreDetailModal {...defaultProps} store={stoppedStore} />);
 
-    expect(screen.getByText('門市目前已收工，籌號計算器暫停使用')).toBeInTheDocument();
+    expect(screen.getByText('門市目前已停飛，籌號計算器暫停使用')).toBeInTheDocument();
   });
 
   it('shows 直入 when store is open but has no queues', () => {
