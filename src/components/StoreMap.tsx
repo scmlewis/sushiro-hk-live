@@ -109,22 +109,22 @@ function ScrollLock() {
 
 function ZoomControls() {
    const map = useMap();
-return (
-      <div className="absolute top-4 left-4 z-40 flex flex-col gap-1">
-        <button
-          onClick={() => map.setZoom(map.getZoom() - 1)}
-          className="w-10 h-10 flex items-center justify-center bg-white/90 hover:bg-white rounded-full shadow border border-neutral-200 text-neutral-800"
-        >
-          <span className="text-xl font-bold">−</span>
-        </button>
-        <button
-          onClick={() => map.setZoom(map.getZoom() + 1)}
-          className="w-10 h-10 flex items-center justify-center bg-white/90 hover:bg-white rounded-full shadow border border-neutral-200 text-neutral-800"
-        >
-          <span className="text-xl font-bold">+</span>
-        </button>
-      </div>
-    );
+   return (
+     <div className="absolute top-4 left-4 z-[60] flex flex-col gap-1 bg-neutral-950/20 backdrop-blur-sm rounded-xl p-1.5">
+       <button
+         onClick={() => map.setZoom(map.getZoom() - 1)}
+         className="w-11 h-11 flex items-center justify-center bg-white/95 hover:bg-white rounded-lg shadow border border-neutral-200 text-neutral-800"
+       >
+         <span className="text-2xl font-bold">−</span>
+       </button>
+       <button
+         onClick={() => map.setZoom(map.getZoom() + 1)}
+         className="w-11 h-11 flex items-center justify-center bg-white/95 hover:bg-white rounded-lg shadow border border-neutral-200 text-neutral-800"
+       >
+         <span className="text-2xl font-bold">+</span>
+       </button>
+     </div>
+   );
  }
 
 function MapReinit({ stores }: { stores: SushiroStore[] }) {
@@ -191,7 +191,7 @@ export const StoreMap: React.FC<StoreMapProps> = ({
         maxZoom={18}
         dragging={true}
         touchZoom={true}
-        scrollWheelZoom={false}
+        scrollWheelZoom={true}
         doubleClickZoom={true}
       >
         <TileLayer
