@@ -4,7 +4,6 @@ html, body {
   background-color: #141414;
   min-height: -webkit-fill-available;
   min-height: 100dvh;
-  overflow-x: hidden;
 }
 
 #root {
