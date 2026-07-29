@@ -249,9 +249,6 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                   <Calculator className="w-4 h-4 text-[#E21F26]" />
                   <span>籌號計算器</span>
                 </h3>
-                {isServicing && allCurrentNums.length > 0 && (
-                  <span className="text-xs text-neutral-400">目前最新籌號: <strong className="text-neutral-900 dark:text-white">#{minCalledNum}</strong></span>
-                )}
               </div>
 
               <div className={`mb-4 p-3 rounded-md border text-xs font-bold flex items-center justify-between gap-2 transition-all ${
