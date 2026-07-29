@@ -83,11 +83,10 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
 
   const isServicing = isStoreServicing(store);
 
-  // 3 most recent called numbers across all categories
+  // 3 most recent called numbers — smallest first (lowest = currently being called)
   const recentNumbers = allCurrentNums
     .sort((a, b) => a - b)
-    .slice(-3)
-    .reverse();
+    .slice(0, 3);
 
   const myTicketNum = parseInt(myTicket, 10);
   let groupsAhead = 0;

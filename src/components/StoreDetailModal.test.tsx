@@ -46,13 +46,13 @@ describe('StoreDetailModal', () => {
     // Check for the latest calling numbers section
     expect(screen.getByText('最新叫號')).toBeInTheDocument();
 
-    // Check that recent queue numbers are shown (sorted: 88, 105, 201 — top 3)
-    const [queue105] = screen.getAllByText((_, el) => el?.textContent?.includes('#105') ?? false);
-    expect(queue105).toBeInTheDocument();
+    // Check that recent queue numbers are shown (sorted: 88, 105, 106 — top 3 smallest)
     const [queue88] = screen.getAllByText((_, el) => el?.textContent?.includes('#88') ?? false);
     expect(queue88).toBeInTheDocument();
-    const [queue201] = screen.getAllByText((_, el) => el?.textContent?.includes('#201') ?? false);
-    expect(queue201).toBeInTheDocument();
+    const [queue105] = screen.getAllByText((_, el) => el?.textContent?.includes('#105') ?? false);
+    expect(queue105).toBeInTheDocument();
+    const [queue106] = screen.getAllByText((_, el) => el?.textContent?.includes('#106') ?? false);
+    expect(queue106).toBeInTheDocument();
 
     // Keypad is active and shows instructions
     expect(screen.getByText('請使用下方數字鍵盤輸入您手中的籌號')).toBeInTheDocument();
