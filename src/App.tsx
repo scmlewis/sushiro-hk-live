@@ -551,7 +551,7 @@ export default function App() {
 
             {/* All Stores View Tab (Isolated View) */}
             {activeMainTab === 'all' && (
-              <>
+              <div className={viewMode === 'map' ? 'flex-1 min-h-0 flex flex-col' : ''}>
                 {/* District Filter & Floating Search & Sort Bar */}
                 <DistrictFilterBar
               regionCounts={regionCounts}
@@ -614,7 +614,7 @@ export default function App() {
                 </button>
               </div>
             ) : (
-              <div className={viewMode === 'map' ? 'flex flex-col flex-1 min-h-0 -m-4 sm:-m-6 lg:-m-8' : ''}>
+              <div className={viewMode === 'map' ? 'flex-1 min-h-0 flex flex-col' : ''}>
                 {viewMode !== 'map' && (
                 <div className="flex items-center justify-between mb-3 px-1">
                   <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400">
@@ -656,7 +656,8 @@ export default function App() {
                 )}
               </div>
             )}
-          </>)}
+              </div>
+            )}
           </motion.div>
         </AnimatePresence>
       </main>
