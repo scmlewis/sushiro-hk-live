@@ -75,7 +75,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   const allCurrentNums = [...new Set(
     [...boothNumbers, ...counterNumbers, ...storeNumbers]
       .map((n) => parseInt(n.replace(/\D/g, ''), 10))
-      .filter((n) => !isNaN(n))
+      .filter((n) => !isNaN(n) && n < 1000)
   )];
 
   const minCalledNum = allCurrentNums.length > 0 ? Math.min(...allCurrentNums) : 0;
@@ -132,7 +132,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
     ticketValidationState = 'valid';
     groupsAhead = myTicketNum - minCalledNum;
     estimatedMins = Math.max(2, Math.round(groupsAhead * 1.35));
-    validationMessage = `正常輪候中：前面尚有 ${groupsAhead} 組，預估等待時間約 ${estimatedMins} 分鐘。`;
+    validationMessage = `正常輪候中：前面尚有 ${groupsAhead} 組，預估等待約 ${estimatedMins} 分鐘。`;
   }
 
   return (

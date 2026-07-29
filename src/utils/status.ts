@@ -63,7 +63,7 @@ export function getTicketStatusInfo(
   // 2. 停飛 (walk-in ticketing stopped — most critical for walk-in users)
   if (isStopFly) {
     return {
-      label: '停飛',
+      label: '現場停止派籌',
       bgColor: 'bg-[#E21F26]/10',
       textColor: 'text-[#E21F26] dark:text-red-400',
       borderColor: 'border-[#E21F26]/20',
@@ -74,7 +74,7 @@ export function getTicketStatusInfo(
   // 3. 收工 (fully stopped — no queues, no ticketing)
   if (isFinished) {
     return {
-      label: '收工',
+      label: '已收工',
       bgColor: 'bg-slate-500/10',
       textColor: 'text-slate-500',
       borderColor: 'border-slate-500/20',
@@ -82,9 +82,9 @@ export function getTicketStatusInfo(
     };
   }
 
-  // 4. 營業中 (store is OPEN and not in any stopped state)
+  // 4. 現場派籌中 (store is OPEN and walk-in ticketing is active)
   return {
-    label: '營業中',
+    label: '現場派籌',
     bgColor: 'bg-emerald-500/10',
     textColor: 'text-emerald-700 dark:text-emerald-400',
     borderColor: 'border-emerald-500/20',
