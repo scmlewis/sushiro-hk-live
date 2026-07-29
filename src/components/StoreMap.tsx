@@ -107,7 +107,7 @@ export const StoreMap: React.FC<StoreMapProps> = ({
   }, [stores]);
 
   return (
-    <div className="relative w-full flex-1 min-h-0 rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-800 z-0">
+    <div className="fixed inset-0 z-20 bg-neutral-950">
       <ScrollLock />
       <MapContainer
         center={center}

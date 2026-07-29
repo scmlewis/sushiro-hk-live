@@ -477,7 +477,7 @@ export default function App() {
       />
 
       {/* Main Container */}
-              <main className={`flex-1 ${viewMode === 'map' && activeMainTab === 'all' ? 'flex flex-col' : 'max-w-7xl mx-auto'} px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-8 w-full`}>
+              <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-8 w-full">
         {/* Service Worker Offline Cache Notice */}
         {isOffline && (
           <div className="mb-6 p-4 bg-[#aa151b] text-white font-black text-xs uppercase tracking-wider flex items-center justify-between shadow-xl border-2 border-white/20 animate-pulse rounded-xl">
@@ -551,7 +551,7 @@ export default function App() {
 
             {/* All Stores View Tab (Isolated View) */}
             {activeMainTab === 'all' && (
-              <div className={viewMode === 'map' ? 'flex-1 min-h-0 flex flex-col' : ''}>
+              <>
                 {/* District Filter & Floating Search & Sort Bar */}
                 <DistrictFilterBar
               regionCounts={regionCounts}
@@ -614,7 +614,7 @@ export default function App() {
                 </button>
               </div>
             ) : (
-              <div className={viewMode === 'map' ? 'flex-1 min-h-0 flex flex-col' : ''}>
+              <div>
                 {viewMode !== 'map' && (
                 <div className="flex items-center justify-between mb-3 px-1">
                   <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400">
@@ -656,8 +656,7 @@ export default function App() {
                 )}
               </div>
             )}
-              </div>
-            )}
+          </>)}
           </motion.div>
         </AnimatePresence>
       </main>
