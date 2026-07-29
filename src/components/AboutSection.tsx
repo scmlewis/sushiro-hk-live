@@ -163,7 +163,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
             <span>壽司郎官方網站</span>
           </a>
           <a
-            href="https://www.facebook.com/SushiroHK"
+            href="https://www.facebook.com/SUSHIROHONGKONG"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#1877F2] hover:bg-[#166FE5] text-white text-xs font-bold rounded-lg transition-colors"
