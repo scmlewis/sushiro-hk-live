@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+html, body, #root {
+  background-color: #141414;
+}
+
+html {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
 .sushiro-tooltip {
   background: #1a1a1a !important;
   border: 1px solid #404040 !important;
@@ -23,7 +31,6 @@
   border: none !important;
 }
 
-/* Marker transition for smooth hover effects */
 .sushiro-marker div {
   transition: transform 0.15s ease, opacity 0.15s ease;
   will-change: transform, opacity;
@@ -32,20 +39,4 @@
 .user-location-marker {
   background: transparent !important;
   border: none !important;
-}
-
-/* Override cluster styles for dark theme */
-.marker-cluster-small,
-.marker-cluster-medium,
-.marker-cluster-large {
-  background-color: rgba(16, 185, 129, 0.15) !important;
-}
-
-.marker-cluster-small div,
-.marker-cluster-medium div,
-.marker-cluster-large div {
-  background-color: rgba(16, 185, 129, 0.7) !important;
-  color: #fff !important;
-  font-weight: 900 !important;
-  font-size: 12px !important;
 }
