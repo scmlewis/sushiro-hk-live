@@ -43,16 +43,6 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
     }
   };
 
-  const handleQuickPreset = (preset: 'called' | 'next10' | 'next25') => {
-    if (preset === 'called') {
-      setMyTicket(String(minCalledNum));
-    } else if (preset === 'next10') {
-      setMyTicket(String(minCalledNum + 10));
-    } else if (preset === 'next25') {
-      setMyTicket(String(minCalledNum + 25));
-    }
-  };
-
   if (!store) return null;
 
   const storeStatusInfo = getStoreStatusInfo(store.storeStatus);
@@ -124,15 +114,10 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
         : '門市目前已停飛，籌號計算器暫停使用';
     }
   } else if (hasNoQueue) {
-    if (!myTicket || isNaN(myTicketNum) || myTicketNum <= 0) {
-      ticketValidationState = 'empty';
-      validationMessage = '目前無輪候，請輸入籌號或直入';
-    } else {
-      ticketValidationState = 'valid';
-      groupsAhead = 0;
-      estimatedMins = 0;
-      validationMessage = '目前無輪候，可直入就餐';
-    }
+    ticketValidationState = 'valid';
+    groupsAhead = 0;
+    estimatedMins = 0;
+    validationMessage = '目前無輪候，可直入就餐';
   } else if (!myTicket || isNaN(myTicketNum) || myTicketNum <= 0) {
     ticketValidationState = 'empty';
     validationMessage = '請使用下方數字鍵盤輸入您手中的籌號';
@@ -297,43 +282,6 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <div className="flex items-center gap-1.5 mb-2 text-[11px]">
-                    <span className="text-neutral-400 font-bold">快速輸入:</span>
-                    <button
-                      disabled={!isServicing}
-                      onClick={() => handleQuickPreset('called')}
-                      className={`px-2 py-0.5 rounded transition-colors font-bold ${
-                        !isServicing
-                          ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-400 cursor-not-allowed opacity-50'
-                          : 'bg-neutral-100 dark:bg-neutral-800 hover:bg-[#E21F26] hover:text-white cursor-pointer'
-                      }`}
-                    >
-                      #{minCalledNum} (叫號中)
-                    </button>
-                    <button
-                      disabled={!isServicing}
-                      onClick={() => handleQuickPreset('next10')}
-                      className={`px-2 py-0.5 rounded transition-colors font-bold ${
-                        !isServicing
-                          ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-400 cursor-not-allowed opacity-50'
-                          : 'bg-neutral-100 dark:bg-neutral-800 hover:bg-[#E21F26] hover:text-white cursor-pointer'
-                      }`}
-                    >
-                      +#{minCalledNum + 10}
-                    </button>
-                    <button
-                      disabled={!isServicing}
-                      onClick={() => handleQuickPreset('next25')}
-                      className={`px-2 py-0.5 rounded transition-colors font-bold ${
-                        !isServicing
-                          ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-400 cursor-not-allowed opacity-50'
-                          : 'bg-neutral-100 dark:bg-neutral-800 hover:bg-[#E21F26] hover:text-white cursor-pointer'
-                      }`}
-                    >
-                      +#{minCalledNum + 25}
-                    </button>
-                  </div>
-
                   <div className={`mb-3 p-3 bg-white dark:bg-neutral-800 border-2 rounded-lg text-center h-12 flex items-center justify-between px-4 ${myTicket ? 'border-[#E21F26]' : 'border-neutral-200 dark:border-neutral-700'}`}>
                     <span className="text-xs font-bold text-neutral-400">您輸入的籌號</span>
                     <span className={`text-2xl font-black tracking-widest tabular-nums ${myTicket ? 'text-[#E21F26]' : 'text-neutral-300 dark:text-neutral-600'}`}>
@@ -429,12 +377,11 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
         </div>
 
         {/* Fixed Modal Footer */}
-        <div className="shrink-0 p-3 sm:p-4 bg-[#141414] border-t border-neutral-800 flex justify-between items-center text-xs text-neutral-400">
+        <div className="shrink-0 p-3 sm:p-4 bg-[#141414] border-t border-neutral-800 flex items-center justify-center text-xs text-neutral-400">
           <div className="flex items-center gap-2 font-medium">
             <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>即時數據已同步</span>
           </div>
-          <span className="text-[11px] text-neutral-500 font-mono">壽司郎即時數據</span>
         </div>
       </motion.div>
     </motion.div>

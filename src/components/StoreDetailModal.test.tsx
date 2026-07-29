@@ -69,11 +69,7 @@ describe('StoreDetailModal', () => {
     expect(screen.getByText('收工')).toBeInTheDocument();
     expect(screen.getByText('等開工')).toBeInTheDocument();
 
-    // Presets and numpad are disabled (opacity & cursor-not-allowed classes should be present)
-    const presetBtn = screen.getByText('#74 (叫號中)');
-    expect(presetBtn).toBeDisabled();
-    expect(presetBtn).toHaveClass('cursor-not-allowed');
-
+    // Numpad is disabled
     const numpadBtn = screen.getByText('5');
     expect(numpadBtn).toBeDisabled();
     expect(numpadBtn).toHaveClass('cursor-not-allowed');
@@ -119,8 +115,8 @@ describe('StoreDetailModal', () => {
     };
     render(<StoreDetailModal {...defaultProps} queue={noQueueQueue} />);
 
-    // Shows no-queue message
-    expect(screen.getByText('目前無輪候，請輸入籌號或直入')).toBeInTheDocument();
+    // Shows no-queue message — 直入 directly
+    expect(screen.getByText('目前無輪候，可直入就餐')).toBeInTheDocument();
   });
 
   it('shows 直入 and 約0分 when entering ticket with no queues', async () => {
