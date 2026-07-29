@@ -60,12 +60,12 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   const mapsUrl = formatGoogleMapsUrl(store.latitude, store.longitude, store.address, store.name);
 
   // Parse queue number string like "74-1" or "73" into structured object
-  const parseQueueNum = (raw: string): { raw: string; base: number; sub: number } => {
+  const parseQueueNum = (raw: string): { raw: string; base: number; sub: number; isReservation: boolean } => {
     const cleaned = raw.replace(/^#/, '');
     const parts = cleaned.split('-');
     const base = parseInt(parts[0], 10);
     const sub = parts.length > 1 ? parseInt(parts[1], 10) : 0;
-    return { raw: cleaned, base: isNaN(base) ? 0 : base, sub: isNaN(sub) ? 0 : sub };
+    return { raw: cleaned, base: isNaN(base) ? 0 : base, sub: isNaN(sub) ? 0 : sub, isReservation: !isNaN(base) && base >= 1000 };
   };
 
   const boothNumbers = [...new Set([
@@ -81,25 +81,30 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
     ...(queue?.mixedQueue || []),
   ])];
 
-  // Parse all raw strings, filter valid walk-in numbers, dedup by raw string
+  // Parse all raw strings, filter valid numbers, dedup by raw string
   const allRawNums = [...new Set([...boothNumbers, ...counterNumbers, ...storeNumbers])]
     .map((n) => n.replace(/^#/, ''))
     .filter((n) => {
       const { base } = parseQueueNum(n);
-      return !isNaN(base) && base > 0 && base < 1000;
+      return !isNaN(base) && base > 0;
     });
 
-  // Sort by base number, then sub-number (ascending)
+  // Sort: walk-in first (by base, sub), then reservation (by base, sub)
   const parsedNums = allRawNums
     .map(parseQueueNum)
-    .sort((a, b) => a.base - b.base || a.sub - b.sub);
+    .sort((a, b) => {
+      if (a.isReservation !== b.isReservation) return a.isReservation ? 1 : -1;
+      return a.base - b.base || a.sub - b.sub;
+    });
 
-  const minCalledNum = parsedNums.length > 0 ? parsedNums[0].base : 0;
-  const hasNoQueue = parsedNums.length === 0;
+  // Walk-in only for calculator comparison
+  const walkInNums = parsedNums.filter((n) => !n.isReservation);
+  const minCalledNum = walkInNums.length > 0 ? walkInNums[0].base : 0;
+  const hasNoQueue = walkInNums.length === 0;
 
   const isServicing = isStoreServicing(store);
 
-  // 3 most recent called numbers — smallest first (lowest = currently being called)
+  // 3 most recent called numbers — walk-in smallest first, then reservations
   const recentNumbers = parsedNums.slice(0, 3);
 
   const myTicketNum = parseInt(myTicket, 10);
@@ -234,13 +239,16 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
               </div>
 
               {recentNumbers.length > 0 ? (
-                <div className="flex items-center justify-center gap-3">
+                <div className="flex items-center justify-center gap-3 flex-wrap">
                   {recentNumbers.map((num, idx) => (
                     <div key={num.raw} className="flex items-center gap-3">
                       <span className={`text-2xl sm:text-3xl font-black tabular-nums ${
                         idx === 0 ? 'text-[#E21F26]' : 'text-neutral-900 dark:text-white'
                       }`}>
                         #{num.raw}
+                        {num.isReservation && (
+                          <span className="text-xs font-bold text-neutral-400 dark:text-neutral-500 ml-1">(預約)</span>
+                        )}
                       </span>
                       {idx < recentNumbers.length - 1 && (
                         <span className="text-neutral-300 dark:text-neutral-600 text-lg">→</span>
