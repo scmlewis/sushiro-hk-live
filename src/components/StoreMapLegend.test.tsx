@@ -6,11 +6,11 @@ describe('StoreMapLegend', () => {
   it('renders all legend labels', () => {
     render(<StoreMapLegend />);
     expect(screen.getByText('直入')).toBeInTheDocument();
-    expect(screen.getByText('<30分')).toBeInTheDocument();
+    expect(screen.getByText('<15分')).toBeInTheDocument();
+    expect(screen.getByText('15-29分')).toBeInTheDocument();
     expect(screen.getByText('30-59分')).toBeInTheDocument();
-    expect(screen.getByText('60-89分')).toBeInTheDocument();
-    expect(screen.getByText('≥90分')).toBeInTheDocument();
-    expect(screen.getByText('收工/停飛')).toBeInTheDocument();
+    expect(screen.getByText('≥60分')).toBeInTheDocument();
+    expect(screen.getByText('休息/收工')).toBeInTheDocument();
   });
 
   it('renders color dots for each legend item', () => {

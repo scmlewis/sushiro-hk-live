@@ -1,25 +1,21 @@
 @import "tailwindcss";
 
 .sushiro-tooltip {
-  background: white !important;
-  border: 1px solid #e5e7eb !important;
+  background: #1a1a1a !important;
+  border: 1px solid #404040 !important;
   border-radius: 8px !important;
   padding: 6px 10px !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  color: #e5e5e5 !important;
 }
 
 .sushiro-tooltip::before {
-  border-top-color: white !important;
+  border-top-color: #1a1a1a !important;
 }
 
-.dark .sushiro-tooltip {
-  background: #171717 !important;
-  border-color: #404040 !important;
-}
-
-.dark .sushiro-tooltip::before {
-  border-top-color: #171717 !important;
+.leaflet-tooltip-top.sushiro-tooltip::before {
+  border-top-color: #1a1a1a !important;
 }
 
 .sushiro-marker {
@@ -30,4 +26,20 @@
 .user-location-marker {
   background: transparent !important;
   border: none !important;
+}
+
+/* Override cluster styles for dark theme */
+.marker-cluster-small,
+.marker-cluster-medium,
+.marker-cluster-large {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+}
+
+.marker-cluster-small div,
+.marker-cluster-medium div,
+.marker-cluster-large div {
+  background-color: rgba(16, 185, 129, 0.7) !important;
+  color: #fff !important;
+  font-weight: 900 !important;
+  font-size: 12px !important;
 }

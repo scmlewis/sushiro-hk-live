@@ -477,7 +477,7 @@ export default function App() {
       />
 
       {/* Main Container */}
-              <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-8 w-full">
+              <main className={`flex-1 ${viewMode === 'map' && activeMainTab === 'all' ? 'flex flex-col' : 'max-w-7xl mx-auto'} px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-8 w-full`}>
         {/* Service Worker Offline Cache Notice */}
         {isOffline && (
           <div className="mb-6 p-4 bg-[#aa151b] text-white font-black text-xs uppercase tracking-wider flex items-center justify-between shadow-xl border-2 border-white/20 animate-pulse rounded-xl">
@@ -614,7 +614,8 @@ export default function App() {
                 </button>
               </div>
             ) : (
-              <div>
+              <div className={viewMode === 'map' ? 'flex flex-col flex-1 min-h-0 -m-4 sm:-m-6 lg:-m-8' : ''}>
+                {viewMode !== 'map' && (
                 <div className="flex items-center justify-between mb-3 px-1">
                   <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400">
                     顯示 {processedStores.length} 間門市 (全港 44 間)
@@ -623,6 +624,7 @@ export default function App() {
                     點擊門市「詳情」可查看即時叫號明細與歷史紀錄
                   </span>
                 </div>
+                )}
 
                 {viewMode === 'map' ? (
                   <StoreMap
