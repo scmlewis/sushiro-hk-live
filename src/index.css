@@ -1,11 +1,27 @@
 @import "tailwindcss";
 
-html, body, #root {
+html, body {
   background-color: #141414;
+  min-height: -webkit-fill-available;
+}
+
+#root {
+  min-height: -webkit-fill-available;
+  min-height: 100dvh;
 }
 
 html {
-  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+body {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@supports (padding: env(safe-area-inset-bottom)) {
+  html, body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
 
 .sushiro-tooltip {
