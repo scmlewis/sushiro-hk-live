@@ -23,6 +23,12 @@
   border: none !important;
 }
 
+/* Marker transition for smooth hover effects */
+.sushiro-marker div {
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  will-change: transform, opacity;
+}
+
 .user-location-marker {
   background: transparent !important;
   border: none !important;

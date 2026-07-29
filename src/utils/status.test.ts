@@ -177,7 +177,7 @@ describe('isStoreServicing', () => {
     expect(isStoreServicing(store)).toBe(false);
   });
 
-  it('returns false for walk-in stopped store (停飛)', () => {
+  it('returns true for walk-in stopped store (停飛) with waiting groups', () => {
     const store = {
       ...baseStore,
       storeStatus: 'OPEN',
@@ -186,7 +186,7 @@ describe('isStoreServicing', () => {
       wait: 15,
       waitingGroup: 3,
     };
-    expect(isStoreServicing(store)).toBe(false);
+    expect(isStoreServicing(store)).toBe(true);
   });
 
   it('returns true for normal open store', () => {

@@ -1,11 +1,8 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Tooltip, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import '../leaflet-fix';
 import 'leaflet/dist/leaflet.css';
-import 'leaflet.markercluster/dist/MarkerCluster.css';
-import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
-import MarkerClusterGroup from 'react-leaflet-markercluster';
 import { SushiroStore, StoreQueueMap } from '../types';
 import { getStoreDisplayStatus, getMarkerColor } from '../utils/status';
 import { StoreMapLegend } from './StoreMapLegend';
@@ -19,9 +16,8 @@ interface StoreMapProps {
 
 function createMarkerIcon(store: SushiroStore): L.DivIcon {
   const status = getStoreDisplayStatus(store);
-  const isWalkIn = status.accentColor === 'emerald' && !status.isClosed;
   const color = getMarkerColor(status.accentColor);
-  const label = isWalkIn ? '直入' : status.groupText;
+  const label = status.waitText;
 
   return L.divIcon({
     className: 'sushiro-marker',
@@ -30,7 +26,7 @@ function createMarkerIcon(store: SushiroStore): L.DivIcon {
       color: #fff;
       font-size: 11px;
       font-weight: 900;
-      padding: 4px 10px;
+      padding: 4px 8px;
       border-radius: 9999px;
       white-space: nowrap;
       text-align: center;
@@ -39,24 +35,33 @@ function createMarkerIcon(store: SushiroStore): L.DivIcon {
       border: 2px solid rgba(255,255,255,0.9);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       letter-spacing: 0.02em;
-      min-width: 32px;
+      min-width: 30px;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+      will-change: transform, opacity;
     ">${label}</div>`,
-    iconSize: L.point(0, 0),
-    iconAnchor: L.point(28, 14),
+    iconSize: [36, 18],
+    iconAnchor: [18, 9],
   });
 }
 
 function FitBoundsOnce({ stores }: { stores: SushiroStore[] }) {
   const map = useMap();
-  const fitted = useRef(false);
+  const fitted = React.useRef(false);
 
   useEffect(() => {
     if (fitted.current || stores.length === 0) return;
     fitted.current = true;
-    const bounds = L.latLngBounds(
-      stores.map((s) => [s.latitude, s.longitude] as [number, number])
-    );
-    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 13 });
+
+    const HK_BOUNDS = [[22.45, 114.05], [22.65, 114.35]];
+    const hkBounds = L.latLngBounds(HK_BOUNDS as [[number, number], [number, number]]);
+    const storeBounds = L.latLngBounds(stores.map(s => [s.latitude, s.longitude] as [number, number]));
+
+    const combined = hkBounds.extend(storeBounds.getCenter());
+    map.fitBounds(combined, { padding: [40, 40], maxZoom: 14 });
+
+    if (map.getZoom() < 10) {
+      map.setZoom(10);
+    }
   }, [stores, map]);
 
   return null;
@@ -89,6 +94,67 @@ function ScrollLock() {
   return null;
 }
 
+function ZoomControls() {
+  const map = useMap();
+  return (
+    <div className="absolute top-4 right-4 z-40 flex flex-col gap-1">
+      <button
+        onClick={() => map.setZoom(map.getZoom() - 1)}
+        className="w-8 h-8 flex items-center justify-center bg-white/80 hover:bg-white rounded-full shadow"
+      >
+        <span className="text-lg font-bold">−</span>
+      </button>
+      <button
+        onClick={() => map.setZoom(map.getZoom() + 1)}
+        className="w-8 h-8 flex items-center justify-center bg-white/80 hover:bg-white rounded-full shadow"
+      >
+        <span className="text-lg font-bold">+</span>
+      </button>
+    </div>
+  );
+}
+
+function ZoomSlider() {
+  const map = useMap();
+  const [show, setShow] = useState(false);
+  const tapCount = React.useRef(0);
+
+  useEffect(() => {
+    const container = map.getContainer();
+    const handleTouch = () => {
+      tapCount.current++;
+      if (tapCount.current >= 6) {
+        setShow(true);
+        setTimeout(() => { setShow(false); tapCount.current = 0; }, 3000);
+      }
+    };
+    const handleTouchEnd = () => { tapCount.current = 0; };
+    container.addEventListener('touchstart', handleTouch);
+    container.addEventListener('touchend', handleTouchEnd);
+    return () => {
+      container.removeEventListener('touchstart', handleTouch);
+      container.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [map]);
+
+  if (!show) return null;
+
+  return (
+    <div className="absolute top-20 right-4 z-50 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-3">
+      <label className="block text-xs font-medium text-gray-700 mb-1">縮放</label>
+      <input
+        type="range"
+        min={10}
+        max={18}
+        step={1}
+        value={Math.round(map.getZoom())}
+        onChange={(e) => map.setZoom(Number(e.target.value))}
+        className="w-40"
+      />
+    </div>
+  );
+}
+
 export const StoreMap: React.FC<StoreMapProps> = ({
   stores,
   queues,
@@ -101,9 +167,9 @@ export const StoreMap: React.FC<StoreMapProps> = ({
   }, [userLocation]);
 
   const markerIcons = useMemo(() => {
-    const map = new Map<number, L.DivIcon>();
-    stores.forEach((s) => map.set(s.id, createMarkerIcon(s)));
-    return map;
+    const m = new Map<number, L.DivIcon>();
+    stores.forEach((s) => m.set(s.id, createMarkerIcon(s)));
+    return m;
   }, [stores]);
 
   return (
@@ -113,7 +179,7 @@ export const StoreMap: React.FC<StoreMapProps> = ({
         center={center}
         zoom={11}
         className="w-full h-full"
-        zoomControl={false}
+        zoomControl={true}
         attributionControl={false}
       >
         <TileLayer
@@ -121,39 +187,34 @@ export const StoreMap: React.FC<StoreMapProps> = ({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
         />
         <FitBoundsOnce stores={stores} />
-        <MarkerClusterGroup
-          maxClusterRadius={50}
-          spiderfyOnMaxZoom
-          showCoverageOnHover={false}
-          zoomToBoundsOnClick
-        >
-          {stores.map((store) => (
-            <Marker
-              key={store.id}
-              position={[store.latitude, store.longitude]}
-              icon={markerIcons.get(store.id)}
-              eventHandlers={{
-                click: () => onSelectStore(store),
-              }}
+        {stores.map((store) => (
+          <Marker
+            key={store.id}
+            position={[store.latitude, store.longitude]}
+            icon={markerIcons.get(store.id)}
+            eventHandlers={{
+              click: () => onSelectStore(store),
+            }}
+          >
+            <Tooltip
+              direction="top"
+              offset={[0, -15]}
+              opacity={1}
+              permanent={false}
+              className="sushiro-tooltip"
             >
-              <Tooltip
-                direction="top"
-                offset={[0, -15]}
-                opacity={1}
-                permanent={false}
-                className="sushiro-tooltip"
-              >
-                <div style={{ fontWeight: 900, fontSize: '12px', marginBottom: '2px' }}>
-                  {store.name}
-                </div>
-                <div style={{ fontSize: '11px', color: '#999' }}>
-                  {getStoreDisplayStatus(store).waitText} · {getStoreDisplayStatus(store).groupText}
-                </div>
-              </Tooltip>
-            </Marker>
-          ))}
-        </MarkerClusterGroup>
+              <div style={{ fontWeight: 900, fontSize: '12px', marginBottom: '2px' }}>
+                {store.name}
+              </div>
+              <div style={{ fontSize: '11px', color: '#999' }}>
+                {getStoreDisplayStatus(store).waitText} · {getStoreDisplayStatus(store).groupText}
+              </div>
+            </Tooltip>
+          </Marker>
+        ))}
         {userLocation && <UserLocationMarker location={userLocation} />}
+        <ZoomControls />
+        <ZoomSlider />
       </MapContainer>
       <StoreMapLegend />
     </div>

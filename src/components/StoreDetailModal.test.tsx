@@ -91,7 +91,7 @@ describe('StoreDetailModal', () => {
     expect(screen.getByText('等開工')).toBeInTheDocument();
   });
 
-  it('renders non-servicing state when store is walk-in stopped (停飛)', () => {
+  it('renders calculator for walk-in stopped store (停飛) with waiting groups', () => {
     const stoppedStore = {
       ...mockStore,
       storeStatus: 'OPEN',
@@ -102,7 +102,7 @@ describe('StoreDetailModal', () => {
     };
     render(<StoreDetailModal {...defaultProps} store={stoppedStore} />);
 
-    expect(screen.getByText('門市目前已停飛，籌號計算器暫停使用')).toBeInTheDocument();
+    expect(screen.getByText('請使用下方數字鍵盤輸入您手中的籌號')).toBeInTheDocument();
   });
 
   it('shows 直入 when store is open but has no queues', () => {

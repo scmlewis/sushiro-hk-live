@@ -108,9 +108,9 @@ export function isStoreServicing(store: SushiroStore): boolean {
     return false;
   }
   
-  // 停飛 (Walk-in stopped)
+  // 停飛 (Walk-in stopped) — but people are still in queue, calculator should work
   if (isStopFly) {
-    return false;
+    return store.waitingGroup > 0;
   }
   
   return true;
