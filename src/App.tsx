@@ -447,7 +447,7 @@ export default function App() {
   }, [stores]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-100/70 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-red-500 selection:text-white transition-colors pb-16" style={{ fontSize: TEXT_SIZE_MAP[textSize] }}>
+    <div className="min-h-screen bg-slate-100/70 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-red-500 selection:text-white transition-colors pb-16" style={{ fontSize: TEXT_SIZE_MAP[textSize] }}>
       {/* Unified Sticky Top Navbar */}
       <Navbar
         lastUpdated={lastUpdated}
@@ -463,7 +463,7 @@ export default function App() {
       />
 
       {/* Main Container */}
-              <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4">
+              <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4">
         {/* Service Worker Offline Cache Notice */}
         {isOffline && (
           <div className="mb-6 p-4 bg-[#E21F26] text-white font-black text-xs uppercase tracking-wider flex items-center justify-between shadow-xl border-2 border-white/20 animate-pulse rounded-xl">
@@ -635,7 +635,7 @@ export default function App() {
       </main>
 
       {/* Bold Typography Theme Footer */}
-      <footer className="bg-[#141414] text-white px-6 sm:px-8 py-6 border-t-4 border-[#E21F26]">
+      <footer className="mt-16 bg-[#141414] text-white px-6 sm:px-8 py-6 border-t-4 border-[#E21F26]">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-[11px] font-black tracking-[0.2em] uppercase gap-3 text-neutral-400">
           <div>
             <span>數據來源: </span>
