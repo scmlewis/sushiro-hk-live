@@ -1,1 +1,33 @@
 @import "tailwindcss";
+
+.sushiro-tooltip {
+  background: white !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  padding: 6px 10px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+
+.sushiro-tooltip::before {
+  border-top-color: white !important;
+}
+
+.dark .sushiro-tooltip {
+  background: #171717 !important;
+  border-color: #404040 !important;
+}
+
+.dark .sushiro-tooltip::before {
+  border-top-color: #171717 !important;
+}
+
+.sushiro-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+.user-location-marker {
+  background: transparent !important;
+  border: none !important;
+}
