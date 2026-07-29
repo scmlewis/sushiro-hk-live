@@ -447,7 +447,7 @@ export default function App() {
   }, [stores]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-100/70 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-red-500 selection:text-white transition-colors" style={{ fontSize: TEXT_SIZE_MAP[textSize] }}>
+    <div className="min-h-screen flex flex-col bg-slate-100/70 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-red-500 selection:text-white transition-colors overflow-x-hidden" style={{ fontSize: TEXT_SIZE_MAP[textSize] }}>
       {/* Unified Sticky Top Navbar */}
       <Navbar
         lastUpdated={lastUpdated}
@@ -463,7 +463,7 @@ export default function App() {
       />
 
       {/* Main Container */}
-              <main className="flex-1 min-w-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4">
+              <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 w-full">
         {/* Service Worker Offline Cache Notice */}
         {isOffline && (
           <div className="mb-6 p-4 bg-[#E21F26] text-white font-black text-xs uppercase tracking-wider flex items-center justify-between shadow-xl border-2 border-white/20 animate-pulse rounded-xl">
