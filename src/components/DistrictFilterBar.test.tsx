@@ -17,6 +17,8 @@ const defaultProps = {
   onSortChange: vi.fn(),
   onToggleOnlyIssuing: vi.fn(),
   onRequestLocation: vi.fn(),
+  viewMode: 'list' as const,
+  onViewModeChange: vi.fn(),
 };
 
 describe('DistrictFilterBar', () => {
@@ -91,5 +93,39 @@ describe('DistrictFilterBar', () => {
 
     await user.selectOptions(screen.getByDisplayValue(/等候時間最短/), 'wait-desc');
     expect(onSortChange).toHaveBeenCalledWith('wait-desc');
+  });
+
+  it('renders list and map toggle buttons', () => {
+    render(<DistrictFilterBar {...defaultProps} />);
+    expect(screen.getByText('列表')).toBeInTheDocument();
+    expect(screen.getByText('地圖')).toBeInTheDocument();
+  });
+
+  it('calls onViewModeChange with map when 地圖 clicked', async () => {
+    const user = userEvent.setup();
+    const onViewModeChange = vi.fn();
+    render(<DistrictFilterBar {...defaultProps} onViewModeChange={onViewModeChange} />);
+
+    await user.click(screen.getByText('地圖'));
+    expect(onViewModeChange).toHaveBeenCalledWith('map');
+  });
+
+  it('calls onViewModeChange with list when 列表 clicked', async () => {
+    const user = userEvent.setup();
+    const onViewModeChange = vi.fn();
+    render(<DistrictFilterBar {...defaultProps} viewMode="map" onViewModeChange={onViewModeChange} />);
+
+    await user.click(screen.getByText('列表'));
+    expect(onViewModeChange).toHaveBeenCalledWith('list');
+  });
+
+  it('highlights active view mode button', () => {
+    const { rerender } = render(<DistrictFilterBar {...defaultProps} viewMode="list" />);
+    const listBtn = screen.getByText('列表');
+    expect(listBtn.className).toContain('bg-[#141414]');
+
+    rerender(<DistrictFilterBar {...defaultProps} viewMode="map" onViewModeChange={vi.fn()} />);
+    const mapBtn = screen.getByText('地圖');
+    expect(mapBtn.className).toContain('bg-[#141414]');
   });
 });
