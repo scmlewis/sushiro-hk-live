@@ -23,7 +23,7 @@ const mockQueue: GroupQueue = {
   storeQueue: ['201'],
   boothQueue: ['105', '106'],
   counterQueue: ['88'],
-  mixedQueue: [],
+  mixedQueue: ['74-1', '74-2'],
   reservationQueue: [],
 };
 
@@ -46,13 +46,13 @@ describe('StoreDetailModal', () => {
     // Check for the latest calling numbers section
     expect(screen.getByText('最新叫號')).toBeInTheDocument();
 
-    // Check that recent queue numbers are shown (sorted: 88, 105, 106 — top 3 smallest)
+    // Check that recent queue numbers are shown (sorted: 74-1, 74-2, 88 — top 3 smallest)
+    const [queue741] = screen.getAllByText((_, el) => el?.textContent?.includes('#74-1') ?? false);
+    expect(queue741).toBeInTheDocument();
+    const [queue742] = screen.getAllByText((_, el) => el?.textContent?.includes('#74-2') ?? false);
+    expect(queue742).toBeInTheDocument();
     const [queue88] = screen.getAllByText((_, el) => el?.textContent?.includes('#88') ?? false);
     expect(queue88).toBeInTheDocument();
-    const [queue105] = screen.getAllByText((_, el) => el?.textContent?.includes('#105') ?? false);
-    expect(queue105).toBeInTheDocument();
-    const [queue106] = screen.getAllByText((_, el) => el?.textContent?.includes('#106') ?? false);
-    expect(queue106).toBeInTheDocument();
 
     // Keypad is active and shows instructions
     expect(screen.getByText('請使用下方數字鍵盤輸入您手中的籌號')).toBeInTheDocument();
@@ -70,7 +70,7 @@ describe('StoreDetailModal', () => {
     expect(screen.getByText('等開工')).toBeInTheDocument();
 
     // Presets and numpad are disabled (opacity & cursor-not-allowed classes should be present)
-    const presetBtn = screen.getByText('#88 (叫號中)');
+    const presetBtn = screen.getByText('#74 (叫號中)');
     expect(presetBtn).toBeDisabled();
     expect(presetBtn).toHaveClass('cursor-not-allowed');
 

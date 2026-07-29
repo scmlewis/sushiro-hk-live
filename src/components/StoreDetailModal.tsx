@@ -59,6 +59,15 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   const ticketStatusInfo = getTicketStatusInfo(store.netTicketStatus, store.storeStatus, store.localTicketingStatus, store.wait, store.waitingGroup);
   const mapsUrl = formatGoogleMapsUrl(store.latitude, store.longitude, store.address, store.name);
 
+  // Parse queue number string like "74-1" or "73" into structured object
+  const parseQueueNum = (raw: string): { raw: string; base: number; sub: number } => {
+    const cleaned = raw.replace(/^#/, '');
+    const parts = cleaned.split('-');
+    const base = parseInt(parts[0], 10);
+    const sub = parts.length > 1 ? parseInt(parts[1], 10) : 0;
+    return { raw: cleaned, base: isNaN(base) ? 0 : base, sub: isNaN(sub) ? 0 : sub };
+  };
+
   const boothNumbers = [...new Set([
     ...(queue?.boothQueue || []),
     ...(queue?.storeBoothQueue || []),
@@ -72,21 +81,26 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
     ...(queue?.mixedQueue || []),
   ])];
 
-  const allCurrentNums = [...new Set(
-    [...boothNumbers, ...counterNumbers, ...storeNumbers]
-      .map((n) => parseInt(n.replace(/\D/g, ''), 10))
-      .filter((n) => !isNaN(n) && n < 1000)
-  )];
+  // Parse all raw strings, filter valid walk-in numbers, dedup by raw string
+  const allRawNums = [...new Set([...boothNumbers, ...counterNumbers, ...storeNumbers])]
+    .map((n) => n.replace(/^#/, ''))
+    .filter((n) => {
+      const { base } = parseQueueNum(n);
+      return !isNaN(base) && base > 0 && base < 1000;
+    });
 
-  const minCalledNum = allCurrentNums.length > 0 ? Math.min(...allCurrentNums) : 0;
-  const hasNoQueue = allCurrentNums.length === 0;
+  // Sort by base number, then sub-number (ascending)
+  const parsedNums = allRawNums
+    .map(parseQueueNum)
+    .sort((a, b) => a.base - b.base || a.sub - b.sub);
+
+  const minCalledNum = parsedNums.length > 0 ? parsedNums[0].base : 0;
+  const hasNoQueue = parsedNums.length === 0;
 
   const isServicing = isStoreServicing(store);
 
   // 3 most recent called numbers — smallest first (lowest = currently being called)
-  const recentNumbers = allCurrentNums
-    .sort((a, b) => a - b)
-    .slice(0, 3);
+  const recentNumbers = parsedNums.slice(0, 3);
 
   const myTicketNum = parseInt(myTicket, 10);
   let groupsAhead = 0;
@@ -222,11 +236,11 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
               {recentNumbers.length > 0 ? (
                 <div className="flex items-center justify-center gap-3">
                   {recentNumbers.map((num, idx) => (
-                    <div key={num} className="flex items-center gap-3">
+                    <div key={num.raw} className="flex items-center gap-3">
                       <span className={`text-2xl sm:text-3xl font-black tabular-nums ${
                         idx === 0 ? 'text-[#E21F26]' : 'text-neutral-900 dark:text-white'
                       }`}>
-                        #{num}
+                        #{num.raw}
                       </span>
                       {idx < recentNumbers.length - 1 && (
                         <span className="text-neutral-300 dark:text-neutral-600 text-lg">→</span>
