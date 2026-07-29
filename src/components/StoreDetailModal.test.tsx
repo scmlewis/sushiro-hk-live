@@ -114,4 +114,40 @@ describe('StoreDetailModal', () => {
 
     expect(screen.getByText('門市目前已收工，籌號計算器暫停使用')).toBeInTheDocument();
   });
+
+  it('shows 直入 when store is open but has no queues', () => {
+    const noQueueQueue: GroupQueue = {
+      storeQueue: [],
+      boothQueue: [],
+      counterQueue: [],
+      mixedQueue: [],
+      reservationQueue: [],
+    };
+    render(<StoreDetailModal {...defaultProps} queue={noQueueQueue} />);
+
+    // Shows no-queue message
+    expect(screen.getByText('目前無輪候，請輸入籌號或直入')).toBeInTheDocument();
+  });
+
+  it('shows 直入 and 約0分 when entering ticket with no queues', async () => {
+    const user = (await import('@testing-library/user-event')).default.setup();
+    const noQueueQueue: GroupQueue = {
+      storeQueue: [],
+      boothQueue: [],
+      counterQueue: [],
+      mixedQueue: [],
+      reservationQueue: [],
+    };
+    render(<StoreDetailModal {...defaultProps} queue={noQueueQueue} />);
+
+    // Enter a ticket number
+    await user.click(screen.getByText('2'));
+    await user.click(screen.getByText('2'));
+    await user.click(screen.getByText('2'));
+
+    // Should show 直入 and 約0分鐘
+    expect(screen.getByText('直入')).toBeInTheDocument();
+    expect(screen.getByText('約0分鐘')).toBeInTheDocument();
+    expect(screen.getByText('目前無輪候，可直入就餐')).toBeInTheDocument();
+  });
 });

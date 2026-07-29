@@ -227,10 +227,10 @@ export default function App() {
     setBookmarkedIds((prev) => {
       const exists = prev.includes(store.id);
       if (exists) {
-        showToast(`已移除標記：${store.name}`, 'info');
+        showToast(`已移除關注：${store.name}`, 'info');
         return prev.filter((id) => id !== store.id);
       } else {
-        showToast(`已標記門市：${store.name} (將每 10 秒自動更新籌號)`, 'success');
+        showToast(`已關注門市：${store.name} (將每 10 秒自動更新籌號)`, 'success');
         fetchSingleQueue(store.id, true);
         return [...prev, store.id];
       }

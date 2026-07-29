@@ -72,7 +72,8 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
     .map((n) => parseInt(n.replace(/\D/g, ''), 10))
     .filter((n) => !isNaN(n));
 
-  const minCalledNum = allCurrentNums.length > 0 ? Math.min(...allCurrentNums) : Math.max(1, (store.id * 10) % 150 + 50);
+  const minCalledNum = allCurrentNums.length > 0 ? Math.min(...allCurrentNums) : 0;
+  const hasNoQueue = allCurrentNums.length === 0;
 
   const isServicing = isStoreServicing(store);
   const currentBooth = isServicing && boothNumbers.length > 0 ? boothNumbers[0] : '—';
@@ -88,6 +89,16 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   if (!isServicing) {
     ticketValidationState = 'empty';
     validationMessage = '門市目前已收工，籌號計算器暫停使用';
+  } else if (hasNoQueue) {
+    if (!myTicket || isNaN(myTicketNum) || myTicketNum <= 0) {
+      ticketValidationState = 'empty';
+      validationMessage = '目前無輪候，請輸入籌號或直入';
+    } else {
+      ticketValidationState = 'valid';
+      groupsAhead = 0;
+      estimatedMins = 0;
+      validationMessage = '目前無輪候，可直入就餐';
+    }
   } else if (!myTicket || isNaN(myTicketNum) || myTicketNum <= 0) {
     ticketValidationState = 'empty';
     validationMessage = '請使用下方數字鍵盤輸入您手中的籌號';
@@ -100,7 +111,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
     ticketValidationState = 'far_future';
     groupsAhead = myTicketNum - minCalledNum;
     estimatedMins = Math.round(groupsAhead * 1.3);
-    validationMessage = `籌號 #${myTicketNum} 距離目前最新叫號 (#${minCalledNum}) 相差較遠 (${groupsAhead} 組)，請核對票號是否正確。`;
+    validationMessage = `籌號 #${myTicketNum} 距離目前最新叫號 (#${minCalledNum}) 相差較遠 (${groupsAhead} 組)，請核對籌號是否正確。`;
   } else {
     ticketValidationState = 'valid';
     groupsAhead = myTicketNum - minCalledNum;
@@ -217,7 +228,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                   <span>籌號計算器</span>
                 </h3>
                 {isServicing && allCurrentNums.length > 0 && (
-                  <span className="text-xs text-neutral-400">目前最新號碼: <strong className="text-neutral-900 dark:text-white">#{minCalledNum}</strong></span>
+                  <span className="text-xs text-neutral-400">目前最新籌號: <strong className="text-neutral-900 dark:text-white">#{minCalledNum}</strong></span>
                 )}
               </div>
 
@@ -329,7 +340,9 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                   <div className="flex flex-col gap-3 justify-between">
                     <div className={`border-2 rounded-lg p-4 text-center flex-1 flex flex-col items-center justify-center min-h-[90px] transition-all ${
                       ticketValidationState === 'called'
-                        ? 'bg-red-50 border-red-300 dark:bg-red-950/40 dark:border-red-800'
+                        ? 'bg-red-50 border-red-300 dark:bg-red-950/40 dark:border-red-80'
+                        : hasNoQueue && ticketValidationState === 'valid'
+                        ? 'bg-emerald-50 border-emerald-300 dark:bg-emerald-950/40 dark:border-emerald-800'
                         : 'bg-white dark:bg-neutral-800 border-[#E21F26]'
                     }`}>
                       <span className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-1">
@@ -340,19 +353,31 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                           ? '請輸入籌號'
                           : ticketValidationState === 'called'
                           ? '已過號 / 到您入座'
+                          : hasNoQueue && ticketValidationState === 'valid'
+                          ? '直入'
                           : `尚有 ${groupsAhead} 組`}
                       </span>
                     </div>
 
-                    <div className="bg-white dark:bg-neutral-800 border-2 border-neutral-200 dark:border-neutral-700 rounded-lg p-4 text-center flex-1 flex flex-col items-center justify-center min-h-[90px]">
+                    <div className={`border-2 rounded-lg p-4 text-center flex-1 flex flex-col items-center justify-center min-h-[90px] ${
+                      hasNoQueue && ticketValidationState === 'valid'
+                        ? 'bg-emerald-50 border-emerald-300 dark:bg-emerald-950/40 dark:border-emerald-800'
+                        : 'bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700'
+                    }`}>
                       <span className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-1">
                         預估等候時間
                       </span>
-                      <span className="text-2xl sm:text-3xl font-black text-[#E21F26]">
+                      <span className={`text-2xl sm:text-3xl font-black ${
+                        hasNoQueue && ticketValidationState === 'valid'
+                          ? 'text-emerald-600 dark:text-emerald-400'
+                          : 'text-[#E21F26]'
+                      }`}>
                         {ticketValidationState === 'empty'
                           ? '-- 分鐘'
                           : ticketValidationState === 'called'
                           ? '即刻前往櫃檯'
+                          : hasNoQueue && ticketValidationState === 'valid'
+                          ? '約0分鐘'
                           : `約 ${estimatedMins} 分鐘`}
                       </span>
                     </div>
@@ -466,7 +491,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
 
                 {(activeTab === 'all' || activeTab === 'store') && (
                   <QueueCategoryBlock
-                    title="現場 / 混合隊列 (STORE/MIXED QUEUE)"
+                    title="現場 / 混合 (STORE/MIXED QUEUE)"
                     numbers={storeNumbers}
                     badgeColor="bg-amber-50 text-amber-800 border-amber-300 dark:bg-amber-950/40 dark:text-amber-300"
                   />
@@ -474,7 +499,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
 
                 {(activeTab === 'all' || activeTab === 'reservation') && (
                   <QueueCategoryBlock
-                    title="預約隊列 (RESERVATION QUEUE)"
+                    title="預約 (RESERVATION QUEUE)"
                     numbers={reservationNumbers}
                     badgeColor="bg-emerald-50 text-emerald-800 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300"
                   />

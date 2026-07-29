@@ -25,7 +25,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
           關於系統與使用說明
         </h2>
         <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed font-medium">
-          本系統連結全港 44 間壽司郎分店之籌號發放狀態、預估等候時間及現場叫號進度。透過智慧連線機制，助您迅速掌握現場人流，節省現場等候時間。
+          本系統連結全港 44 間壽司郎門市之籌號發放狀態、預估等候時間及現場叫號進度。透過智慧連線機制，助您迅速掌握現場人流，節省現場等候時間。
         </p>
       </div>
 
@@ -42,7 +42,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
             </h3>
           </div>
           <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-medium">
-            收錄全港地區所有營業中分店，支援按港島、九龍、新界地區篩選，或關鍵字搜尋。列表隨時顯示現場是否派籌中、目前叫號進度及預估等候時間。
+            收錄全港地區所有營業中門市，支援按港島、九龍、新界地區篩選，或關鍵字搜尋。列表隨時顯示現場是否派籌中、目前叫號進度及預估等候時間。
           </p>
         </div>
 
@@ -72,7 +72,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
             </h3>
           </div>
           <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-medium">
-            同時選擇 2 至 4 間相鄰分店（例如：馬鞍山店 vs 沙田店），即時橫向對比預估等候時間與現場輪候組數，幫助您決定前往最快入座的分店。
+            同時選擇 2 至 4 間相鄰門市（例如：馬鞍山店 vs 沙田店），即時橫向比對預估等候時間與現場輪候組數，幫助您決定前往最快入座的門市。
           </p>
         </div>
 

@@ -45,7 +45,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
         </div>
         <p className="text-2xl font-black text-neutral-900 dark:text-neutral-100 mb-2">尚未選擇比較門市</p>
         <p className="text-sm mt-1.5 text-neutral-500 dark:text-neutral-400 max-w-md mx-auto leading-relaxed">
-          在全港門市列表中，點擊門市操作欄的「+」按鈕加入分店進行多店即時比較（最多 4 間）。
+          在全港門市列表中，點擊門市操作欄的「+」按鈕加入門市進行多店即時比較（最多 4 間）。
         </p>
         {onAddDefaultStores && (
           <button
@@ -66,7 +66,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
         <div className="flex items-center gap-2">
           <Layers className="w-4 h-4 text-[#E21F26]" />
           <span className="text-sm font-black text-neutral-900 dark:text-white">
-            門市即時對比
+            門市即時比對
           </span>
           <span className="px-2 py-0.5 bg-[#E21F26] text-white text-[10px] font-black rounded-full">
             {stores.length} / 4
