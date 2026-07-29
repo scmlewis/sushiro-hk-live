@@ -554,19 +554,21 @@ export default function App() {
               <>
                 {/* District Filter & Floating Search & Sort Bar */}
 <DistrictFilterBar
-               regionCounts={regionCounts}
-               selectedArea={selectedArea}
-               searchQuery={searchQuery}
-               sortBy={sortBy}
-               onlyIssuingTickets={onlyIssuingTickets}
-               userLocation={userLocation}
-               locationLoading={locationLoading}
-               onSelectArea={setSelectedArea}
-               onSearchChange={setSearchQuery}
-               onSortChange={setSortBy}
-               onToggleOnlyIssuing={() => setOnlyIssuingTickets((prev) => !prev)}
-               onRequestLocation={handleRequestLocation}
-             />
+                regionCounts={regionCounts}
+                selectedArea={selectedArea}
+                searchQuery={searchQuery}
+                sortBy={sortBy}
+                onlyIssuingTickets={onlyIssuingTickets}
+                userLocation={userLocation}
+                locationLoading={locationLoading}
+                onSelectArea={setSelectedArea}
+                onSearchChange={setSearchQuery}
+                onSortChange={setSortBy}
+                onToggleOnlyIssuing={() => setOnlyIssuingTickets((prev) => !prev)}
+                onRequestLocation={handleRequestLocation}
+                viewMode={viewMode}
+                onViewModeChange={setViewMode}
+              />
 
             {/* Compact List / Skeleton Loading */}
             {loadingStores && stores.length === 0 ? (
