@@ -2,13 +2,19 @@
 
 html, body {
   background-color: #141414;
+  height: 100%;
   min-height: -webkit-fill-available;
   min-height: 100dvh;
+  overflow: hidden;
 }
 
 #root {
+  position: fixed;
+  inset: 0;
+  height: 100%;
   min-height: -webkit-fill-available;
   min-height: 100dvh;
+  background-color: #141414;
 }
 
 @supports (padding: env(safe-area-inset-bottom)) {
