@@ -111,10 +111,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
     if (store.storeStatus !== 'OPEN') {
       validationMessage = '門市非營業中，籌號計算器暫停使用';
     } else {
-      const isFinished = isLocalTicketingOff(store.localTicketingStatus) && store.wait === 0 && store.waitingGroup === 0;
-      validationMessage = isFinished
-        ? '門市當日營業已結束，籌號計算器暫停使用'
-        : '門市停籌，籌號計算器暫停使用';
+      validationMessage = '門市停籌，籌號計算器暫停使用';
     }
   } else if (hasNoQueue) {
     ticketValidationState = 'valid';
@@ -323,7 +320,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                       disabled
                       className="border-2 border-[#aa151b] text-[#aa151b] rounded-lg p-4 text-center flex-1 flex flex-col items-center justify-center min-h-[45px] font-black text-sm bg-transparent opacity-60 pointer-events-none"
                     >
-                      已結束營業
+                      停籌
                     </button>
                     <button
                       disabled

@@ -65,8 +65,8 @@ describe('StoreDetailModal', () => {
     // Shows finished validation warning message
     expect(screen.getByText('門市非營業中，籌號計算器暫停使用')).toBeInTheDocument();
 
-    // Stacked buttons "已結束營業" and "等待開門" are displayed
-    expect(screen.getByText('已結束營業')).toBeInTheDocument();
+     // Stacked buttons "停籌" and "等待開門" are displayed
+     expect(screen.getByText('停籌')).toBeInTheDocument();
     expect(screen.getByText('等待開門')).toBeInTheDocument();
 
     // Numpad is disabled
@@ -75,7 +75,7 @@ describe('StoreDetailModal', () => {
     expect(numpadBtn).toHaveClass('cursor-not-allowed');
   });
 
-  it('renders non-servicing state when store is finished (已結束營業)', () => {
+   it('renders non-servicing state when store is finished (停籌)', () => {
     const finishedStore = {
       ...mockStore,
       storeStatus: 'OPEN' as const,
@@ -86,9 +86,9 @@ describe('StoreDetailModal', () => {
     };
     render(<StoreDetailModal {...defaultProps} store={finishedStore} />);
 
-    expect(screen.getByText('門市當日營業已結束，籌號計算器暫停使用')).toBeInTheDocument();
-    expect(screen.getByText('已結束營業')).toBeInTheDocument();
-    expect(screen.getByText('等待開門')).toBeInTheDocument();
+     expect(screen.getByText('門市停籌，籌號計算器暫停使用')).toBeInTheDocument();
+     expect(screen.getAllByText('停籌').length).toBeGreaterThan(0);
+     expect(screen.getByText('等待開門')).toBeInTheDocument();
   });
 
    it('renders calculator for walk-in stopped store (停籌) with waiting groups', () => {

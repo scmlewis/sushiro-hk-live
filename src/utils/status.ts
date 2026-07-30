@@ -60,20 +60,18 @@ export function getTicketStatusInfo(
     };
   }
 
-  // 2. 當日營業已結束 (fully stopped — walk-in stopped and no one waiting)
-  if (isStopFly && isOffline && wait === 0 && waitingGroup === 0) {
+  /**
+   * 2. 停籌 (walk-in stopped — either finished or suspended with groups)
+   */
+  if (isStopFly && wait === 0 && waitingGroup === 0) {
     return {
-      label: '當日營業已結束',
+      label: '停籌',
       bgColor: 'bg-slate-500/10',
       textColor: 'text-slate-500',
       borderColor: 'border-slate-500/20',
       dotColor: 'bg-slate-400',
     };
   }
-
-  /**
-   * 3. 停籌 (walk-in stopped — but people still waiting)
-   */
   if (isStopFly) {
     return {
       label: '停籌',
@@ -95,7 +93,7 @@ export function getTicketStatusInfo(
 }
 
 export interface StoreDisplayStatus {
-  waitText: string;        // "休息" | "收工" | "停飛" | "X分"
+  waitText: string;        // "休息" | "停飛" | "停籌" | "X分"
   groupText: string;       // "--" | "X組"
   isClosed: boolean;       // true if store is not servicing
   accentColor: string;     // 'blue' | 'emerald' | 'yellow' | 'orange' | 'red' | 'neutral'
@@ -105,7 +103,7 @@ export function isStoreServicing(store: SushiroStore): boolean {
   if (store.storeStatus !== 'OPEN') return false;
   const isStopFly = isLocalTicketingOff(store.localTicketingStatus);
   
-  // 收工 (Finished) — walk-in stopped and no one waiting
+  // 停籌 (Stop walk-in — either finished or serving remaining groups)
   if (isStopFly && store.wait === 0 && store.waitingGroup === 0) {
     return false;
   }
@@ -132,23 +130,14 @@ export function getStoreDisplayStatus(store: SushiroStore): StoreDisplayStatus {
     };
   }
 
-  // 2. 已結束營業 (Finished) — walk-in stopped and no one waiting
-  if (isStopFly && store.wait === 0 && store.waitingGroup === 0) {
-    return {
-      waitText: '已結束營業',
-      groupText: '--',
-      isClosed: true,
-      accentColor: 'neutral',
-    };
-  }
-
-  // 3. 停籌 (Walk-in stopped)
+  // 2. 停籌 (walk-in stopped — either no one waiting or people still waiting)
   if (isStopFly) {
+    const hasWaitingGroups = store.waitingGroup > 0;
     return {
       waitText: '停籌',
-      groupText: `${store.waitingGroup}組`,
+      groupText: hasWaitingGroups ? `${store.waitingGroup}組` : '--',
       isClosed: true,
-      accentColor: 'purple',
+      accentColor: hasWaitingGroups ? 'purple' : 'neutral',
     };
   }
 

@@ -53,7 +53,7 @@ describe('CompactStoreRow', () => {
      expect(screen.getByText('停籌')).toBeInTheDocument();
   });
 
-  it('renders 已結束營業 when store has finished servicing', () => {
+   it('renders 停籌 when store has finished servicing', () => {
     render(
       <CompactStoreRow
         {...defaultProps}
@@ -67,7 +67,7 @@ describe('CompactStoreRow', () => {
         }}
       />
     );
-    expect(screen.getByText('已結束營業')).toBeInTheDocument();
+     expect(screen.getByText('停籌')).toBeInTheDocument();
     expect(screen.getByText('--')).toBeInTheDocument();
   });
 

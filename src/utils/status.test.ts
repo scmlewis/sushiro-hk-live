@@ -123,17 +123,17 @@ it('returns 停籌 when localTicketingStatus is OFF and store has queues', () =>
   expect(result.dotColor).toContain('8b5cf6');
 });
 
-it('returns 當日營業已結束 when localTicketingStatus is OFF, store is offline/manual, and no queues', () => {
-  const result = getTicketStatusInfo('OFFLINE_MANUAL', 'OPEN', 'OFF', 0, 0);
-  expect(result.label).toBe('當日營業已結束');
-  expect(result.dotColor).toContain('slate');
-});
+it('returns 停籌 when localTicketingStatus is OFF, store is offline/manual, and no queues', () => {
+   const result = getTicketStatusInfo('OFFLINE_MANUAL', 'OPEN', 'OFF', 0, 0);
+   expect(result.label).toBe('停籌');
+   expect(result.dotColor).toContain('slate');
+ });
 
-it('returns 當日營業已結束 when localTicketingStatus is OFF, net status is ONLINE, and no queues', () => {
-  const result = getTicketStatusInfo('ONLINE', 'OPEN', 'OFF', 0, 0);
-  expect(result.label).toBe('當日營業已結束');
-  expect(result.dotColor).toContain('slate');
-});
+ it('returns 停籌 when localTicketingStatus is OFF, net status is ONLINE, and no queues', () => {
+   const result = getTicketStatusInfo('ONLINE', 'OPEN', 'OFF', 0, 0);
+   expect(result.label).toBe('停籌');
+   expect(result.dotColor).toContain('slate');
+ });
 
   it('returns 非營業中 when store is CLOSED even if localTicketingStatus is OFF', () => {
     const result = getTicketStatusInfo('ONLINE', 'CLOSED', 'OFF');
@@ -178,7 +178,7 @@ describe('isStoreServicing', () => {
     expect(isStoreServicing(store)).toBe(false);
   });
 
-  it('returns false for finished store (已結束營業)', () => {
+   it('returns false for finished store (停籌)', () => {
     const store = {
       ...baseStore,
       storeStatus: 'OPEN' as const,
@@ -243,22 +243,22 @@ describe('getStoreDisplayStatus', () => {
     expect(res.accentColor).toBe('neutral');
   });
 
-  it('returns 已結束營業 for OPEN + offline + local OFF + 0 wait + 0 group', () => {
-    const res = getStoreDisplayStatus({
-      ...baseStore,
-      storeStatus: 'OPEN',
-      netTicketStatus: 'OFFLINE_MANUAL',
-      localTicketingStatus: 'OFF',
-      wait: 0,
-      waitingGroup: 0,
-    });
-    expect(res.waitText).toBe('已結束營業');
+   it('returns 停籌 for OPEN + offline + local OFF + 0 wait + 0 group', () => {
+     const res = getStoreDisplayStatus({
+       ...baseStore,
+       storeStatus: 'OPEN',
+       netTicketStatus: 'OFFLINE_MANUAL',
+       localTicketingStatus: 'OFF',
+       wait: 0,
+       waitingGroup: 0,
+     });
+      expect(res.waitText).toBe('停籌');
     expect(res.groupText).toBe('--');
     expect(res.isClosed).toBe(true);
     expect(res.accentColor).toBe('neutral');
   });
 
-   it('returns 停籌 for local OFF when not closed or 已結束營業', () => {
+   it('returns 停籌 for local OFF when not done yet', () => {
      const res = getStoreDisplayStatus({
        ...baseStore,
        storeStatus: 'OPEN',
