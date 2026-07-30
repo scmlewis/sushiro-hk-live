@@ -1,5 +1,5 @@
 import React from 'react';
-import { Store, Heart, Layers, Calculator, WifiOff, Clock, Sparkles, CheckCircle2, ExternalLink, Github, Type,Facebook, Instagram } from 'lucide-react';
+import { Store, Heart, Layers, Calculator, WifiOff, Clock, Sparkles, CheckCircle2, ExternalLink, Github, Type, Facebook, Instagram, Map, Locate } from 'lucide-react';
 
 const SUSHIRO_HK_URL = 'https://sushirohk.com.hk/';
 
@@ -25,7 +25,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
           系統簡介與使用說明
         </h2>
         <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed font-medium">
-          本系統連結全港 44 間壽司郎門市之籌號發放狀態、預估等候時間及現場叫號進度。透過智慧連線機制，助您迅速掌握現場人流，節省現場等候時間。
+          本系統連結全港壽司郎門市之籌號發放狀態、預估等候時間及現場叫號進度。透過智慧連線機制，助您迅速掌握現場人流，節省現場等候時間。
         </p>
       </div>
 
@@ -88,6 +88,36 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
           </div>
           <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-medium">
             在門市詳情視圖中，輸入您手上的籌號（例如 #200），系統會根據現場最新叫號與各類別進度（桌席、吧台、現場籌），自動算出身前剩餘組數與預估等候時間。
+          </p>
+        </div>
+
+        {/* Feature 5: Map View */}
+        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-5 rounded-2xl shadow-sm space-y-2.5">
+          <div className="flex items-center gap-2.5 text-[#aa151b]">
+            <div className="p-2 rounded-lg bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900/50">
+              <Map className="w-5 h-5" />
+            </div>
+            <h3 className="text-base font-black text-neutral-900 dark:text-white">
+              地圖模式
+            </h3>
+          </div>
+          <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-medium">
+            切換至地圖分頁，以互動地圖檢視全港門市分佈。各門市以顏色標記顯示等候狀態（綠色即時入座、黃/橙/紅色 longer wait），點擊標記即可預覽詳情或直接開啟 Google 地圖導航。
+          </p>
+        </div>
+
+        {/* Feature 6: GPS & Distance Sorting */}
+        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-5 rounded-2xl shadow-sm space-y-2.5">
+          <div className="flex items-center gap-2.5 text-[#aa151b]">
+            <div className="p-2 rounded-lg bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900/50">
+              <Locate className="w-5 h-5" />
+            </div>
+            <h3 className="text-base font-black text-neutral-900 dark:text-white">
+              GPS 定位與距離排序
+            </h3>
+          </div>
+          <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-medium">
+            點擊「以 GPS 測算距離」按鈕取得您的即時位置，門市列表將自動標示與您之間的直線距離，並支援「由近至遠」排序，助您快速找到最近且最快入座的門市。
           </p>
         </div>
       </div>
