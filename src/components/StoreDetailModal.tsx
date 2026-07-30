@@ -89,7 +89,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
 
   // Walk-in only for calculator comparison
   const walkInNums = parsedNums.filter((n) => !n.isReservation);
-  const minCalledNum = walkInNums.length > 0 ? walkInNums[0].base : 0;
+  const maxCalledNum = walkInNums.length > 0 ? Math.max(...walkInNums.map((n) => n.base)) : 0;
   const hasNoQueue = walkInNums.length === 0 && parsedNums.length === 0;
 
   const isServicing = isStoreServicing(store);
@@ -124,19 +124,19 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   } else if (!myTicket || isNaN(myTicketNum) || myTicketNum <= 0) {
     ticketValidationState = 'empty';
     validationMessage = '請使用下方數字鍵盤輸入您手中的籌號';
-  } else if (myTicketNum <= minCalledNum) {
+  } else if (myTicketNum <= maxCalledNum) {
     ticketValidationState = 'called';
     groupsAhead = 0;
     estimatedMins = 0;
     validationMessage = `籌號 #${myTicketNum} 已於較早前叫號完畢，如錯過叫號請至門市櫃檯登記過期補號。`;
-  } else if (myTicketNum - minCalledNum > 350) {
+  } else if (myTicketNum - maxCalledNum > 350) {
     ticketValidationState = 'far_future';
-    groupsAhead = myTicketNum - minCalledNum;
+    groupsAhead = myTicketNum - maxCalledNum;
     estimatedMins = Math.max(2, Math.round(groupsAhead * 1.3));
-    validationMessage = `籌號 #${myTicketNum} 距離目前最新叫號 (#${minCalledNum}) 相差較遠 (${groupsAhead} 組)，請核對籌號是否正確。`;
+    validationMessage = `籌號 #${myTicketNum} 距離目前最新叫號 (#${maxCalledNum}) 相差較遠 (${groupsAhead} 組)，請核對籌號是否正確。`;
   } else {
     ticketValidationState = 'valid';
-    groupsAhead = myTicketNum - minCalledNum;
+    groupsAhead = myTicketNum - maxCalledNum;
     estimatedMins = Math.max(2, Math.round(groupsAhead * 1.35));
     validationMessage = `正常輪候中：前面尚有 ${groupsAhead} 組，預估等待約 ${estimatedMins} 分鐘。`;
   }
