@@ -59,7 +59,7 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
          <div className="flex items-center gap-1">
              <Users className="w-3 h-3 text-sky-500" />
              <span className="text-sm font-black text-neutral-900 dark:text-white tabular-nums whitespace-nowrap">
-               {queue ? `${getQueueTicketCount(queue)}張` : displayStatus.groupText}
+               {queue ? `${getQueueTicketCount(queue)}組` : displayStatus.groupText}
              </span>
            </div>
         </div>

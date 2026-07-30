@@ -140,7 +140,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
                        <Users className="w-3 h-3 text-sky-500" />票數
                     </span>
                     <span className="font-black text-neutral-900 dark:text-white text-sm tabular-nums">
-                       {displayStatus.isClosed ? '--' : `${getQueueTicketCount(q)} 張`}
+                       {displayStatus.isClosed ? '--' : `${getQueueTicketCount(q)} 組`}
                     </span>
                   </div>
                 </div>

@@ -24,9 +24,9 @@ function createMarkerIcon(store: SushiroStore, queue?: GroupQueue, isPreview = f
    const status = getStoreDisplayStatus(store);
    const color = getMarkerColor(status.accentColor);
    const ticketCount = queue ? getQueueTicketCount(queue) : null;
-   const label = !status.isClosed
-     ? (ticketCount !== null ? `${ticketCount}張` : `${store.waitingGroup}組`)
-     : status.waitText;
+    const label = !status.isClosed
+      ? (ticketCount !== null ? `${ticketCount}組` : `${store.waitingGroup}組`)
+      : status.waitText;
    const isBusy = !status.isClosed && (ticketCount ?? store.waitingGroup) > 0;
    const previewRing = isPreview
      ? `box-shadow: 0 0 0 3px rgba(255,255,255,0.8), 0 0 12px rgba(255,255,255,0.4), 0 2px 8px rgba(0,0,0,0.4); animation: marker-pulse 1s ease-in-out infinite;`
