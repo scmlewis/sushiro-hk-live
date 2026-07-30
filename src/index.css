@@ -7,11 +7,8 @@ html, body {
 }
 
 #root {
-  position: fixed;
-  inset: 0;
   min-height: -webkit-fill-available;
   min-height: 100dvh;
-  background-color: #141414;
 }
 
 @supports (padding: env(safe-area-inset-bottom)) {
