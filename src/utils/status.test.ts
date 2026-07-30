@@ -173,16 +173,16 @@ describe('isStoreServicing', () => {
   };
 
   it('returns false for closed store', () => {
-    const store = { ...baseStore, storeStatus: 'CLOSED' };
+    const store = { ...baseStore, storeStatus: 'CLOSED' as const };
     expect(isStoreServicing(store)).toBe(false);
   });
 
   it('returns false for finished store (收工)', () => {
     const store = {
       ...baseStore,
-      storeStatus: 'OPEN',
-      netTicketStatus: 'OFFLINE_MANUAL',
-      localTicketingStatus: 'OFF',
+      storeStatus: 'OPEN' as const,
+      netTicketStatus: 'OFFLINE_MANUAL' as const,
+      localTicketingStatus: 'OFF' as const,
       wait: 0,
       waitingGroup: 0,
     };
@@ -192,9 +192,9 @@ describe('isStoreServicing', () => {
   it('returns true for walk-in stopped store (停飛) with waiting groups', () => {
     const store = {
       ...baseStore,
-      storeStatus: 'OPEN',
-      netTicketStatus: 'ONLINE',
-      localTicketingStatus: 'OFF',
+      storeStatus: 'OPEN' as const,
+      netTicketStatus: 'ONLINE' as const,
+      localTicketingStatus: 'OFF' as const,
       wait: 15,
       waitingGroup: 3,
     };
@@ -208,8 +208,8 @@ describe('isStoreServicing', () => {
   it('returns true for store with active queue even if ticketing is offline', () => {
     const store = {
       ...baseStore,
-      netTicketStatus: 'OFFLINE_MANUAL',
-      localTicketingStatus: 'ON',
+      netTicketStatus: 'OFFLINE_MANUAL' as const,
+      localTicketingStatus: 'ON' as const,
       wait: 10,
       waitingGroup: 2,
     };

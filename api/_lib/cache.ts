@@ -3,12 +3,13 @@ interface CacheEntry<T> {
   timestamp: number;
 }
 
-const storesCache: { current: CacheEntry<any> | null } = { current: null };
-const queuesCache = new Map<string, CacheEntry<any>>();
+const storesCache: { current: CacheEntry<unknown> | null } = { current: null };
+const queuesCache = new Map<string, CacheEntry<unknown>>();
 
-const STORES_CACHE_TTL = 30 * 1000;
-const QUEUE_CACHE_TTL = 15 * 1000;
-const FETCH_TIMEOUT_MS = 8000;
+// Cache TTLs and fetch timeout (ms)
+const STORES_CACHE_TTL = 30_000;
+const QUEUE_CACHE_TTL = 15_000;
+const FETCH_TIMEOUT_MS = 8_000;
 
 export async function fetchWithTimeout(url: string, options: RequestInit = {}): Promise<Response> {
   const controller = new AbortController();

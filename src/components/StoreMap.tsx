@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import '../leaflet-fix';
 import 'leaflet/dist/leaflet.css';
+import { MAP_CENTER } from '../config';
 import { SushiroStore, StoreQueueMap } from '../types';
 import { getStoreDisplayStatus, getMarkerColor } from '../utils/status';
 import { StoreMapLegend } from './StoreMapLegend';
@@ -149,7 +150,7 @@ export const StoreMap: React.FC<StoreMapProps> = ({
 }) => {
   const center = useMemo<[number, number]>(() => {
     if (userLocation) return [userLocation.latitude, userLocation.longitude];
-    return [22.32, 114.17];
+    return MAP_CENTER;
   }, [userLocation]);
 
   const [previewId, setPreviewId] = useState<number | null>(null);

@@ -59,7 +59,7 @@ describe('StoreDetailModal', () => {
   });
 
   it('renders non-servicing state when store is CLOSED', () => {
-    const closedStore = { ...mockStore, storeStatus: 'CLOSED' };
+    const closedStore = { ...mockStore, storeStatus: 'CLOSED' as const };
     render(<StoreDetailModal {...defaultProps} store={closedStore} />);
 
     // Shows finished validation warning message
@@ -78,9 +78,9 @@ describe('StoreDetailModal', () => {
   it('renders non-servicing state when store is finished (收工)', () => {
     const finishedStore = {
       ...mockStore,
-      storeStatus: 'OPEN',
-      netTicketStatus: 'OFFLINE_MANUAL',
-      localTicketingStatus: 'OFF',
+      storeStatus: 'OPEN' as const,
+      netTicketStatus: 'OFFLINE_MANUAL' as const,
+      localTicketingStatus: 'OFF' as const,
       wait: 0,
       waitingGroup: 0,
     };
@@ -94,9 +94,9 @@ describe('StoreDetailModal', () => {
   it('renders calculator for walk-in stopped store (停飛) with waiting groups', () => {
     const stoppedStore = {
       ...mockStore,
-      storeStatus: 'OPEN',
-      netTicketStatus: 'ONLINE',
-      localTicketingStatus: 'OFF',
+      storeStatus: 'OPEN' as const,
+      netTicketStatus: 'ONLINE' as const,
+      localTicketingStatus: 'OFF' as const,
       wait: 10,
       waitingGroup: 2,
     };

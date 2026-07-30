@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { SortOption } from '../types';
+import { STORAGE_KEYS } from '../config';
 import { Search, ArrowUpDown, Filter, Navigation, ChevronDown, Check } from 'lucide-react';
 
 interface DistrictFilterBarProps {
@@ -19,7 +20,7 @@ interface DistrictFilterBarProps {
   onViewModeChange: (mode: 'list' | 'map') => void;
 }
 
-const FILTER_EXPANDED_KEY = 'sushiro_filter_bar_expanded';
+const FILTER_EXPANDED_KEY = STORAGE_KEYS.filterBarExpanded;
 
 export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
   selectedArea,

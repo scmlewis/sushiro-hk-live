@@ -32,6 +32,8 @@
     "@testing-library/user-event": "^14.6.1",
     "@types/leaflet": "^1.9.21",
     "@types/node": "^22.14.0",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
     "@vercel/node": "^3.0.0",
     "autoprefixer": "^10.4.21",
     "jsdom": "^29.1.1",

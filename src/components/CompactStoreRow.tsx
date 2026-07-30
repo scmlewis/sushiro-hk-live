@@ -1,6 +1,7 @@
 import React from 'react';
 import { SushiroStore, GroupQueue } from '../types';
 import { formatGoogleMapsUrl, getStoreDisplayStatus } from '../utils/status';
+import { getAccentBgClass, getWaitTextColor } from '../utils/colors';
 import { Heart, MapPin, RefreshCw, ChevronRight, Plus, Check, Clock, Users } from 'lucide-react';
 
 interface CompactStoreRowProps {
@@ -30,28 +31,8 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
 
   const displayStatus = getStoreDisplayStatus(store);
 
-  const bgMap: Record<string, string> = {
-    emerald: 'bg-emerald-500',
-    amber: 'bg-amber-500',
-    violet: 'bg-violet-500',
-    orange: 'bg-orange-500',
-    red: 'bg-red-700',
-    neutral: 'bg-neutral-300 dark:bg-neutral-700',
-  };
-  const accentColorClass = bgMap[displayStatus.accentColor] || bgMap.neutral;
-
-  const textMap: Record<string, string> = {
-    emerald: 'text-emerald-600 dark:text-emerald-400',
-    amber: 'text-amber-600 dark:text-amber-400',
-    violet: 'text-violet-600 dark:text-violet-400',
-    orange: 'text-orange-600 dark:text-orange-400',
-    red: 'text-red-700 dark:text-red-400',
-    neutral: 'text-neutral-400',
-  };
-
-  const waitColorClass = displayStatus.waitText === '停飛'
-    ? 'text-rose-600 dark:text-rose-400'
-    : textMap[displayStatus.accentColor] || 'text-neutral-900 dark:text-white';
+  const accentColorClass = getAccentBgClass(displayStatus.accentColor);
+  const waitColorClass = getWaitTextColor(displayStatus.waitText, displayStatus.accentColor);
 
   return (
     <div className="group relative bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 hover:border-neutral-400 dark:hover:border-neutral-600 transition-all shadow-xs overflow-hidden">

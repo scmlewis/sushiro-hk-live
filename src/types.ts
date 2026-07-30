@@ -1,3 +1,7 @@
+export type StoreStatus = 'OPEN' | 'CLOSED';
+export type NetTicketStatus = 'ONLINE' | 'MANUAL' | 'OFFLINE_MANUAL' | 'OPEN';
+export type LocalTicketingStatus = 'ON' | 'OFF';
+
 export interface SushiroStore {
   id: number;
   name: string;
@@ -8,9 +12,9 @@ export interface SushiroStore {
   longitude: number;
   wait: number;             // estimated wait in minutes
   waitingGroup: number;     // number of groups waiting
-  storeStatus: string;      // "OPEN" / "CLOSED" / etc.
-  netTicketStatus: string;  // e.g. "ONLINE", "OFFLINE_MANUAL", "MANUAL"
-  localTicketingStatus: string; // "ON" / "OFF" — walk-in ticketing status
+  storeStatus: StoreStatus;
+  netTicketStatus: NetTicketStatus;
+  localTicketingStatus: LocalTicketingStatus;
   waitTimeCap: number;
   distanceKm?: number;      // Calculated client-side if geolocation enabled
 }
@@ -38,8 +42,10 @@ export type SortOption = 'wait-asc' | 'wait-desc' | 'groups-desc' | 'distance-as
 
 export type ViewMode = 'list' | 'map';
 
+export type TabId = 'all' | 'bookmarks' | 'compare' | 'about';
+
 export interface ToastMessage {
   id: string;
   text: string;
-  type?: 'success' | 'info' | 'warning' | 'error';
+  type: 'success' | 'info' | 'warning' | 'error';
 }

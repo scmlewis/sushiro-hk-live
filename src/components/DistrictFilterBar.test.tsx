@@ -17,6 +17,8 @@ const defaultProps = {
   onSortChange: vi.fn(),
   onToggleOnlyIssuing: vi.fn(),
   onRequestLocation: vi.fn(),
+  viewMode: 'list' as const,
+  onViewModeChange: vi.fn(),
 };
 
 describe('DistrictFilterBar', () => {
