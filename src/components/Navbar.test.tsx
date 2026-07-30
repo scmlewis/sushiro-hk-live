@@ -2,13 +2,14 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Navbar } from './Navbar';
+import { TOTAL_STORE_COUNT } from '../config';
 
 const defaultProps = {
   lastUpdated: Date.now(),
   loading: false,
   bookmarkCount: 2,
   compareCount: 1,
-  storeCount: 44,
+  storeCount: TOTAL_STORE_COUNT,
   activeMainTab: 'all' as const,
   onSelectTab: vi.fn(),
   onGlobalRefresh: vi.fn(),

@@ -2,11 +2,12 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DistrictFilterBar } from './DistrictFilterBar';
+import { TOTAL_STORE_COUNT } from '../config';
 import type { SortOption } from '../types';
 
 const defaultProps = {
   selectedArea: '',
-  regionCounts: { all: 44, hkIsland: 12, kowloon: 15, nt: 17 },
+  regionCounts: { all: TOTAL_STORE_COUNT, hkIsland: 12, kowloon: 15, nt: 17 },
   searchQuery: '',
   sortBy: 'wait-asc' as SortOption,
   onlyIssuingTickets: false,
