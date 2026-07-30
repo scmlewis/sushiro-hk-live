@@ -5,8 +5,8 @@ import L from 'leaflet';
 import '../leaflet-fix';
 import 'leaflet/dist/leaflet.css';
 import { MAP_CENTER } from '../config';
-import { SushiroStore, StoreQueueMap, GroupQueue } from '../types';
-import { getStoreDisplayStatus, getMarkerColor, getQueueTicketCount } from '../utils/status';
+import { SushiroStore, StoreQueueMap } from '../types';
+import { getStoreDisplayStatus, getMarkerColor } from '../utils/status';
 import { StoreMapLegend } from './StoreMapLegend';
 
 interface StoreMapProps {
@@ -20,14 +20,10 @@ const HK_BOUNDS = L.latLngBounds(
   [[22.15, 113.85], [22.65, 114.40]] as [[number, number], [number, number]]
 );
 
-function createMarkerIcon(store: SushiroStore, queue?: GroupQueue, isPreview = false): L.DivIcon {
+function createMarkerIcon(store: SushiroStore, isPreview = false): L.DivIcon {
    const status = getStoreDisplayStatus(store);
    const color = getMarkerColor(status.accentColor);
-   const ticketCount = queue ? getQueueTicketCount(queue) : null;
-    const label = !status.isClosed
-      ? (ticketCount !== null ? `${ticketCount}組` : `${store.waitingGroup}組`)
-      : status.waitText;
-   const isBusy = !status.isClosed && (ticketCount ?? store.waitingGroup) > 0;
+   const label = !status.isClosed ? `${store.waitingGroup}組` : status.waitText;
    const previewRing = isPreview
      ? `box-shadow: 0 0 0 3px rgba(255,255,255,0.8), 0 0 12px rgba(255,255,255,0.4), 0 2px 8px rgba(0,0,0,0.4); animation: marker-pulse 1s ease-in-out infinite;`
      : `box-shadow: 0 2px 8px rgba(0,0,0,0.4);`;
@@ -187,7 +183,7 @@ export const StoreMap: React.FC<StoreMapProps> = ({
 
   const markerIcons = useMemo(() => {
     const m = new Map<number, L.DivIcon>();
-    stores.forEach((s) => m.set(s.id, createMarkerIcon(s, queues[s.id]?.queue, previewId === s.id)));
+    stores.forEach((s) => m.set(s.id, createMarkerIcon(s, previewId === s.id)));
     return m;
   }, [stores, queues, previewId]);
 
