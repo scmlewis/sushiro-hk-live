@@ -2,9 +2,16 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { calculateDistanceKm, getCurrentPosition } from './geolocation';
 
 describe('calculateDistanceKm', () => {
-  it('returns Infinity when any coordinate is 0', () => {
-    expect(calculateDistanceKm(0, 0, 22.3, 114.2)).toBe(Infinity);
-    expect(calculateDistanceKm(22.3, 0, 22.3, 114.2)).toBe(Infinity);
+  it('returns Infinity when any coordinate is null or undefined', () => {
+    expect(calculateDistanceKm(null as unknown as number, 0, 22.3, 114.2)).toBe(Infinity);
+    expect(calculateDistanceKm(22.3, undefined as unknown as number, 22.3, 114.2)).toBe(Infinity);
+    expect(calculateDistanceKm(22.3, 114.2, null as unknown as number, 0)).toBe(Infinity);
+  });
+
+  it('treats 0 as a valid coordinate (equator/prime meridian)', () => {
+    const dist = calculateDistanceKm(0, 0, 22.3, 114.2);
+    expect(dist).toBeGreaterThan(0);
+    expect(dist).toBeLessThan(Infinity);
   });
 
   it('returns 0 for same point', () => {

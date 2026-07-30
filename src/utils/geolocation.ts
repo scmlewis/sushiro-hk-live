@@ -7,7 +7,7 @@ export function calculateDistanceKm(
   lat2: number,
   lon2: number
 ): number {
-  if (!lat1 || !lon1 || !lat2 || !lon2) return Infinity;
+  if (lat1 == null || lon1 == null || lat2 == null || lon2 == null) return Infinity;
   const R = 6371; // Radius of Earth in km
   const dLat = (lat2 - lat1) * (Math.PI / 180);
   const dLon = (lon2 - lon1) * (Math.PI / 180);

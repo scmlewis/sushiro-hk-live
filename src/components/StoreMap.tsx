@@ -185,7 +185,7 @@ export const StoreMap: React.FC<StoreMapProps> = ({
     const m = new Map<number, L.DivIcon>();
     stores.forEach((s) => m.set(s.id, createMarkerIcon(s, previewId === s.id)));
     return m;
-  }, [stores, queues, previewId]);
+  }, [stores, previewId]);
 
   const handleMarkerClick = (store: SushiroStore) => {
     if (previewId === store.id) {

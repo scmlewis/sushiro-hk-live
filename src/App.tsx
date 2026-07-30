@@ -41,6 +41,7 @@ export default function App() {
   const [locationLoading, setLocationLoading] = useState(false);
   const [toast, setToast] = useState<ToastMessage | null>(null);
   const [isOffline, setIsOffline] = useState(typeof navigator !== 'undefined' ? !navigator.onLine : false);
+  const [isStaleData, setIsStaleData] = useState(false);
   const [autoRefreshTimer, setAutoRefreshTimer] = useState(POLL_INTERVAL_MS / 1000);
 
   const tabVariants = {
@@ -62,6 +63,7 @@ export default function App() {
       if (data.success && Array.isArray(data.stores)) {
         setStores(data.stores);
         setLastUpdated(data.timestamp || Date.now());
+        setIsStaleData(data.stale === true);
         if (force) {
           showToast(`已更新全港 ${TOTAL_STORE_COUNT} 間門市資料`, 'success');
         }
@@ -194,9 +196,10 @@ export default function App() {
     const defaultIds = stores.filter((s) => s.storeStatus === 'OPEN').slice(0, 3).map((s) => s.id);
     if (defaultIds.length > 0) {
       setCompareIds(defaultIds);
+      defaultIds.forEach((id) => fetchSingleQueue(id, false));
       showToast(`已載入 ${defaultIds.length} 門市至比較`, 'success');
     }
-  }, [stores, showToast]);
+  }, [stores, showToast, fetchSingleQueue]);
 
   const handleRequestLocation = useCallback(async () => {
     setLocationLoading(true);
@@ -324,6 +327,13 @@ export default function App() {
                 <span>目前網路連線不穩定/離線：已啟用 Service Worker 載入近期的門市離線快取資料</span>
               </div>
               <span className="hidden sm:inline-block bg-black/40 px-3 py-1 text-[10px] uppercase font-mono rounded">離線模式</span>
+            </div>
+          )}
+
+          {!isOffline && isStaleData && (
+            <div className="mb-6 p-3 bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 rounded-xl flex items-center gap-2.5 text-xs sm:text-sm">
+              <AlertCircle className="w-4 h-4 shrink-0 text-amber-500" />
+              <span className="font-medium">上游伺服器暫時無法連線，顯示的資料可能為暫存快取</span>
             </div>
           )}
 
