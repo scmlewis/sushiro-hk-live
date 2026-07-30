@@ -116,11 +116,23 @@ describe('getTicketStatusInfo', () => {
     expect(result.label).toBe('現場派籌');
   });
 
-  it('returns 現場停止派籌 when localTicketingStatus is OFF', () => {
-    const result = getTicketStatusInfo('ONLINE', 'OPEN', 'OFF');
-    expect(result.label).toBe('現場停止派籌');
-    expect(result.dotColor).toContain('aa151b');
-  });
+it('returns 現場停止派籌 when localTicketingStatus is OFF and store has queues', () => {
+  const result = getTicketStatusInfo('ONLINE', 'OPEN', 'OFF', 10, 3);
+  expect(result.label).toBe('現場停止派籌');
+  expect(result.dotColor).toContain('aa151b');
+});
+
+it('returns 已收工 when localTicketingStatus is OFF, store is offline/manual, and no queues', () => {
+  const result = getTicketStatusInfo('OFFLINE_MANUAL', 'OPEN', 'OFF', 0, 0);
+  expect(result.label).toBe('已收工');
+  expect(result.dotColor).toContain('slate');
+});
+
+it('returns 已收工 when localTicketingStatus is OFF, net status is ONLINE, and no queues', () => {
+  const result = getTicketStatusInfo('ONLINE', 'OPEN', 'OFF', 0, 0);
+  expect(result.label).toBe('已收工');
+  expect(result.dotColor).toContain('slate');
+});
 
   it('returns 休息 when store is CLOSED even if localTicketingStatus is OFF', () => {
     const result = getTicketStatusInfo('ONLINE', 'CLOSED', 'OFF');

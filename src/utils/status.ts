@@ -32,8 +32,9 @@ export function isLocalTicketingOff(localTicketingStatus: string): boolean {
   return (localTicketingStatus || '').toUpperCase() === 'OFF';
 }
 
-export function isStoreIssuing(netTicketStatus: string, storeStatus: string): boolean {
+export function isStoreIssuing(netTicketStatus: string, storeStatus: string, localTicketingStatus = 'ON'): boolean {
   if (storeStatus !== 'OPEN') return false;
+  if (isLocalTicketingOff(localTicketingStatus)) return false;
   const statusUpper = (netTicketStatus || '').toUpperCase();
   return statusUpper === 'MANUAL' || statusUpper === 'ONLINE' || statusUpper === 'OPEN';
 }
@@ -46,8 +47,7 @@ export function getTicketStatusInfo(
   waitingGroup = 0
 ): StatusBadge {
   const isStopFly = isLocalTicketingOff(localTicketingStatus);
-  const isOffline = !isStoreIssuing(netTicketStatus, storeStatus);
-  const isFinished = storeStatus === 'OPEN' && isOffline && isStopFly && wait === 0 && waitingGroup === 0;
+  const isOffline = !isStoreIssuing(netTicketStatus, storeStatus, localTicketingStatus);
 
   // 1. 門市休息
   if (storeStatus !== 'OPEN') {
@@ -60,7 +60,18 @@ export function getTicketStatusInfo(
     };
   }
 
-  // 2. 停飛 (walk-in ticketing stopped — most critical for walk-in users)
+  // 2. 收工 (fully stopped — walk-in stopped and no one waiting)
+  if (isStopFly && isOffline && wait === 0 && waitingGroup === 0) {
+    return {
+      label: '已收工',
+      bgColor: 'bg-slate-500/10',
+      textColor: 'text-slate-500',
+      borderColor: 'border-slate-500/20',
+      dotColor: 'bg-slate-400',
+    };
+  }
+
+  // 3. 停飛 (walk-in stopped — but people still waiting)
   if (isStopFly) {
     return {
       label: '現場停止派籌',
@@ -68,17 +79,6 @@ export function getTicketStatusInfo(
       textColor: 'text-[#aa151b] dark:text-red-400',
       borderColor: 'border-[#aa151b]/20',
       dotColor: 'bg-[#aa151b]',
-    };
-  }
-
-  // 3. 收工 (fully stopped — no queues, no ticketing)
-  if (isFinished) {
-    return {
-      label: '已收工',
-      bgColor: 'bg-slate-500/10',
-      textColor: 'text-slate-500',
-      borderColor: 'border-slate-500/20',
-      dotColor: 'bg-slate-400',
     };
   }
 

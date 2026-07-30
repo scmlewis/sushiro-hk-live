@@ -88,8 +88,10 @@ export const CompareView: React.FC<CompareViewProps> = ({
           const ticketStatusInfo = getTicketStatusInfo(store.netTicketStatus, store.storeStatus, store.localTicketingStatus, store.wait, store.waitingGroup);
           const qData = queues[store.id];
           const q = qData?.queue;
-          const booth = q?.boothQueue?.[0] || q?.storeBoothQueue?.[0];
-          const counter = q?.counterQueue?.[0] || q?.storeCounterQueue?.[0];
+          const boothQueue = q?.boothQueue || q?.storeBoothQueue || [];
+          const counterQueue = q?.counterQueue || q?.storeCounterQueue || [];
+          const booth = boothQueue.length > 0 ? boothQueue[boothQueue.length - 1] : undefined;
+          const counter = counterQueue.length > 0 ? counterQueue[counterQueue.length - 1] : undefined;
           const isFastest = minWait !== null && store.storeStatus === 'OPEN' && store.wait === minWait;
           const isLeastGroups = minGroup !== null && store.storeStatus === 'OPEN' && store.waitingGroup === minGroup;
 

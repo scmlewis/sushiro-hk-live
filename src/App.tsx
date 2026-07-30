@@ -432,15 +432,18 @@ export default function App() {
     return list;
   }, [stores, searchQuery, selectedArea, onlyIssuingTickets, sortBy, userLocation]);
 
+  const bookmarkedIdsSet = useMemo(() => new Set(bookmarkedIds), [bookmarkedIds]);
+  const compareIdsSet = useMemo(() => new Set(compareIds), [compareIds]);
+
   // Bookmarked stores list
   const bookmarkedStores = useMemo(() => {
-    return stores.filter((s) => bookmarkedIds.includes(s.id));
-  }, [stores, bookmarkedIds]);
+    return stores.filter((s) => bookmarkedIdsSet.has(s.id));
+  }, [stores, bookmarkedIdsSet]);
 
   // Compared stores list
   const comparedStores = useMemo(() => {
-    return stores.filter((s) => compareIds.includes(s.id));
-  }, [stores, compareIds]);
+    return stores.filter((s) => compareIdsSet.has(s.id));
+  }, [stores, compareIdsSet]);
 
   // Overall quick stats
   const stats = useMemo(() => {
@@ -468,7 +471,6 @@ export default function App() {
         loading={loadingStores}
         bookmarkCount={bookmarkedIds.length}
         compareCount={compareIds.length}
-        storeCount={stores.length}
         activeMainTab={activeMainTab}
         onSelectTab={(tab) => {
           setActiveMainTab(tab);
@@ -507,50 +509,53 @@ export default function App() {
           </div>
         )}
 
-        {/* Tab Content with Transition */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeMainTab}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2 }}
+        {/* Tab Content — all tabs stay mounted, CSS controls visibility */}
+        <div className="relative">
+          {/* About Section View Tab */}
+          <div
+            className={`${activeMainTab !== 'about' ? 'hidden' : ''}`}
           >
-            {/* About Section View Tab */}
-            {activeMainTab === 'about' && <AboutSection textSize={textSize} onTextSizeChange={setTextSize} />}
+            <AboutSection textSize={textSize} onTextSizeChange={setTextSize} />
+          </div>
 
-            {/* Bookmarked Stores View Tab */}
-            {activeMainTab === 'bookmarks' && (
-              <BookmarksSection
-                bookmarkedStores={bookmarkedStores}
-                queues={queues}
-                compareList={compareIds}
-                autoRefreshTimer={autoRefreshTimer}
-                onToggleBookmark={handleToggleBookmark}
-                onToggleCompare={handleToggleCompare}
-                onRefreshQueue={handleManualStoreRefresh}
-                onSelectStore={handleSelectStoreModal}
-                onGoToAllStores={() => setActiveMainTab('all')}
-                onCompareAllBookmarks={handleCompareAllBookmarks}
-                onClearAllBookmarks={handleClearAllBookmarks}
-              />
-            )}
+          {/* Bookmarked Stores View Tab */}
+          <div
+            className={`${activeMainTab !== 'bookmarks' ? 'hidden' : ''}`}
+          >
+            <BookmarksSection
+              bookmarkedStores={bookmarkedStores}
+              queues={queues}
+              compareList={compareIds}
+              autoRefreshTimer={autoRefreshTimer}
+              onToggleBookmark={handleToggleBookmark}
+              onToggleCompare={handleToggleCompare}
+              onRefreshQueue={handleManualStoreRefresh}
+              onSelectStore={handleSelectStoreModal}
+              onGoToAllStores={() => setActiveMainTab('all')}
+              onCompareAllBookmarks={handleCompareAllBookmarks}
+              onClearAllBookmarks={handleClearAllBookmarks}
+            />
+          </div>
 
-            {/* Compare View Tab (Inline) */}
-            {activeMainTab === 'compare' && (
-              <CompareView
-                stores={comparedStores}
-                queues={queues}
-                onRemoveFromCompare={(id) => setCompareIds((prev) => prev.filter((item) => item !== id))}
-                onClearCompare={() => setCompareIds([])}
-                onRefreshQueue={handleManualStoreRefresh}
-                onSelectStore={(store) => handleSelectStoreModal(store)}
-                onAddDefaultStores={handleAddDefaultCompareStores}
-              />
-            )}
+          {/* Compare View Tab (Inline) */}
+          <div
+            className={`${activeMainTab !== 'compare' ? 'hidden' : ''}`}
+          >
+            <CompareView
+              stores={comparedStores}
+              queues={queues}
+              onRemoveFromCompare={(id) => setCompareIds((prev) => prev.filter((item) => item !== id))}
+              onClearCompare={() => setCompareIds([])}
+              onRefreshQueue={handleManualStoreRefresh}
+              onSelectStore={(store) => handleSelectStoreModal(store)}
+              onAddDefaultStores={handleAddDefaultCompareStores}
+            />
+          </div>
 
-            {/* All Stores View Tab (Isolated View) */}
-            {activeMainTab === 'all' && (
+          {/* All Stores View Tab (Isolated View) */}
+          <div
+            className={`${activeMainTab !== 'all' ? 'hidden' : ''}`}
+          >
               <>
                 {/* District Filter & Floating Search & Sort Bar */}
 <DistrictFilterBar
@@ -643,8 +648,8 @@ export default function App() {
                           store={store}
                           queue={qData?.queue}
                           queueLoading={qData?.loading}
-                          isBookmarked={bookmarkedIds.includes(store.id)}
-                          isComparing={compareIds.includes(store.id)}
+isBookmarked={bookmarkedIdsSet.has(store.id)}
+                           isComparing={compareIdsSet.has(store.id)}
                           onToggleBookmark={handleToggleBookmark}
                           onToggleCompare={handleToggleCompare}
                           onRefreshQueue={handleManualStoreRefresh}
@@ -656,9 +661,9 @@ export default function App() {
                 )}
               </div>
             )}
-          </>)}
-          </motion.div>
-        </AnimatePresence>
+              </>
+          </div>
+        </div>
       </main>
 
       {/* Bold Typography Theme Footer */}

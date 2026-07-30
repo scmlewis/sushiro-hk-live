@@ -90,7 +90,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   // Walk-in only for calculator comparison
   const walkInNums = parsedNums.filter((n) => !n.isReservation);
   const minCalledNum = walkInNums.length > 0 ? walkInNums[0].base : 0;
-  const hasNoQueue = walkInNums.length === 0;
+  const hasNoQueue = walkInNums.length === 0 && parsedNums.length === 0;
 
   const isServicing = isStoreServicing(store);
 

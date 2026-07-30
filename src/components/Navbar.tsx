@@ -6,7 +6,6 @@ interface NavbarProps {
   loading: boolean;
   bookmarkCount: number;
   compareCount: number;
-  storeCount: number;
   activeMainTab: 'all' | 'bookmarks' | 'compare' | 'about';
   onSelectTab: (tab: 'all' | 'bookmarks' | 'compare' | 'about') => void;
   onGlobalRefresh: () => void;
@@ -17,7 +16,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   loading,
   bookmarkCount,
   compareCount,
-  storeCount,
   activeMainTab,
   onSelectTab,
   onGlobalRefresh,

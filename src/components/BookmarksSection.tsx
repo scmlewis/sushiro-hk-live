@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { SushiroStore, StoreQueueMap } from '../types';
 import { CompactStoreRow } from './CompactStoreRow';
 import { Heart, Sparkles, Layers, Trash2 } from 'lucide-react';
@@ -30,6 +30,8 @@ export const BookmarksSection: React.FC<BookmarksSectionProps> = ({
   onCompareAllBookmarks,
   onClearAllBookmarks,
 }) => {
+  const compareListSet = useMemo(() => new Set(compareList), [compareList]);
+
   if (bookmarkedStores.length === 0) {
     return (
       <div className="bg-white dark:bg-neutral-900 border-2 border-neutral-200 dark:border-neutral-800 p-8 sm:p-12 text-center my-6 rounded-2xl shadow-lg max-w-xl mx-auto">
@@ -128,7 +130,7 @@ export const BookmarksSection: React.FC<BookmarksSectionProps> = ({
               queue={queueData?.queue}
               queueLoading={queueData?.loading}
               isBookmarked={true}
-              isComparing={compareList.includes(store.id)}
+              isComparing={compareListSet.has(store.id)}
               onToggleBookmark={onToggleBookmark}
               onToggleCompare={onToggleCompare}
               onRefreshQueue={onRefreshQueue}
