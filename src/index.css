@@ -11,14 +11,6 @@ html, body {
   min-height: 100dvh;
 }
 
-html {
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-
-body {
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-
 @supports (padding: env(safe-area-inset-bottom)) {
   html, body {
     padding-bottom: env(safe-area-inset-bottom);

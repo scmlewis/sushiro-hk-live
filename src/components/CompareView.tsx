@@ -39,18 +39,20 @@ export const CompareView: React.FC<CompareViewProps> = ({
 
   if (stores.length === 0) {
     return (
-      <div className="text-center py-16 px-4 text-neutral-500 font-medium">
-        <div className="w-20 h-20 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-400 flex items-center justify-center mx-auto mb-5 border border-neutral-200 dark:border-neutral-700">
-          <Layers className="w-10 h-10" />
+      <div className="bg-white dark:bg-neutral-900 border-2 border-neutral-200 dark:border-neutral-800 p-8 sm:p-12 text-center my-6 rounded-2xl shadow-lg max-w-xl mx-auto">
+        <div className="w-16 h-16 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-400 flex items-center justify-center mx-auto mb-4 border border-neutral-200 dark:border-neutral-700">
+          <Layers className="w-8 h-8" />
         </div>
-        <p className="text-2xl font-black text-neutral-900 dark:text-neutral-100 mb-2">尚未加入比較門市</p>
-        <p className="text-sm mt-1.5 text-neutral-500 dark:text-neutral-400 max-w-md mx-auto leading-relaxed">
-          在全港門市列表中，點擊門市操作欄的「+」按鈕加入門市進行多店比較（最多 4 間）。
+        <h3 className="text-2xl font-black text-neutral-900 dark:text-white tracking-tight">
+          尚未選擇比較門市
+        </h3>
+        <p className="text-xs sm:text-sm font-bold text-neutral-500 dark:text-neutral-400 mt-2 max-w-md mx-auto leading-relaxed">
+          在全港門市列表中，點擊門市操作欄的「+」按鈕加入門市進行多店即時比較（最多 4 間）。
         </p>
         {onAddDefaultStores && (
           <button
             onClick={onAddDefaultStores}
-            className="mt-6 px-6 py-2.5 rounded-full bg-[#aa151b] text-white font-black text-xs uppercase tracking-wider transition-all hover:bg-red-700 cursor-pointer shadow-sm inline-flex items-center gap-1.5"
+            className="mt-6 px-6 py-2.5 rounded-full bg-[#aa151b] text-white font-black text-xs uppercase tracking-wider transition-all hover:bg-red-700 cursor-pointer shadow-md inline-flex items-center gap-2"
           >
             <Sparkles className="w-4 h-4" />
             <span>自動載入熱門門市比較</span>
