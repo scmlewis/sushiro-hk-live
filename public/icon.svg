@@ -6,8 +6,10 @@
   </defs>
   <g clip-path="url(#sq)">
     <rect width="512" height="512" fill="#1a1a1e"/>
-    <path d="M 160,280 C 160,250 352,250 352,280 L 352,320 C 352,345 160,345 160,320 Z" fill="#F4F4F6"/>
-    <path d="M 136,260 C 136,200 376,200 376,260 C 376,290 352,300 256,300 C 160,300 136,290 136,260 Z" fill="#FF6B57"/>
-    <rect x="236" y="212" width="40" height="92" rx="6" fill="#1C2826"/>
+    <path d="M 90,256 A 166,166 0 0,1 422,256" fill="none" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round"/>
+    <path d="M 422,256 A 166,166 0 0,1 90,256" fill="none" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round"/>
+    <path d="M 140,280 C 140,240 372,240 372,280 L 372,330 C 372,360 140,360 140,330 Z" fill="#F4F4F6"/>
+    <path d="M 112,256 C 112,188 398,188 398,256 C 398,290 372,304 256,304 C 140,304 112,290 112,256 Z" fill="#FF6B57"/>
+    <rect x="232" y="204" width="48" height="100" rx="6" fill="#1C2826"/>
   </g>
 </svg>
