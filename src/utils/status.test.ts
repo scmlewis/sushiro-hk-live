@@ -119,7 +119,7 @@ describe('getTicketStatusInfo', () => {
 it('returns 現場派籌已暫停 when localTicketingStatus is OFF and store has queues', () => {
   const result = getTicketStatusInfo('ONLINE', 'OPEN', 'OFF', 10, 3);
   expect(result.label).toBe('現場派籌已暫停');
-  expect(result.dotColor).toContain('aa151b');
+  expect(result.dotColor).toContain('8b5cf6');
 });
 
 it('returns 當日營業已結束 when localTicketingStatus is OFF, store is offline/manual, and no queues', () => {
@@ -269,7 +269,7 @@ describe('getStoreDisplayStatus', () => {
     expect(res.waitText).toBe('現場派籌已暫停');
     expect(res.groupText).toBe('3組');
     expect(res.isClosed).toBe(true);
-    expect(res.accentColor).toBe('red');
+    expect(res.accentColor).toBe('purple');
   });
 
   it('returns normal queue wait time and groups', () => {

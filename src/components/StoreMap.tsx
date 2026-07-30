@@ -23,7 +23,7 @@ const HK_BOUNDS = L.latLngBounds(
 function createMarkerIcon(store: SushiroStore, isPreview = false): L.DivIcon {
    const status = getStoreDisplayStatus(store);
    const color = getMarkerColor(status.accentColor);
-   const label = !status.isClosed && store.waitingGroup > 0
+   const label = !status.isClosed
      ? `${store.waitingGroup}組`
      : status.waitText;
    const isBusy = !status.isClosed && store.waitingGroup > 0;
@@ -111,25 +111,7 @@ function ScrollLock() {
   return null;
 }
 
-function ZoomControls() {
-   const map = useMap();
-   return (
-     <div className="absolute top-4 left-4 z-[60] flex flex-col gap-1 bg-neutral-950/20 backdrop-blur-sm rounded-xl p-1.5">
-       <button
-         onClick={() => map.setZoom(map.getZoom() - 1)}
-         className="w-11 h-11 flex items-center justify-center bg-white/95 hover:bg-white rounded-lg shadow border border-neutral-200 text-neutral-800"
-       >
-         <span className="text-2xl font-bold">−</span>
-       </button>
-       <button
-         onClick={() => map.setZoom(map.getZoom() + 1)}
-         className="w-11 h-11 flex items-center justify-center bg-white/95 hover:bg-white rounded-lg shadow border border-neutral-200 text-neutral-800"
-       >
-         <span className="text-2xl font-bold">+</span>
-       </button>
-     </div>
-   );
- }
+
 
 function MapReinit({ stores }: { stores: SushiroStore[] }) {
   const map = useMap();
@@ -259,7 +241,6 @@ export const StoreMap: React.FC<StoreMapProps> = ({
          ))}
         {userLocation && <UserLocationMarker location={userLocation} />}
         {previewStore && <PreviewTooltip store={previewStore} />}
-        <ZoomControls />
       </MapContainer>
       <StoreMapLegend />
     </div>

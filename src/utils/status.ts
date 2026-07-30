@@ -75,10 +75,10 @@ export function getTicketStatusInfo(
   if (isStopFly) {
     return {
       label: '現場派籌已暫停',
-      bgColor: 'bg-[#aa151b]/10',
-      textColor: 'text-[#aa151b] dark:text-red-400',
-      borderColor: 'border-[#aa151b]/20',
-      dotColor: 'bg-[#aa151b]',
+      bgColor: 'bg-[#8b5cf6]/10',
+      textColor: 'text-[#8b5cf6] dark:text-violet-400',
+      borderColor: 'border-[#8b5cf6]/20',
+      dotColor: 'bg-[#8b5cf6]',
     };
   }
 
@@ -146,7 +146,7 @@ export function getStoreDisplayStatus(store: SushiroStore): StoreDisplayStatus {
       waitText: '現場派籌已暫停',
       groupText: `${store.waitingGroup}組`,
       isClosed: true,
-      accentColor: 'red',
+      accentColor: 'purple',
     };
   }
 
@@ -201,6 +201,7 @@ const MARKER_COLORS: Record<string, string> = {
   yellow: '#eab308',
   orange: '#f97316',
   red: '#aa151b',
+  purple: '#8b5cf6',
   neutral: '#6b7280',
 };
 
