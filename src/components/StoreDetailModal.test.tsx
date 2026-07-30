@@ -63,11 +63,11 @@ describe('StoreDetailModal', () => {
     render(<StoreDetailModal {...defaultProps} store={closedStore} />);
 
     // Shows finished validation warning message
-    expect(screen.getByText('門市已休息，籌號計算器暫停使用')).toBeInTheDocument();
+    expect(screen.getByText('門市非營業中，籌號計算器暫停使用')).toBeInTheDocument();
 
-    // Stacked buttons "收工" and "等開工" are displayed
-    expect(screen.getByText('收工')).toBeInTheDocument();
-    expect(screen.getByText('等開工')).toBeInTheDocument();
+    // Stacked buttons "已結束營業" and "等待開門" are displayed
+    expect(screen.getByText('已結束營業')).toBeInTheDocument();
+    expect(screen.getByText('等待開門')).toBeInTheDocument();
 
     // Numpad is disabled
     const numpadBtn = screen.getByText('5');
@@ -75,7 +75,7 @@ describe('StoreDetailModal', () => {
     expect(numpadBtn).toHaveClass('cursor-not-allowed');
   });
 
-  it('renders non-servicing state when store is finished (收工)', () => {
+  it('renders non-servicing state when store is finished (已結束營業)', () => {
     const finishedStore = {
       ...mockStore,
       storeStatus: 'OPEN' as const,
@@ -86,12 +86,12 @@ describe('StoreDetailModal', () => {
     };
     render(<StoreDetailModal {...defaultProps} store={finishedStore} />);
 
-    expect(screen.getByText('門市目前已收工，籌號計算器暫停使用')).toBeInTheDocument();
-    expect(screen.getByText('收工')).toBeInTheDocument();
-    expect(screen.getByText('等開工')).toBeInTheDocument();
+    expect(screen.getByText('門市當日營業已結束，籌號計算器暫停使用')).toBeInTheDocument();
+    expect(screen.getByText('已結束營業')).toBeInTheDocument();
+    expect(screen.getByText('等待開門')).toBeInTheDocument();
   });
 
-  it('renders calculator for walk-in stopped store (停飛) with waiting groups', () => {
+  it('renders calculator for walk-in stopped store (現場派籌已暫停) with waiting groups', () => {
     const stoppedStore = {
       ...mockStore,
       storeStatus: 'OPEN' as const,
@@ -105,7 +105,7 @@ describe('StoreDetailModal', () => {
     expect(screen.getByText('請使用下方數字鍵盤輸入您手中的籌號')).toBeInTheDocument();
   });
 
-  it('shows 直入 when store is open but has no queues', () => {
+  it('shows 即時入座 when store is open but has no queues', () => {
     const noQueueQueue: GroupQueue = {
       storeQueue: [],
       boothQueue: [],
@@ -115,11 +115,11 @@ describe('StoreDetailModal', () => {
     };
     render(<StoreDetailModal {...defaultProps} queue={noQueueQueue} />);
 
-    // Shows no-queue message — 直入 directly
-    expect(screen.getByText('目前無輪候，可直入就餐')).toBeInTheDocument();
+    // Shows no-queue message — 即時入座 directly
+    expect(screen.getByText('目前無輪候，可即時入座')).toBeInTheDocument();
   });
 
-  it('shows 直入 and 約0分 when entering ticket with no queues', async () => {
+  it('shows 即時入座 and 約0分 when entering ticket with no queues', async () => {
     const user = (await import('@testing-library/user-event')).default.setup();
     const noQueueQueue: GroupQueue = {
       storeQueue: [],
@@ -135,9 +135,9 @@ describe('StoreDetailModal', () => {
     await user.click(screen.getByText('2'));
     await user.click(screen.getByText('2'));
 
-    // Should show 直入 and 約0分鐘
-    expect(screen.getByText('直入')).toBeInTheDocument();
+    // Should show 即時入座 and 約0分鐘
+    expect(screen.getByText('即時入座')).toBeInTheDocument();
     expect(screen.getByText('約0分鐘')).toBeInTheDocument();
-    expect(screen.getByText('目前無輪候，可直入就餐')).toBeInTheDocument();
+    expect(screen.getByText('目前無輪候，可即時入座')).toBeInTheDocument();
   });
 });

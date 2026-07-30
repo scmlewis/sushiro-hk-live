@@ -15,14 +15,14 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
       <div className="bg-neutral-900 text-white p-6 sm:p-8 rounded-2xl border-l-4 border-[#aa151b] shadow-xl relative overflow-hidden">
         <div className="flex items-center gap-3 mb-3">
           <span className="px-2.5 py-0.5 bg-[#aa151b] text-white text-[10px] font-black uppercase tracking-widest rounded">
-            關於系統
+            系統簡介
           </span>
           <span className="text-xs font-bold text-neutral-400">
             香港壽司郎即時籌號追蹤看板
           </span>
         </div>
         <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white mb-2">
-          關於系統與使用說明
+          系統簡介與使用說明
         </h2>
         <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed font-medium">
           本系統連結全港 44 間壽司郎門市之籌號發放狀態、預估等候時間及現場叫號進度。透過智慧連線機制，助您迅速掌握現場人流，節省現場等候時間。
@@ -96,16 +96,16 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
       <div className="bg-neutral-100 dark:bg-neutral-800/80 p-5 rounded-2xl border border-neutral-200 dark:border-neutral-700 space-y-3">
         <h3 className="text-sm font-black text-neutral-900 dark:text-white flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-amber-500" />
-          <span>效能與自動連線機制</span>
+          <span>效能與自動更新機制</span>
         </h3>
         <ul className="text-xs text-neutral-600 dark:text-neutral-300 space-y-2 font-medium">
           <li className="flex items-start gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-            <span><strong>頁面靜置/切換分頁時：</strong>自動暫停背景讀取以節省手機電力與數據流量，回頭檢視時自動連線更新。</span>
+            <span><strong>頁面閒置或切換分頁時：</strong>自動暫停背景讀取以節省手機電力與流量，回頭檢視時自動更新。</span>
           </li>
           <li className="flex items-start gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-            <span><strong>離線與弱網快取：</strong>系統已配備 Service Worker 快取，在乘搭港鐵或訊號不穩定時，仍可閱讀最新一次載入的門市資料與模擬估算數據。</span>
+            <span><strong>離線快取機制：</strong>系統已配備 Service Worker 快取，在乘搭港鐵或訊號不穩定時，仍可閱讀最新一次載入的門市資料。</span>
           </li>
         </ul>
       </div>
@@ -150,7 +150,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
       <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-5 rounded-2xl shadow-sm space-y-3">
         <h3 className="text-sm font-black text-neutral-900 dark:text-white flex items-center gap-2">
           <ExternalLink className="w-4 h-4 text-[#aa151b]" />
-          <span>相關連結</span>
+          <span>相關資源</span>
         </h3>
         <div className="flex flex-wrap gap-2">
           <a

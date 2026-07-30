@@ -1,13 +1,13 @@
 import React from 'react';
 
 const LEGEND_ITEMS = [
-  { color: '#10b981', label: '直入' },
-  { color: '#f59e0b', label: '<15分' },
-  { color: '#8b5cf6', label: '15-29分' },
+  { color: '#3b82f6', label: '即時入座' },
+  { color: '#10b981', label: '<15分' },
+  { color: '#eab308', label: '15-29分' },
   { color: '#f97316', label: '30-59分' },
   { color: '#aa151b', label: '≥60分' },
-  { color: '#ef4444', label: '停飛' },
-  { color: '#6b7280', label: '休息/收工' },
+  { color: '#aa151b', label: '現場派籌已暫停' },
+  { color: '#6b7280', label: '非營業中' },
 ];
 
 export const StoreMapLegend: React.FC = () => {

@@ -29,7 +29,7 @@ describe('Navbar', () => {
     render(<Navbar {...defaultProps} />);
     expect(screen.getByText('門市')).toBeInTheDocument();
     expect(screen.getAllByText(/關注/).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/比對/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/比較/).length).toBeGreaterThan(0);
     expect(screen.getByText('關於')).toBeInTheDocument();
   });
 
@@ -59,24 +59,24 @@ describe('Navbar', () => {
     const onGlobalRefresh = vi.fn();
     render(<Navbar {...defaultProps} onGlobalRefresh={onGlobalRefresh} />);
 
-    const refreshBtn = screen.getByTitle('更新數據');
+    const refreshBtn = screen.getByTitle('重新載入全港門市即時資料');
     await user.click(refreshBtn);
     expect(onGlobalRefresh).toHaveBeenCalledTimes(1);
   });
 
-  it('shows 更新中 text when loading', () => {
+  it('shows 更新中… text when loading', () => {
     render(<Navbar {...defaultProps} loading={true} />);
-    expect(screen.getByText('更新中')).toBeInTheDocument();
+    expect(screen.getByText('更新中…')).toBeInTheDocument();
   });
 
-  it('shows 更新數據 text when not loading', () => {
+  it('shows 更新資料 text when not loading', () => {
     render(<Navbar {...defaultProps} loading={false} />);
-    expect(screen.getByText('更新數據')).toBeInTheDocument();
+    expect(screen.getByText('更新資料')).toBeInTheDocument();
   });
 
   it('disables refresh button when loading', () => {
     render(<Navbar {...defaultProps} loading={true} />);
-    const refreshBtn = screen.getByTitle('重新讀取全港門市叫號數據');
+    const refreshBtn = screen.getByTitle('重新載入全港門市即時資料');
     expect(refreshBtn).toBeDisabled();
   });
 

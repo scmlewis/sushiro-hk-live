@@ -43,9 +43,9 @@ export const CompareView: React.FC<CompareViewProps> = ({
         <div className="w-20 h-20 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-400 flex items-center justify-center mx-auto mb-5 border border-neutral-200 dark:border-neutral-700">
           <Layers className="w-10 h-10" />
         </div>
-        <p className="text-2xl font-black text-neutral-900 dark:text-neutral-100 mb-2">尚未選擇比較門市</p>
+        <p className="text-2xl font-black text-neutral-900 dark:text-neutral-100 mb-2">尚未加入比較門市</p>
         <p className="text-sm mt-1.5 text-neutral-500 dark:text-neutral-400 max-w-md mx-auto leading-relaxed">
-          在全港門市列表中，點擊門市操作欄的「+」按鈕加入門市進行多店即時比較（最多 4 間）。
+          在全港門市列表中，點擊門市操作欄的「+」按鈕加入門市進行多店比較（最多 4 間）。
         </p>
         {onAddDefaultStores && (
           <button
@@ -53,7 +53,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
             className="mt-6 px-6 py-2.5 rounded-full bg-[#aa151b] text-white font-black text-xs uppercase tracking-wider transition-all hover:bg-red-700 cursor-pointer shadow-sm inline-flex items-center gap-1.5"
           >
             <Sparkles className="w-4 h-4" />
-            <span>自動載入熱門門市比對</span>
+            <span>自動載入熱門門市比較</span>
           </button>
         )}
       </div>
@@ -107,12 +107,12 @@ export const CompareView: React.FC<CompareViewProps> = ({
                   <div className="flex gap-1">
                     {isFastest && (
                       <span className="inline-flex items-center gap-0.5 text-[10px] font-black bg-emerald-500 text-white px-2 py-0.5 rounded-full">
-                        <Zap className="w-3 h-3" />最快開枱
+                        <Zap className="w-3 h-3" />最快可入座
                       </span>
                     )}
                     {isLeastGroups && (
                       <span className="inline-flex items-center gap-0.5 text-[10px] font-black bg-sky-500 text-white px-2 py-0.5 rounded-full">
-                        <Users className="w-3 h-3" />最少組數
+                        <Users className="w-3 h-3" />最少輪候組數
                       </span>
                     )}
                   </div>

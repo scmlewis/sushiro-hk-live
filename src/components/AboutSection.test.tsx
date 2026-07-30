@@ -11,7 +11,7 @@ const defaultProps = {
 describe('AboutSection', () => {
   it('renders the about header', () => {
     render(<AboutSection {...defaultProps} />);
-    expect(screen.getByText('關於系統與使用說明')).toBeInTheDocument();
+    expect(screen.getByText('系統簡介與使用說明')).toBeInTheDocument();
   });
 
   it('renders all four feature cards', () => {

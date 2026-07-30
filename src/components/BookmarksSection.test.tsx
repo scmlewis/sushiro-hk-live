@@ -37,7 +37,7 @@ const defaultProps = {
 describe('BookmarksSection', () => {
   it('shows empty state when no bookmarks', () => {
     render(<BookmarksSection {...defaultProps} />);
-    expect(screen.getByText('尚未關注任何門市')).toBeInTheDocument();
+    expect(screen.getByText('尚未加入關注門市')).toBeInTheDocument();
   });
 
   it('shows "瀏覽全港門市列表" button in empty state', async () => {

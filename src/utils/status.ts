@@ -20,7 +20,7 @@ export function getStoreStatusInfo(status: string): StatusBadge {
     };
   }
   return {
-    label: '休息',
+    label: '非營業中',
     bgColor: 'bg-slate-500/10',
     textColor: 'text-slate-600 dark:text-slate-400',
     borderColor: 'border-slate-500/20',
@@ -49,10 +49,10 @@ export function getTicketStatusInfo(
   const isStopFly = isLocalTicketingOff(localTicketingStatus);
   const isOffline = !isStoreIssuing(netTicketStatus, storeStatus, localTicketingStatus);
 
-  // 1. 門市休息
+  // 1. 門市非營業中
   if (storeStatus !== 'OPEN') {
     return {
-      label: '休息',
+      label: '非營業中',
       bgColor: 'bg-slate-500/10',
       textColor: 'text-slate-500',
       borderColor: 'border-slate-500/20',
@@ -60,10 +60,10 @@ export function getTicketStatusInfo(
     };
   }
 
-  // 2. 收工 (fully stopped — walk-in stopped and no one waiting)
+  // 2. 當日營業已結束 (fully stopped — walk-in stopped and no one waiting)
   if (isStopFly && isOffline && wait === 0 && waitingGroup === 0) {
     return {
-      label: '已收工',
+      label: '當日營業已結束',
       bgColor: 'bg-slate-500/10',
       textColor: 'text-slate-500',
       borderColor: 'border-slate-500/20',
@@ -71,10 +71,10 @@ export function getTicketStatusInfo(
     };
   }
 
-  // 3. 停飛 (walk-in stopped — but people still waiting)
+  // 3. 現場派籌已暫停 (walk-in stopped — but people still waiting)
   if (isStopFly) {
     return {
-      label: '現場停止派籌',
+      label: '現場派籌已暫停',
       bgColor: 'bg-[#aa151b]/10',
       textColor: 'text-[#aa151b] dark:text-red-400',
       borderColor: 'border-[#aa151b]/20',
@@ -84,7 +84,7 @@ export function getTicketStatusInfo(
 
   // 4. 現場派籌中 (store is OPEN and walk-in ticketing is active)
   return {
-    label: '現場派籌',
+    label: '現場派籌中',
     bgColor: 'bg-emerald-500/10',
     textColor: 'text-emerald-700 dark:text-emerald-400',
     borderColor: 'border-emerald-500/20',
@@ -96,7 +96,7 @@ export interface StoreDisplayStatus {
   waitText: string;        // "休息" | "收工" | "停飛" | "X分"
   groupText: string;       // "--" | "X組"
   isClosed: boolean;       // true if store is not servicing
-  accentColor: string;     // 'emerald' | 'amber' | 'violet' | 'orange' | 'red' | 'neutral'
+  accentColor: string;     // 'blue' | 'emerald' | 'yellow' | 'orange' | 'red' | 'neutral'
 }
 
 export function isStoreServicing(store: SushiroStore): boolean {
@@ -120,30 +120,30 @@ export function getStoreDisplayStatus(store: SushiroStore): StoreDisplayStatus {
   const isOpen = store.storeStatus === 'OPEN';
   const isStopFly = isLocalTicketingOff(store.localTicketingStatus);
 
-  // 1. 休息 (Closed)
+  // 1. 非營業中 (Closed)
   if (!isOpen) {
     return {
-      waitText: '休息',
+      waitText: '非營業中',
       groupText: '--',
       isClosed: true,
       accentColor: 'neutral',
     };
   }
 
-  // 2. 收工 (Finished) — walk-in stopped and no one waiting
+  // 2. 已結束營業 (Finished) — walk-in stopped and no one waiting
   if (isStopFly && store.wait === 0 && store.waitingGroup === 0) {
     return {
-      waitText: '收工',
+      waitText: '已結束營業',
       groupText: '--',
       isClosed: true,
       accentColor: 'neutral',
     };
   }
 
-  // 3. 停飛 (Walk-in stopped)
+  // 3. 現場派籌已暫停 (Walk-in stopped)
   if (isStopFly) {
     return {
-      waitText: '停飛',
+      waitText: '現場派籌已暫停',
       groupText: `${store.waitingGroup}組`,
       isClosed: true,
       accentColor: 'red',
@@ -153,11 +153,11 @@ export function getStoreDisplayStatus(store: SushiroStore): StoreDisplayStatus {
   // 4. Normal queue
   let accentColor = 'neutral';
   if (store.wait <= 0) {
-    accentColor = 'emerald';
+    accentColor = 'blue';
   } else if (store.wait < 15) {
-    accentColor = 'amber';
+    accentColor = 'emerald';
   } else if (store.wait < 30) {
-    accentColor = 'violet';
+    accentColor = 'yellow';
   } else if (store.wait < 60) {
     accentColor = 'orange';
   } else {
@@ -196,9 +196,9 @@ export function formatGoogleMapsUrl(lat: number, lng: number, address: string, n
 }
 
 const MARKER_COLORS: Record<string, string> = {
+  blue: '#3b82f6',
   emerald: '#10b981',
-  amber: '#f59e0b',
-  violet: '#8b5cf6',
+  yellow: '#eab308',
   orange: '#f97316',
   red: '#aa151b',
   neutral: '#6b7280',

@@ -105,22 +105,22 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
 
   if (loading) {
     ticketValidationState = 'empty';
-    validationMessage = '正在載入叫號資料...';
+    validationMessage = '正在載入叫號資料…';
   } else if (!isServicing) {
     ticketValidationState = 'empty';
     if (store.storeStatus !== 'OPEN') {
-      validationMessage = '門市已休息，籌號計算器暫停使用';
+      validationMessage = '門市非營業中，籌號計算器暫停使用';
     } else {
       const isFinished = isLocalTicketingOff(store.localTicketingStatus) && store.wait === 0 && store.waitingGroup === 0;
       validationMessage = isFinished
-        ? '門市目前已收工，籌號計算器暫停使用'
-        : '門市目前已停飛，籌號計算器暫停使用';
+        ? '門市當日營業已結束，籌號計算器暫停使用'
+        : '門市現場派籌已暫停，籌號計算器暫停使用';
     }
   } else if (hasNoQueue) {
     ticketValidationState = 'valid';
     groupsAhead = 0;
     estimatedMins = 0;
-    validationMessage = '目前無輪候，可直入就餐';
+    validationMessage = '目前無輪候，可即時入座';
   } else if (!myTicket || isNaN(myTicketNum) || myTicketNum <= 0) {
     ticketValidationState = 'empty';
     validationMessage = '請使用下方數字鍵盤輸入您手中的籌號';
@@ -251,7 +251,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                 </div>
               ) : (
                 <div className="text-center text-neutral-400 font-bold text-sm py-2">
-                  {isServicing ? '暫無叫號資訊' : '門市已休息'}
+                  {isServicing ? '暫無叫號資料' : '門市非營業中'}
                 </div>
               )}
             </div>
@@ -283,7 +283,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                     onClick={() => handleNumpad('clear')}
                     className="text-[10px] underline hover:no-underline cursor-pointer shrink-0"
                   >
-                    重設輸入
+                    清除輸入
                   </button>
                 )}
               </div>
@@ -323,13 +323,13 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                       disabled
                       className="border-2 border-[#aa151b] text-[#aa151b] rounded-lg p-4 text-center flex-1 flex flex-col items-center justify-center min-h-[45px] font-black text-sm bg-transparent opacity-60 pointer-events-none"
                     >
-                      收工
+                      已結束營業
                     </button>
                     <button
                       disabled
                       className="border-2 border-[#aa151b] text-[#aa151b] rounded-lg p-4 text-center flex-1 flex flex-col items-center justify-center min-h-[45px] font-black text-sm bg-transparent opacity-60 pointer-events-none"
                     >
-                      等開工
+                      等待開門
                     </button>
                   </div>
                 ) : (
@@ -348,9 +348,9 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                         {ticketValidationState === 'empty'
                           ? '請輸入籌號'
                           : ticketValidationState === 'called'
-                          ? '已過號 / 到您入座'
+                          ? '已過號 / 即時入座'
                           : hasNoQueue && ticketValidationState === 'valid'
-                          ? '直入'
+                          ? '即時入座'
                           : `尚有 ${groupsAhead} 組`}
                       </span>
                     </div>
@@ -388,7 +388,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
         <div className="shrink-0 p-3 sm:p-4 bg-[#141414] border-t border-neutral-800 flex items-center justify-center text-xs text-neutral-400">
           <div className="flex items-center gap-2 font-medium">
             <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>即時數據已同步</span>
+            <span>即時資料已同步</span>
           </div>
         </div>
       </motion.div>

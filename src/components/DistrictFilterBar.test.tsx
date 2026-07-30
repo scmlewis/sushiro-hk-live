@@ -58,7 +58,7 @@ describe('DistrictFilterBar', () => {
     const onToggleOnlyIssuing = vi.fn();
     render(<DistrictFilterBar {...defaultProps} onToggleOnlyIssuing={onToggleOnlyIssuing} />);
 
-    await user.click(screen.getByText('只看派籌中'));
+    await user.click(screen.getByText('僅顯示派籌中'));
     expect(onToggleOnlyIssuing).toHaveBeenCalledTimes(1);
   });
 
@@ -83,7 +83,7 @@ describe('DistrictFilterBar', () => {
 
   it('renders sort dropdown', () => {
     render(<DistrictFilterBar {...defaultProps} />);
-    expect(screen.getByDisplayValue(/等候時間最短/)).toBeInTheDocument();
+    expect(screen.getByDisplayValue(/由短至長/)).toBeInTheDocument();
   });
 
   it('calls onSortChange when sort option selected', async () => {
@@ -91,7 +91,7 @@ describe('DistrictFilterBar', () => {
     const onSortChange = vi.fn();
     render(<DistrictFilterBar {...defaultProps} onSortChange={onSortChange} />);
 
-    await user.selectOptions(screen.getByDisplayValue(/等候時間最短/), 'wait-desc');
+    await user.selectOptions(screen.getByDisplayValue(/由短至長/), 'wait-desc');
     expect(onSortChange).toHaveBeenCalledWith('wait-desc');
   });
 });

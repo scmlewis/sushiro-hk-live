@@ -52,7 +52,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={onGlobalRefresh}
               disabled={loading}
               className="p-2 rounded-full bg-white text-[#aa151b] transition-all cursor-pointer disabled:opacity-60"
-              title="更新數據"
+              title="更新資料"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             </button>
@@ -97,8 +97,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">門市比對</span>
-            <span className="sm:hidden">比對</span>
+            <span className="hidden sm:inline">門市比較</span>
+            <span className="sm:hidden">比較</span>
             <span>({compareCount})</span>
           </button>
 
@@ -127,10 +127,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={onGlobalRefresh}
             disabled={loading}
             className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-white text-[#aa151b] font-black text-xs transition-all cursor-pointer disabled:opacity-60 hover:bg-red-50 shadow-sm"
-            title="重新讀取全港門市叫號數據"
+            title="重新載入全港門市即時資料"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-            <span>{loading ? '更新中' : '更新數據'}</span>
+            <span>{loading ? '更新中…' : '更新資料'}</span>
           </button>
         </div>
       </div>

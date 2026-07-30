@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import { AnimatePresence } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 import { SushiroStore, StoreQueueMap, ToastMessage, TabId } from './types';
 import { FALLBACK_LOCATION, TEXT_SIZE_MAP, TOTAL_STORE_COUNT, MAX_COMPARE_STORES, POLL_INTERVAL_MS, BRAND_COLOR } from './config';
 import { calculateDistanceKm, getCurrentPosition } from './utils/geolocation';
@@ -43,6 +43,12 @@ export default function App() {
   const [isOffline, setIsOffline] = useState(typeof navigator !== 'undefined' ? !navigator.onLine : false);
   const [autoRefreshTimer, setAutoRefreshTimer] = useState(POLL_INTERVAL_MS / 1000);
 
+  const tabVariants = {
+    initial: { opacity: 0, y: 8 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -8 },
+  };
+
   const showToast = useCallback((text: string, type: ToastMessage['type'] = 'info') => {
     setToast({ id: Date.now().toString(), text, type });
   }, []);
@@ -57,16 +63,16 @@ export default function App() {
         setStores(data.stores);
         setLastUpdated(data.timestamp || Date.now());
         if (force) {
-          showToast(`已更新全港 ${TOTAL_STORE_COUNT} 間壽司郎門市資料`, 'success');
+          showToast(`已更新全港 ${TOTAL_STORE_COUNT} 間門市資料`, 'success');
         }
       } else {
-        throw new Error(data.error || '無法取得門市列表');
+        throw new Error(data.error || '無法載入門市資料');
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
       console.warn('Failed to load stores:', err);
       setErrorStores(message || '連線失敗，請檢查網路設定');
-      showToast('連線至伺服器失敗，將嘗試使用快取資料', 'error');
+      showToast('伺服器連線失敗，已載入快取資料', 'error');
     } finally {
       setLoadingStores(false);
     }
@@ -75,12 +81,12 @@ export default function App() {
   useEffect(() => {
     const handleOnline = () => {
       setIsOffline(false);
-      showToast('網路已恢復連線，正在更新門市資料', 'success');
+      showToast('網路已恢復，正在更新資料', 'success');
       fetchStores(true);
     };
     const handleOffline = () => {
       setIsOffline(true);
-      showToast('網路連線中斷：已啟用 Service Worker 離線快取模式', 'warning');
+      showToast('網路中斷，已啟用離線快取', 'warning');
     };
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
@@ -147,9 +153,9 @@ export default function App() {
   const handleToggleBookmark = useCallback((store: SushiroStore) => {
     toggleBookmark(store.id);
     if (bookmarkedIds.includes(store.id)) {
-      showToast(`已移除關注：${store.name}`, 'info');
+      showToast(`已取消關注：${store.name}`, 'info');
     } else {
-      showToast(`已關注門市：${store.name} (將每 ${POLL_INTERVAL_MS / 1000} 秒自動更新籌號)`, 'success');
+      showToast(`已加入關注：${store.name}（每 ${POLL_INTERVAL_MS / 1000} 秒自動更新）`, 'success');
       fetchSingleQueue(store.id, true);
     }
   }, [toggleBookmark, bookmarkedIds, showToast, fetchSingleQueue]);
@@ -158,11 +164,11 @@ export default function App() {
     setCompareIds((prev) => {
       const exists = prev.includes(store.id);
       if (exists) {
-        showToast(`已從比較清單移除：${store.name}`, 'info');
+        showToast(`已移除比較：${store.name}`, 'info');
         return prev.filter((id) => id !== store.id);
       }
       if (prev.length >= MAX_COMPARE_STORES) {
-        showToast(`最多可同時比較 ${MAX_COMPARE_STORES} 間門市`, 'warning');
+        showToast(`最多可比較 ${MAX_COMPARE_STORES} 間門市`, 'warning');
         return prev;
       }
       showToast(`已加入比較：${store.name}`, 'success');
@@ -176,19 +182,19 @@ export default function App() {
     const combined = Array.from(new Set([...compareIds, ...bookmarkedIds])).slice(0, MAX_COMPARE_STORES);
     setCompareIds(combined);
     setActiveMainTab('compare');
-    showToast(`已將關注門市加入即時比對（已加入 ${combined.length} 間）`, 'success');
+    showToast(`已將關注門市加入比較（已加入 ${combined.length} 間）`, 'success');
   }, [bookmarkedIds, compareIds, showToast]);
 
   const handleClearAllBookmarks = useCallback(() => {
     clearBookmarks();
-    showToast('已清空所有關注門市', 'info');
+    showToast('已清空關注列表', 'info');
   }, [clearBookmarks, showToast]);
 
   const handleAddDefaultCompareStores = useCallback(() => {
     const defaultIds = stores.filter((s) => s.storeStatus === 'OPEN').slice(0, 3).map((s) => s.id);
     if (defaultIds.length > 0) {
       setCompareIds(defaultIds);
-      showToast(`已自動載入 ${defaultIds.length} 間門市進入比對`, 'success');
+      showToast(`已載入 ${defaultIds.length} 門市至比較`, 'success');
     }
   }, [stores, showToast]);
 
@@ -198,11 +204,11 @@ export default function App() {
       const coords = await getCurrentPosition();
       setUserLocation(coords);
       filters.setSortBy('distance-asc');
-      showToast('已取得 GPS 定位，已按最近距離排序門市', 'success');
+      showToast('已取得 GPS 定位，已按距離排序', 'success');
     } catch {
       setUserLocation(FALLBACK_LOCATION);
       filters.setSortBy('distance-asc');
-      showToast('無法存取真實 GPS，已載入「旺角 / 市中心」作為預設參考位置並計算距離', 'warning');
+      showToast('無法取得 GPS 定位，已使用預設位置', 'warning');
     } finally {
       setLocationLoading(false);
     }
@@ -210,7 +216,7 @@ export default function App() {
 
   const handleManualStoreRefresh = useCallback(async (storeId: number, storeName: string) => {
     await fetchSingleQueue(storeId, true);
-    showToast(`已更新【${storeName}】最新籌號與等候時間`, 'success');
+    showToast(`已更新：${storeName}`, 'success');
   }, [fetchSingleQueue, showToast]);
 
   const handleSelectStoreModal = useCallback((store: SushiroStore) => {
@@ -324,107 +330,143 @@ export default function App() {
           {errorStores && (
             <div className="mb-6 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 flex items-center gap-3">
               <AlertCircle className="w-5 h-5 shrink-0 text-rose-500" />
-              <div className="text-xs sm:text-sm font-medium flex-1">{errorStores} (已載入最近之快取門市數據)</div>
+              <div className="text-xs sm:text-sm font-medium flex-1">{errorStores}（已載入快取資料）</div>
               <button onClick={() => fetchStores(true)} className="px-3 py-1 rounded-xl bg-rose-600 text-white text-xs font-semibold hover:bg-rose-700 cursor-pointer">重試</button>
             </div>
           )}
 
           <div className="relative">
-            <div className={`${activeMainTab !== 'about' ? 'hidden' : ''}`}>
-              <AboutSection textSize={textSize} onTextSizeChange={setTextSize} />
-            </div>
+            <AnimatePresence mode="wait">
+              {activeMainTab === 'about' && (
+                <motion.div
+                  key="about"
+                  variants={tabVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ duration: 0.15, ease: 'easeOut' }}
+                >
+                  <AboutSection textSize={textSize} onTextSizeChange={setTextSize} />
+                </motion.div>
+              )}
 
-            <div className={`${activeMainTab !== 'bookmarks' ? 'hidden' : ''}`}>
-              <BookmarksSection
-                bookmarkedStores={bookmarkedStores} queues={queues} compareList={compareIds}
-                autoRefreshTimer={autoRefreshTimer} onToggleBookmark={handleToggleBookmark}
-                onToggleCompare={handleToggleCompare} onRefreshQueue={handleManualStoreRefresh}
-                onSelectStore={handleSelectStoreModal} onGoToAllStores={() => setActiveMainTab('all')}
-                onCompareAllBookmarks={handleCompareAllBookmarks} onClearAllBookmarks={handleClearAllBookmarks}
-              />
-            </div>
+              {activeMainTab === 'bookmarks' && (
+                <motion.div
+                  key="bookmarks"
+                  variants={tabVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ duration: 0.15, ease: 'easeOut' }}
+                >
+                  <BookmarksSection
+                    bookmarkedStores={bookmarkedStores} queues={queues} compareList={compareIds}
+                    autoRefreshTimer={autoRefreshTimer} onToggleBookmark={handleToggleBookmark}
+                    onToggleCompare={handleToggleCompare} onRefreshQueue={handleManualStoreRefresh}
+                    onSelectStore={handleSelectStoreModal} onGoToAllStores={() => setActiveMainTab('all')}
+                    onCompareAllBookmarks={handleCompareAllBookmarks} onClearAllBookmarks={handleClearAllBookmarks}
+                  />
+                </motion.div>
+              )}
 
-            <div className={`${activeMainTab !== 'compare' ? 'hidden' : ''}`}>
-              <CompareView
-                stores={comparedStores} queues={queues}
-                onRemoveFromCompare={(id) => setCompareIds((prev) => prev.filter((item) => item !== id))}
-                onClearCompare={() => setCompareIds([])} onRefreshQueue={handleManualStoreRefresh}
-                onSelectStore={(store) => handleSelectStoreModal(store)} onAddDefaultStores={handleAddDefaultCompareStores}
-              />
-            </div>
+              {activeMainTab === 'compare' && (
+                <motion.div
+                  key="compare"
+                  variants={tabVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ duration: 0.15, ease: 'easeOut' }}
+                >
+                  <CompareView
+                    stores={comparedStores} queues={queues}
+                    onRemoveFromCompare={(id) => setCompareIds((prev) => prev.filter((item) => item !== id))}
+                    onClearCompare={() => setCompareIds([])} onRefreshQueue={handleManualStoreRefresh}
+                    onSelectStore={(store) => handleSelectStoreModal(store)} onAddDefaultStores={handleAddDefaultCompareStores}
+                  />
+                </motion.div>
+              )}
 
-            {activeMainTab === 'all' && (
-              <>
-                <DistrictFilterBar
-                  regionCounts={regionCounts} selectedArea={filters.selectedArea}
-                  searchQuery={filters.searchQuery} sortBy={filters.sortBy}
-                  onlyIssuingTickets={filters.onlyIssuingTickets} userLocation={userLocation}
-                  locationLoading={locationLoading} onSelectArea={filters.setSelectedArea}
-                  onSearchChange={filters.setSearchQuery} onSortChange={filters.setSortBy}
-                  onToggleOnlyIssuing={() => filters.setOnlyIssuingTickets((prev) => !prev)}
-                  onRequestLocation={handleRequestLocation} viewMode={viewMode} onViewModeChange={setViewMode}
-                />
+              {activeMainTab === 'all' && (
+                <motion.div
+                  key="all"
+                  variants={tabVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ duration: 0.15, ease: 'easeOut' }}
+                >
+                  <DistrictFilterBar
+                    regionCounts={regionCounts} selectedArea={filters.selectedArea}
+                    searchQuery={filters.searchQuery} sortBy={filters.sortBy}
+                    onlyIssuingTickets={filters.onlyIssuingTickets} userLocation={userLocation}
+                    locationLoading={locationLoading} onSelectArea={filters.setSelectedArea}
+                    onSearchChange={filters.setSearchQuery} onSortChange={filters.setSortBy}
+                    onToggleOnlyIssuing={() => filters.setOnlyIssuingTickets((prev) => !prev)}
+                    onRequestLocation={handleRequestLocation} viewMode={viewMode} onViewModeChange={setViewMode}
+                  />
 
-                {loadingStores && stores.length === 0 ? (
-                  <div className="flex flex-col space-y-3">
-                    {[1, 2, 3, 4, 5, 6].map((idx) => (
-                      <div key={`skeleton-${idx}`} className="bg-white dark:bg-neutral-900 rounded-xl p-4 border border-neutral-200 dark:border-neutral-800 animate-pulse flex justify-between items-center">
-                        <div className="space-y-2">
-                          <div className="h-4 bg-neutral-200 dark:bg-neutral-800 rounded-full w-24" />
-                          <div className="h-6 bg-neutral-200 dark:bg-neutral-800 rounded-full w-48" />
+                  {loadingStores && stores.length === 0 ? (
+                    <div className="flex flex-col space-y-3">
+                      {[1, 2, 3, 4, 5, 6].map((idx) => (
+                        <div key={`skeleton-${idx}`} className="bg-white dark:bg-neutral-900 rounded-xl p-4 border border-neutral-200 dark:border-neutral-800 animate-pulse flex justify-between items-center">
+                          <div className="space-y-2">
+                            <div className="h-4 bg-neutral-200 dark:bg-neutral-800 rounded-full w-24" />
+                            <div className="h-6 bg-neutral-200 dark:bg-neutral-800 rounded-full w-48" />
+                          </div>
+                          <div className="h-10 bg-neutral-200 dark:bg-neutral-800 rounded-xl w-24" />
                         </div>
-                        <div className="h-10 bg-neutral-200 dark:bg-neutral-800 rounded-xl w-24" />
-                      </div>
-                    ))}
-                  </div>
-                ) : processedStores.length === 0 ? (
-                  <div className="text-center py-12 px-6 bg-white dark:bg-neutral-900 border-2 border-neutral-200 dark:border-neutral-800 shadow-xl max-w-xl mx-auto my-6 rounded-2xl">
-                    <div className="w-36 h-36 sm:w-44 sm:h-44 mx-auto mb-4 overflow-hidden rounded-2xl bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center p-2">
-                      <img src={noStoresFoundImg} alt="未找到搜尋門市" referrerPolicy="no-referrer" className="w-full h-full object-contain" />
+                      ))}
                     </div>
-                    <h3 className="text-2xl font-black tracking-tight text-neutral-900 dark:text-white uppercase">未找到符合條件的門市</h3>
-                    <p className="text-xs font-bold text-neutral-400 mt-2 max-w-md mx-auto tracking-wide">請嘗試清除搜尋關鍵字、切換全港地區，或取消「只看派籌中」篩選。</p>
-                    <button onClick={filters.resetFilters} className="mt-6 px-6 py-2.5 rounded-full bg-[#aa151b] text-white font-black text-xs uppercase tracking-wider transition-all hover:bg-red-700 cursor-pointer shadow-md">重置所有篩選條件</button>
-                  </div>
-                ) : (
-                  <div>
-                    {viewMode !== 'map' && (
-                      <div className="flex items-center justify-between mb-3 px-1">
-                        <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400">顯示 {processedStores.length} 間門市 (全港 {TOTAL_STORE_COUNT} 間)</span>
-                        <span className="text-xs text-neutral-400 hidden sm:inline">點擊門市「詳情」可查看即時叫號明細與歷史紀錄</span>
+                  ) : processedStores.length === 0 ? (
+                    <div className="text-center py-12 px-6 bg-white dark:bg-neutral-900 border-2 border-neutral-200 dark:border-neutral-800 shadow-xl max-w-xl mx-auto my-6 rounded-2xl">
+                      <div className="w-36 h-36 sm:w-44 sm:h-44 mx-auto mb-4 overflow-hidden rounded-2xl bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center p-2">
+                        <img src={noStoresFoundImg} alt="未找到搜尋門市" referrerPolicy="no-referrer" className="w-full h-full object-contain" />
                       </div>
-                    )}
-                    {viewMode === 'map' ? (
-                      <StoreMap stores={processedStores} queues={queues} userLocation={userLocation} onSelectStore={handleSelectStoreModal} />
-                    ) : (
-                      <div className="flex flex-col space-y-2">
-                        {processedStores.map((store) => {
-                          const qData = queues[store.id];
-                          return (
-                            <CompactStoreRow
-                              key={`compact-store-${store.id}`} store={store} queue={qData?.queue} queueLoading={qData?.loading}
-                              isBookmarked={bookmarkedIdsSet.has(store.id)} isComparing={compareIdsSet.has(store.id)}
-                              onToggleBookmark={handleToggleBookmark} onToggleCompare={handleToggleCompare}
-                              onRefreshQueue={handleManualStoreRefresh} onSelectStore={handleSelectStoreModal}
-                            />
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </>
-            )}
+                      <h3 className="text-2xl font-black tracking-tight text-neutral-900 dark:text-white uppercase">未找到符合條件的門市</h3>
+                      <p className="text-xs font-bold text-neutral-400 mt-2 max-w-md mx-auto tracking-wide">請嘗試清除搜尋關鍵字、切換全港地區，或取消「僅顯示派籌中」篩選。</p>
+                      <button onClick={filters.resetFilters} className="mt-6 px-6 py-2.5 rounded-full bg-[#aa151b] text-white font-black text-xs uppercase tracking-wider transition-all hover:bg-red-700 cursor-pointer shadow-md">重置所有篩選條件</button>
+                    </div>
+                  ) : (
+                    <div>
+                      {viewMode !== 'map' && (
+                        <div className="flex items-center justify-between mb-3 px-1">
+                          <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400">顯示 {processedStores.length} 間門市 (全港 {TOTAL_STORE_COUNT} 間)</span>
+                          <span className="text-xs text-neutral-400 hidden sm:inline">點擊門市「詳情」可查看即時叫號明細</span>
+                        </div>
+                      )}
+                      {viewMode === 'map' ? (
+                        <StoreMap stores={processedStores} queues={queues} userLocation={userLocation} onSelectStore={handleSelectStoreModal} />
+                      ) : (
+                        <div className="flex flex-col space-y-2">
+                          {processedStores.map((store) => {
+                            const qData = queues[store.id];
+                            return (
+                              <CompactStoreRow
+                                key={`compact-store-${store.id}`} store={store} queue={qData?.queue} queueLoading={qData?.loading}
+                                isBookmarked={bookmarkedIdsSet.has(store.id)} isComparing={compareIdsSet.has(store.id)}
+                                onToggleBookmark={handleToggleBookmark} onToggleCompare={handleToggleCompare}
+                                onRefreshQueue={handleManualStoreRefresh} onSelectStore={handleSelectStoreModal}
+                              />
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </main>
 
         <footer className="bg-[#141414] text-white px-6 sm:px-8 py-6 border-t-4 border-[#aa151b]">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-[11px] font-black tracking-[0.2em] uppercase gap-3 text-neutral-400">
-            <div><span>數據來源: </span><span className="text-white">SUSHI-PASS API (HK)</span></div>
+            <div><span>資料來源: </span><span className="text-white">SUSHI-PASS API (HK)</span></div>
             <div><span>免責聲明: </span><span className="text-neutral-300">本網站與壽司郎官方無關</span></div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#aa151b] animate-ping" />
-              <span className="text-white">輪詢間隔: {POLL_INTERVAL_MS / 1000}秒</span>
+              <span className="text-white">更新頻率: {POLL_INTERVAL_MS / 1000}秒</span>
             </div>
           </div>
         </footer>

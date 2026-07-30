@@ -43,17 +43,17 @@ describe('CompactStoreRow', () => {
     expect(screen.getByText('15分')).toBeInTheDocument();
   });
 
-  it('renders 休息 for closed store', () => {
+  it('renders 非營業中 for closed store', () => {
     render(<CompactStoreRow {...defaultProps} store={{ ...mockStore, storeStatus: 'CLOSED' }} />);
-    expect(screen.getByText('休息')).toBeInTheDocument();
+    expect(screen.getByText('非營業中')).toBeInTheDocument();
   });
 
-  it('renders 停飛 when localTicketingStatus is OFF', () => {
+  it('renders 現場派籌已暫停 when localTicketingStatus is OFF', () => {
     render(<CompactStoreRow {...defaultProps} store={{ ...mockStore, localTicketingStatus: 'OFF' }} />);
-    expect(screen.getByText('停飛')).toBeInTheDocument();
+    expect(screen.getByText('現場派籌已暫停')).toBeInTheDocument();
   });
 
-  it('renders 收工 when store has finished servicing (收工)', () => {
+  it('renders 已結束營業 when store has finished servicing', () => {
     render(
       <CompactStoreRow
         {...defaultProps}
@@ -67,7 +67,7 @@ describe('CompactStoreRow', () => {
         }}
       />
     );
-    expect(screen.getByText('收工')).toBeInTheDocument();
+    expect(screen.getByText('已結束營業')).toBeInTheDocument();
     expect(screen.getByText('--')).toBeInTheDocument();
   });
 
@@ -100,7 +100,7 @@ describe('CompactStoreRow', () => {
     const onToggleCompare = vi.fn();
     render(<CompactStoreRow {...defaultProps} onToggleCompare={onToggleCompare} />);
 
-    await user.click(screen.getByTitle('加入比對'));
+    await user.click(screen.getByTitle('加入比較'));
     expect(onToggleCompare).toHaveBeenCalledWith(mockStore);
   });
 

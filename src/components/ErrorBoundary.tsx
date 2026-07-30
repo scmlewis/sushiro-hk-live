@@ -38,17 +38,17 @@ export class ErrorBoundary extends Component<Props, State> {
               <AlertTriangle className="w-8 h-8" />
             </div>
             <h2 className="text-xl font-black text-neutral-900 dark:text-white mb-2">
-              {this.props.fallbackLabel || '發生錯誤'}
+              {this.props.fallbackLabel || '系統錯誤'}
             </h2>
             <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-6">
-              {this.state.error?.message || '應用程式遇到未預期的錯誤'}
+              {this.state.error?.message || '應用程式發生未預期的錯誤'}
             </p>
             <button
               onClick={this.handleReset}
               className="px-6 py-2.5 rounded-full bg-[#aa151b] text-white font-black text-xs uppercase tracking-wider transition-all hover:bg-red-700 cursor-pointer inline-flex items-center gap-2"
             >
               <RefreshCw className="w-4 h-4" />
-              重試
+              重新嘗試
             </button>
           </div>
         </div>

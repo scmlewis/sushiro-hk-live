@@ -106,7 +106,7 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
               ? 'text-[#141414] dark:text-white'
               : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
           }`}
-          title={isComparing ? '取消比對' : '加入比對'}
+          title={isComparing ? '取消比較' : '加入比較'}
         >
           {isComparing ? <Check className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
         </button>

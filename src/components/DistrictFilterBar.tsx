@@ -146,12 +146,12 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
               onChange={(e) => onSortChange(e.target.value as SortOption)}
               className="w-full pl-10 pr-8 py-2 rounded-full bg-neutral-100 dark:bg-neutral-800 border-2 border-transparent focus:border-[#aa151b] text-xs font-extrabold text-neutral-800 dark:text-neutral-200 focus:outline-none cursor-pointer appearance-none uppercase"
             >
-              <option value="wait-asc">⏱️ 等候時間最短</option>
-              <option value="wait-desc">⏳ 等候時間最長</option>
-              <option value="groups-desc">👥 輪候組數最多</option>
-              {userLocation && <option value="distance-asc">📍 距離最近（GPS）</option>}
-              <option value="area-asc">🗺️ 地區名稱排序</option>
-              <option value="name-asc">🔤 門市名稱排序</option>
+              <option value="wait-asc">等候時間：由短至長</option>
+              <option value="wait-desc">等候時間：由長至短</option>
+              <option value="groups-desc">輪候組數：由多至少</option>
+              {userLocation && <option value="distance-asc">距離：由近至遠（GPS 定位）</option>}
+              <option value="area-asc">地區名稱</option>
+              <option value="name-asc">門市名稱</option>
             </select>
           </div>
 
@@ -234,7 +234,7 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
             }`}
           >
             {onlyIssuingTickets && <Check className="w-3 h-3" />}
-            <span>只看派籌中</span>
+            <span>僅顯示派籌中</span>
           </button>
         </div>
         </div>

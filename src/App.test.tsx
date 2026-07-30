@@ -118,7 +118,7 @@ describe('App integration flow', () => {
 
     // AnimatePresence delays rendering, wait for it
     await waitFor(() => {
-      expect(screen.getByText('關於系統與使用說明')).toBeInTheDocument();
+      expect(screen.getByText('系統簡介與使用說明')).toBeInTheDocument();
     });
 
     // Switch back to All Stores
@@ -143,7 +143,7 @@ describe('App integration flow', () => {
     await user.click(bookmarkBtn);
 
     await waitFor(() => {
-      expect(screen.getByText('尚未關注任何門市')).toBeInTheDocument();
+      expect(screen.getByText('尚未加入關注門市')).toBeInTheDocument();
     });
   });
 

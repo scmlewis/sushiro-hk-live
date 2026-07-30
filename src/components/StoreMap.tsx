@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import ReactDOM from 'react-dom';
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import '../leaflet-fix';
@@ -22,7 +23,9 @@ const HK_BOUNDS = L.latLngBounds(
 function createMarkerIcon(store: SushiroStore, isPreview = false): L.DivIcon {
    const status = getStoreDisplayStatus(store);
    const color = getMarkerColor(status.accentColor);
-   const label = status.waitText;
+   const label = !status.isClosed && store.waitingGroup > 0
+     ? `${store.waitingGroup}組`
+     : status.waitText;
    const isBusy = !status.isClosed && store.waitingGroup > 0;
    const previewRing = isPreview
      ? `box-shadow: 0 0 0 3px rgba(255,255,255,0.8), 0 0 12px rgba(255,255,255,0.4), 0 2px 8px rgba(0,0,0,0.4); animation: marker-pulse 1s ease-in-out infinite;`
@@ -142,6 +145,43 @@ function MapReinit({ stores }: { stores: SushiroStore[] }) {
   return null;
 }
 
+function PreviewTooltip({ store }: { store: SushiroStore }) {
+  const map = useMap();
+  const status = getStoreDisplayStatus(store);
+  const pos = useMemo(() => L.latLng(store.latitude, store.longitude), [store.latitude, store.longitude]);
+  const [offset, setOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const update = () => {
+      const pt = map.latLngToContainerPoint(pos);
+      setOffset({ x: pt.x, y: pt.y });
+    };
+    update();
+    map.on('move zoom resize', update);
+    return () => { map.off('move zoom resize', update); };
+  }, [map, pos]);
+
+  return ReactDOM.createPortal(
+    <div
+      className="pointer-events-none absolute z-[1000]"
+      style={{
+        left: offset.x,
+        top: offset.y - 36,
+        transform: 'translate(-50%, -100%)',
+      }}
+    >
+      <div className="bg-neutral-900/95 backdrop-blur-sm border border-neutral-700 rounded-xl px-3 py-2 shadow-xl">
+        <div className="text-[11px] font-black text-white leading-tight">{store.name}</div>
+        <div className="text-[10px] font-bold text-neutral-400 mt-0.5">{status.waitText}</div>
+      </div>
+      <div className="flex justify-center">
+        <div className="w-2 h-2 bg-neutral-900/95 rotate-45 -mt-1 border-r border-b border-neutral-700" />
+      </div>
+    </div>,
+    map.getContainer(),
+  );
+}
+
 export const StoreMap: React.FC<StoreMapProps> = ({
   stores,
   queues,
@@ -155,6 +195,11 @@ export const StoreMap: React.FC<StoreMapProps> = ({
 
   const [previewId, setPreviewId] = useState<number | null>(null);
   const previewTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const previewStore = useMemo(
+    () => (previewId !== null ? stores.find((s) => s.id === previewId) ?? null : null),
+    [stores, previewId],
+  );
 
   const markerIcons = useMemo(() => {
     const m = new Map<number, L.DivIcon>();
@@ -213,6 +258,7 @@ export const StoreMap: React.FC<StoreMapProps> = ({
            />
          ))}
         {userLocation && <UserLocationMarker location={userLocation} />}
+        {previewStore && <PreviewTooltip store={previewStore} />}
         <ZoomControls />
       </MapContainer>
       <StoreMapLegend />
