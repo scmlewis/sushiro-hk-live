@@ -10,7 +10,7 @@ describe('StoreMapLegend', () => {
     expect(screen.getByText('15-29分')).toBeInTheDocument();
     expect(screen.getByText('30-59分')).toBeInTheDocument();
     expect(screen.getByText('≥60分')).toBeInTheDocument();
-    expect(screen.getByText('現場派籌已暫停')).toBeInTheDocument();
+    expect(screen.getByText('停籌')).toBeInTheDocument();
     expect(screen.getByText('非營業中')).toBeInTheDocument();
   });
 

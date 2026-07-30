@@ -48,9 +48,9 @@ describe('CompactStoreRow', () => {
     expect(screen.getByText('非營業中')).toBeInTheDocument();
   });
 
-  it('renders 現場派籌已暫停 when localTicketingStatus is OFF', () => {
-    render(<CompactStoreRow {...defaultProps} store={{ ...mockStore, localTicketingStatus: 'OFF' }} />);
-    expect(screen.getByText('現場派籌已暫停')).toBeInTheDocument();
+   it('renders 停籌 when localTicketingStatus is OFF', () => {
+     render(<CompactStoreRow {...defaultProps} store={{ ...mockStore, localTicketingStatus: 'OFF' }} />);
+     expect(screen.getByText('停籌')).toBeInTheDocument();
   });
 
   it('renders 已結束營業 when store has finished servicing', () => {

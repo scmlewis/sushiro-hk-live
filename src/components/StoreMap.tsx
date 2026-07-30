@@ -5,8 +5,8 @@ import L from 'leaflet';
 import '../leaflet-fix';
 import 'leaflet/dist/leaflet.css';
 import { MAP_CENTER } from '../config';
-import { SushiroStore, StoreQueueMap } from '../types';
-import { getStoreDisplayStatus, getMarkerColor } from '../utils/status';
+import { SushiroStore, StoreQueueMap, GroupQueue } from '../types';
+import { getStoreDisplayStatus, getMarkerColor, getQueueTicketCount } from '../utils/status';
 import { StoreMapLegend } from './StoreMapLegend';
 
 interface StoreMapProps {
@@ -20,40 +20,42 @@ const HK_BOUNDS = L.latLngBounds(
   [[22.15, 113.85], [22.65, 114.40]] as [[number, number], [number, number]]
 );
 
-function createMarkerIcon(store: SushiroStore, isPreview = false): L.DivIcon {
+function createMarkerIcon(store: SushiroStore, queue?: GroupQueue, isPreview = false): L.DivIcon {
    const status = getStoreDisplayStatus(store);
    const color = getMarkerColor(status.accentColor);
+   const ticketCount = queue ? getQueueTicketCount(queue) : null;
    const label = !status.isClosed
-     ? `${store.waitingGroup}組`
+     ? (ticketCount !== null ? `${ticketCount}張` : `${store.waitingGroup}組`)
      : status.waitText;
-   const isBusy = !status.isClosed && store.waitingGroup > 0;
+   const isBusy = !status.isClosed && (ticketCount ?? store.waitingGroup) > 0;
    const previewRing = isPreview
      ? `box-shadow: 0 0 0 3px rgba(255,255,255,0.8), 0 0 12px rgba(255,255,255,0.4), 0 2px 8px rgba(0,0,0,0.4); animation: marker-pulse 1s ease-in-out infinite;`
      : `box-shadow: 0 2px 8px rgba(0,0,0,0.4);`;
 
-   return L.divIcon({
-     className: 'sushiro-marker',
-     html: `<div style="
-       background: ${color};
-       color: #fff;
-       font-size: 12px;
-       font-weight: 900;
-       padding: 5px 10px;
-       border-radius: 9999px;
-       white-space: nowrap;
-       text-align: center;
-       line-height: 1.3;
-       ${previewRing}
-       border: 2px solid rgba(255,255,255,0.9);
-       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-       letter-spacing: 0.02em;
-       min-width: 42px;
-       transition: transform 0.15s ease, opacity 0.15s ease;
-       will-change: transform, opacity;
-     ">${label}</div>`,
-     iconSize: [46, 22],
-     iconAnchor: [23, 11],
-   });
+    return L.divIcon({
+      className: 'sushiro-marker',
+      html: `<div style="
+        background: ${color};
+        color: #fff;
+        font-size: 12px;
+        font-weight: 900;
+        padding: 5px 10px;
+        border-radius: 9999px;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        ${previewRing}
+        border: 2px solid rgba(255,255,255,0.9);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        letter-spacing: 0.02em;
+        transition: transform 0.15s ease, opacity 0.15s ease;
+        will-change: transform, opacity;
+      ">${label}</div>`,
+      iconSize: [46, 22],
+      iconAnchor: [23, 11],
+    });
  }
 
 function FitBoundsOnce({ stores }: { stores: SushiroStore[] }) {
@@ -185,9 +187,9 @@ export const StoreMap: React.FC<StoreMapProps> = ({
 
   const markerIcons = useMemo(() => {
     const m = new Map<number, L.DivIcon>();
-    stores.forEach((s) => m.set(s.id, createMarkerIcon(s, previewId === s.id)));
+    stores.forEach((s) => m.set(s.id, createMarkerIcon(s, queues[s.id]?.queue, previewId === s.id)));
     return m;
-  }, [stores, previewId]);
+  }, [stores, queues, previewId]);
 
   const handleMarkerClick = (store: SushiroStore) => {
     if (previewId === store.id) {

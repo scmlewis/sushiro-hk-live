@@ -1,4 +1,4 @@
-import { SushiroStore } from '../types';
+import { SushiroStore, GroupQueue } from '../types';
 
 export interface StatusBadge {
   label: string;
@@ -71,10 +71,12 @@ export function getTicketStatusInfo(
     };
   }
 
-  // 3. 現場派籌已暫停 (walk-in stopped — but people still waiting)
+  /**
+   * 3. 停籌 (walk-in stopped — but people still waiting)
+   */
   if (isStopFly) {
     return {
-      label: '現場派籌已暫停',
+      label: '停籌',
       bgColor: 'bg-[#8b5cf6]/10',
       textColor: 'text-[#8b5cf6] dark:text-violet-400',
       borderColor: 'border-[#8b5cf6]/20',
@@ -140,10 +142,10 @@ export function getStoreDisplayStatus(store: SushiroStore): StoreDisplayStatus {
     };
   }
 
-  // 3. 現場派籌已暫停 (Walk-in stopped)
+  // 3. 停籌 (Walk-in stopped)
   if (isStopFly) {
     return {
-      waitText: '現場派籌已暫停',
+      waitText: '停籌',
       groupText: `${store.waitingGroup}組`,
       isClosed: true,
       accentColor: 'purple',
@@ -186,6 +188,22 @@ export function getStoreRegion(store: { area?: string; address?: string; name?: 
   }
 
   return '新界';
+}
+
+export function getQueueTicketCount(queue: GroupQueue | null | undefined): number {
+  if (!queue) return 0;
+  const all = new Set([
+    ...(queue.storeQueue || []),
+    ...(queue.boothQueue || []),
+    ...(queue.counterQueue || []),
+    ...(queue.mixedQueue || []),
+    ...(queue.reservationQueue || []),
+    ...(queue.storeCounterQueue || []),
+    ...(queue.storeBoothQueue || []),
+    ...(queue.reservationCounterQueue || []),
+    ...(queue.reservationBoothQueue || []),
+  ]);
+  return all.size + (typeof queue.separateQueue === "number" ? queue.separateQueue : 0);
 }
 
 export function formatGoogleMapsUrl(lat: number, lng: number, address: string, name: string): string {

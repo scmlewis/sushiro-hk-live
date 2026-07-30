@@ -91,7 +91,7 @@ describe('StoreDetailModal', () => {
     expect(screen.getByText('等待開門')).toBeInTheDocument();
   });
 
-  it('renders calculator for walk-in stopped store (現場派籌已暫停) with waiting groups', () => {
+   it('renders calculator for walk-in stopped store (停籌) with waiting groups', () => {
     const stoppedStore = {
       ...mockStore,
       storeStatus: 'OPEN' as const,

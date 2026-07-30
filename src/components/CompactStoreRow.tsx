@@ -1,6 +1,6 @@
 import React from 'react';
 import { SushiroStore, GroupQueue } from '../types';
-import { formatGoogleMapsUrl, getStoreDisplayStatus } from '../utils/status';
+import { formatGoogleMapsUrl, getStoreDisplayStatus, getQueueTicketCount } from '../utils/status';
 import { getAccentBgClass, getWaitTextColor } from '../utils/colors';
 import { Heart, MapPin, RefreshCw, ChevronRight, Plus, Check, Clock, Users } from 'lucide-react';
 
@@ -56,12 +56,12 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
             </span>
           </div>
 
-          <div className="flex items-center gap-1">
-            <Users className="w-3 h-3 text-sky-500" />
-            <span className="text-sm font-black text-neutral-900 dark:text-white tabular-nums whitespace-nowrap">
-              {displayStatus.groupText}
-            </span>
-          </div>
+         <div className="flex items-center gap-1">
+             <Users className="w-3 h-3 text-sky-500" />
+             <span className="text-sm font-black text-neutral-900 dark:text-white tabular-nums whitespace-nowrap">
+               {queue ? `${getQueueTicketCount(queue)}張` : displayStatus.groupText}
+             </span>
+           </div>
         </div>
       </div>
 

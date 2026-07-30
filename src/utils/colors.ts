@@ -41,6 +41,6 @@ export function getAccentBgClass(accentColor: string): string {
 }
 
 export function getWaitTextColor(waitText: string, accentColor: string): string {
-  if (waitText === '現場派籌已暫停') return 'text-[#8b5cf6] dark:text-violet-400';
+  if (waitText === '停籌') return 'text-[#8b5cf6] dark:text-violet-400';
   return getAccentTextClass(accentColor) || 'text-[#141414] dark:text-white';
 }

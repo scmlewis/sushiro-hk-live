@@ -8,6 +8,7 @@ import {
   formatGoogleMapsUrl,
   isStoreIssuing,
   isLocalTicketingOff,
+  getQueueTicketCount,
 } from './status';
 import type { SushiroStore } from '../types';
 
@@ -116,9 +117,9 @@ describe('getTicketStatusInfo', () => {
     expect(result.label).toBe('現場派籌中');
   });
 
-it('returns 現場派籌已暫停 when localTicketingStatus is OFF and store has queues', () => {
-  const result = getTicketStatusInfo('ONLINE', 'OPEN', 'OFF', 10, 3);
-  expect(result.label).toBe('現場派籌已暫停');
+it('returns 停籌 when localTicketingStatus is OFF and store has queues', () => {
+   const result = getTicketStatusInfo('ONLINE', 'OPEN', 'OFF', 10, 3);
+   expect(result.label).toBe('停籌');
   expect(result.dotColor).toContain('8b5cf6');
 });
 
@@ -139,9 +140,9 @@ it('returns 當日營業已結束 when localTicketingStatus is OFF, net status i
     expect(result.label).toBe('非營業中');
   });
 
-  it('returns 現場派籌已暫停 for store with local OFF even if not fully finished', () => {
-    const result = getTicketStatusInfo('OFFLINE_MANUAL', 'OPEN', 'OFF', 5, 2);
-    expect(result.label).toBe('現場派籌已暫停');
+   it('returns 停籌 for store with local OFF even if not fully finished', () => {
+     const result = getTicketStatusInfo('OFFLINE_MANUAL', 'OPEN', 'OFF', 5, 2);
+     expect(result.label).toBe('停籌');
   });
 
   it('returns 現場派籌中 when localTicketingStatus is ON', () => {
@@ -189,7 +190,7 @@ describe('isStoreServicing', () => {
     expect(isStoreServicing(store)).toBe(false);
   });
 
-  it('returns true for walk-in stopped store (現場派籌已暫停) with waiting groups', () => {
+   it('returns true for walk-in stopped store (停籌) with waiting groups', () => {
     const store = {
       ...baseStore,
       storeStatus: 'OPEN' as const,
@@ -257,16 +258,16 @@ describe('getStoreDisplayStatus', () => {
     expect(res.accentColor).toBe('neutral');
   });
 
-  it('returns 現場派籌已暫停 for local OFF when not closed or 已結束營業', () => {
-    const res = getStoreDisplayStatus({
-      ...baseStore,
-      storeStatus: 'OPEN',
-      netTicketStatus: 'ONLINE',
-      localTicketingStatus: 'OFF',
-      wait: 10,
-      waitingGroup: 3,
-    });
-    expect(res.waitText).toBe('現場派籌已暫停');
+   it('returns 停籌 for local OFF when not closed or 已結束營業', () => {
+     const res = getStoreDisplayStatus({
+       ...baseStore,
+       storeStatus: 'OPEN',
+       netTicketStatus: 'ONLINE',
+       localTicketingStatus: 'OFF',
+       wait: 10,
+       waitingGroup: 3,
+     });
+     expect(res.waitText).toBe('停籌');
     expect(res.groupText).toBe('3組');
     expect(res.isClosed).toBe(true);
     expect(res.accentColor).toBe('purple');
@@ -372,5 +373,39 @@ describe('formatGoogleMapsUrl', () => {
   it('returns text-based search URL when lat/lng are falsy', () => {
     const url = formatGoogleMapsUrl(0, 0, '', 'Test Store');
     expect(url).toContain('query=');
+  });
+});
+
+describe('getQueueTicketCount', () => {
+  it('returns 0 for null queue', () => {
+    expect(getQueueTicketCount(null)).toBe(0);
+  });
+
+  it('returns 0 for undefined queue', () => {
+    expect(getQueueTicketCount(undefined)).toBe(0);
+  });
+
+  it('counts unique tickets across all queue arrays and deduplicates', () => {
+    const queue = {
+      storeQueue: ['277', '278', '279'],
+      boothQueue: ['277', '278', '279'],
+      counterQueue: [],
+      mixedQueue: ['277', '278', '279'],
+      reservationQueue: [],
+      separateQueue: 0,
+    };
+    expect(getQueueTicketCount(queue)).toBe(3);
+  });
+
+  it('counts separateQueue as individual tickets', () => {
+    const queue = {
+      storeQueue: ['277'],
+      boothQueue: [],
+      counterQueue: [],
+      mixedQueue: [],
+      reservationQueue: [],
+      separateQueue: 2,
+    };
+    expect(getQueueTicketCount(queue)).toBe(3);
   });
 });

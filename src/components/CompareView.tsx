@@ -1,7 +1,7 @@
 import React from 'react';
 import { SushiroStore, StoreQueueMap } from '../types';
 import { Layers, Clock, Users, Trash2, RefreshCw, Zap, ExternalLink, Sparkles } from 'lucide-react';
-import { getStoreStatusInfo, getTicketStatusInfo, getStoreDisplayStatus } from '../utils/status';
+import { getStoreStatusInfo, getTicketStatusInfo, getStoreDisplayStatus, getQueueTicketCount } from '../utils/status';
 
 interface CompareViewProps {
   stores: SushiroStore[];
@@ -23,8 +23,8 @@ export const CompareView: React.FC<CompareViewProps> = ({
   onAddDefaultStores,
 }) => {
   const openStores = stores.filter((s) => s.storeStatus === 'OPEN');
-  const minWait = openStores.length > 1 ? Math.min(...openStores.map((s) => s.wait)) : null;
-  const minGroup = openStores.length > 1 ? Math.min(...openStores.map((s) => s.waitingGroup)) : null;
+   const minWait = openStores.length > 1 ? Math.min(...openStores.map((s) => s.wait)) : null;
+   const minTickets = openStores.length > 1 ? Math.min(...openStores.map((s) => getQueueTicketCount(queues[s.id]?.queue || null))) : null;
 
   const sortedStores = [...stores].sort((a, b) => {
     if (a.storeStatus === 'OPEN' && b.storeStatus !== 'OPEN') return -1;
@@ -95,7 +95,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
           const booth = boothQueue.length > 0 ? boothQueue[boothQueue.length - 1] : undefined;
           const counter = counterQueue.length > 0 ? counterQueue[counterQueue.length - 1] : undefined;
           const isFastest = minWait !== null && store.storeStatus === 'OPEN' && store.wait === minWait;
-          const isLeastGroups = minGroup !== null && store.storeStatus === 'OPEN' && store.waitingGroup === minGroup;
+          const isLeastTickets = minTickets !== null && store.storeStatus === 'OPEN' && getQueueTicketCount(q) === minTickets;
 
           return (
             <div
@@ -112,9 +112,9 @@ export const CompareView: React.FC<CompareViewProps> = ({
                         <Zap className="w-3 h-3" />最快可入座
                       </span>
                     )}
-                    {isLeastGroups && (
+                    {isLeastTickets && (
                       <span className="inline-flex items-center gap-0.5 text-[10px] font-black bg-sky-500 text-white px-2 py-0.5 rounded-full">
-                        <Users className="w-3 h-3" />最少輪候組數
+                        <Users className="w-3 h-3" />最少票數
                       </span>
                     )}
                   </div>
@@ -137,10 +137,10 @@ export const CompareView: React.FC<CompareViewProps> = ({
                   <div className="w-px h-4 bg-neutral-300 dark:bg-neutral-600" />
                   <div className="flex items-center gap-1.5">
                     <span className="text-[10px] font-black text-neutral-400 uppercase flex items-center gap-1">
-                      <Users className="w-3 h-3 text-sky-500" />組數
+                       <Users className="w-3 h-3 text-sky-500" />票數
                     </span>
                     <span className="font-black text-neutral-900 dark:text-white text-sm tabular-nums">
-                      {displayStatus.isClosed ? '--' : `${store.waitingGroup} 組`}
+                       {displayStatus.isClosed ? '--' : `${getQueueTicketCount(q)} 張`}
                     </span>
                   </div>
                 </div>

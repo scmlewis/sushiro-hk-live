@@ -114,7 +114,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
       const isFinished = isLocalTicketingOff(store.localTicketingStatus) && store.wait === 0 && store.waitingGroup === 0;
       validationMessage = isFinished
         ? '門市當日營業已結束，籌號計算器暫停使用'
-        : '門市現場派籌已暫停，籌號計算器暫停使用';
+        : '門市停籌，籌號計算器暫停使用';
     }
   } else if (hasNoQueue) {
     ticketValidationState = 'valid';

@@ -6,7 +6,7 @@ const LEGEND_ITEMS = [
   { color: '#eab308', label: '15-29分' },
   { color: '#f97316', label: '30-59分' },
   { color: '#aa151b', label: '≥60分' },
-  { color: '#8b5cf6', label: '現場派籌已暫停' },
+  { color: '#8b5cf6', label: '停籌' },
   { color: '#6b7280', label: '非營業中' },
 ];
 

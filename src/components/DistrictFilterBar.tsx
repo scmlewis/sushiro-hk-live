@@ -182,7 +182,7 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
 
           <button
             onClick={() => onSelectArea('')}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-extrabold transition-all whitespace-nowrap cursor-pointer ${
+            className={`inline-flex items-center justify-center px-3.5 py-1.5 rounded-full text-xs font-extrabold transition-all whitespace-nowrap cursor-pointer ${
               selectedArea === ''
                 ? 'bg-[#141414] text-white shadow-md dark:bg-white dark:text-[#141414]'
                 : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200'
@@ -193,7 +193,7 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
 
           <button
             onClick={() => onSelectArea('港島')}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-extrabold transition-all whitespace-nowrap cursor-pointer ${
+            className={`inline-flex items-center justify-center px-3.5 py-1.5 rounded-full text-xs font-extrabold transition-all whitespace-nowrap cursor-pointer ${
               selectedArea === '港島'
                 ? 'bg-[#141414] text-white shadow-md dark:bg-white dark:text-[#141414]'
                 : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200'
@@ -204,7 +204,7 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
 
           <button
             onClick={() => onSelectArea('九龍')}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-extrabold transition-all whitespace-nowrap cursor-pointer ${
+            className={`inline-flex items-center justify-center px-3.5 py-1.5 rounded-full text-xs font-extrabold transition-all whitespace-nowrap cursor-pointer ${
               selectedArea === '九龍'
                 ? 'bg-[#141414] text-white shadow-md dark:bg-white dark:text-[#141414]'
                 : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200'
@@ -215,7 +215,7 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
 
           <button
             onClick={() => onSelectArea('新界')}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-extrabold transition-all whitespace-nowrap cursor-pointer ${
+            className={`inline-flex items-center justify-center px-3.5 py-1.5 rounded-full text-xs font-extrabold transition-all whitespace-nowrap cursor-pointer ${
               selectedArea === '新界'
                 ? 'bg-[#141414] text-white shadow-md dark:bg-white dark:text-[#141414]'
                 : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200'
@@ -227,7 +227,7 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
           {/* Filter Toggle: Only issuing tickets */}
           <button
             onClick={onToggleOnlyIssuing}
-            className={`ml-auto px-3.5 py-1.5 rounded-full font-extrabold text-xs transition-all whitespace-nowrap cursor-pointer flex items-center gap-1 ${
+            className={`ml-auto inline-flex items-center justify-center px-3.5 py-1.5 rounded-full font-extrabold text-xs transition-all whitespace-nowrap cursor-pointer gap-1 ${
               onlyIssuingTickets
                 ? 'bg-[#aa151b] text-white shadow-md'
                 : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200'
