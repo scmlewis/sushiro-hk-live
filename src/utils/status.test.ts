@@ -252,11 +252,11 @@ describe('getStoreDisplayStatus', () => {
        wait: 0,
        waitingGroup: 0,
      });
-      expect(res.waitText).toBe('停籌');
-    expect(res.groupText).toBe('--');
-    expect(res.isClosed).toBe(true);
-    expect(res.accentColor).toBe('neutral');
-  });
+     expect(res.waitText).toBe('停籌');
+     expect(res.groupText).toBe('--');
+     expect(res.isClosed).toBe(true);
+     expect(res.accentColor).toBe('purple');
+   });
 
    it('returns 停籌 for local OFF when not done yet', () => {
      const res = getStoreDisplayStatus({

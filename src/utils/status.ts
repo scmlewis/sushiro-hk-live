@@ -132,12 +132,11 @@ export function getStoreDisplayStatus(store: SushiroStore): StoreDisplayStatus {
 
   // 2. 停籌 (walk-in stopped — either no one waiting or people still waiting)
   if (isStopFly) {
-    const hasWaitingGroups = store.waitingGroup > 0;
     return {
       waitText: '停籌',
-      groupText: hasWaitingGroups ? `${store.waitingGroup}組` : '--',
+      groupText: store.waitingGroup > 0 ? `${store.waitingGroup}組` : '--',
       isClosed: true,
-      accentColor: hasWaitingGroups ? 'purple' : 'neutral',
+      accentColor: 'purple',
     };
   }
 
