@@ -60,18 +60,18 @@ export function getTicketStatusInfo(
     };
   }
 
-  /**
-   * 2. 停籌 (walk-in stopped — either finished or suspended with groups)
-   */
+  // 2. 非營業中 (Closed for the day — walk-in stopped and no one waiting)
   if (isStopFly && wait === 0 && waitingGroup === 0) {
     return {
-      label: '停籌',
+      label: '非營業中',
       bgColor: 'bg-slate-500/10',
       textColor: 'text-slate-500',
       borderColor: 'border-slate-500/20',
       dotColor: 'bg-slate-400',
     };
   }
+
+  // 3. 停籌 (Walk-in stopped — people still waiting)
   if (isStopFly) {
     return {
       label: '停籌',
@@ -93,7 +93,7 @@ export function getTicketStatusInfo(
 }
 
 export interface StoreDisplayStatus {
-  waitText: string;        // "休息" | "停飛" | "停籌" | "X分"
+  waitText: string;        // "非營業中" | "停籌" | "X分"
   groupText: string;       // "--" | "X組"
   isClosed: boolean;       // true if store is not servicing
   accentColor: string;     // 'blue' | 'emerald' | 'yellow' | 'orange' | 'red' | 'neutral'
@@ -130,11 +130,21 @@ export function getStoreDisplayStatus(store: SushiroStore): StoreDisplayStatus {
     };
   }
 
-  // 2. 停籌 (walk-in stopped — either no one waiting or people still waiting)
+  // 2. 非營業中 (Closed for the day — walk-in stopped and no one waiting)
+  if (isStopFly && store.wait === 0 && store.waitingGroup === 0) {
+    return {
+      waitText: '非營業中',
+      groupText: '--',
+      isClosed: true,
+      accentColor: 'neutral',
+    };
+  }
+
+  // 3. 停籌 (Walk-in stopped — people still waiting)
   if (isStopFly) {
     return {
       waitText: '停籌',
-      groupText: store.waitingGroup > 0 ? `${store.waitingGroup}組` : '--',
+      groupText: `${store.waitingGroup}組`,
       isClosed: true,
       accentColor: 'purple',
     };
