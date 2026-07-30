@@ -353,7 +353,7 @@ export default function App() {
               />
             </div>
 
-            <div className={`${activeMainTab !== 'all' ? 'hidden' : ''}`}>
+            {activeMainTab === 'all' && (
               <>
                 <DistrictFilterBar
                   regionCounts={regionCounts} selectedArea={filters.selectedArea}
@@ -414,7 +414,7 @@ export default function App() {
                   </div>
                 )}
               </>
-            </div>
+            )}
           </div>
         </main>
 
