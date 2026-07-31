@@ -26,21 +26,21 @@ async function findPlaceId(
   lng: number,
   apiKey: string
 ): Promise<string | null> {
-  // Use nearbySearch — much more reliable than textSearch for finding stores by coordinates
-  const url = `https://places.googleapis.com/v1/places:searchNearby?fields=id,displayName,types&key=${apiKey}`;
+  // searchText with "Sushiro" + location bias — Google matches the brand reliably
+  const url = `https://places.googleapis.com/v1/places:searchText?fields=id,displayName,types,location&key=${apiKey}`;
 
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
+      textQuery: 'Sushiro',
       locationBias: {
         circle: {
           center: { latitude: lat, longitude: lng },
-          radius: 5000.0,
+          radius: 10000.0,
         },
       },
-      includedTypes: ['restaurant'],
-      maxResultCount: 20,
+      maxResultCount: 5,
     }),
   });
 
@@ -49,7 +49,7 @@ async function findPlaceId(
   const data = await res.json();
   const places = data.places ?? [];
 
-  // Find the closest Sushiro
+  // Find the closest Sushiro to the store coordinates
   let bestPlace: { id: string; distance: number } | null = null;
 
   for (const place of places) {
@@ -69,13 +69,13 @@ async function findPlaceId(
 
   if (bestPlace) return bestPlace.id;
 
-  // Fallback: textSearch with just the brand name
-  const textUrl = `https://places.googleapis.com/v1/places:searchText?fields=id,displayName,types&key=${apiKey}`;
-  const textRes = await fetch(textUrl, {
+  // Fallback: try Chinese name
+  const fallbackUrl = `https://places.googleapis.com/v1/places:searchText?fields=id,displayName,types,location&key=${apiKey}`;
+  const fallbackRes = await fetch(fallbackUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      textQuery: `壽司郎 ${nameEn || storeName}`,
+      textQuery: '壽司郎',
       locationBias: {
         circle: {
           center: { latitude: lat, longitude: lng },
@@ -86,12 +86,12 @@ async function findPlaceId(
     }),
   });
 
-  if (!textRes.ok) return null;
+  if (!fallbackRes.ok) return null;
 
-  const textData = await textRes.json();
-  const textPlaces = textData.places ?? [];
+  const fallbackData = await fallbackRes.json();
+  const fallbackPlaces = fallbackData.places ?? [];
 
-  for (const place of textPlaces) {
+  for (const place of fallbackPlaces) {
     const name = (place.displayName?.text ?? '').toLowerCase();
     if (name.includes('sushiro') || name.includes('壽司郎') || name.includes('すしろ') || name.includes('寿司郎')) {
       return place.id;
