@@ -26,11 +26,12 @@ describe('Navbar', () => {
     expect(screen.getByText('LIVE')).toBeInTheDocument();
   });
 
-  it('renders all four tabs', () => {
+  it('renders all tabs', () => {
     render(<Navbar {...defaultProps} />);
     expect(screen.getByText('門市')).toBeInTheDocument();
     expect(screen.getAllByText(/關注/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/比較/).length).toBeGreaterThan(0);
+    expect(screen.getByText('價格')).toBeInTheDocument();
     expect(screen.getByText('關於')).toBeInTheDocument();
   });
 

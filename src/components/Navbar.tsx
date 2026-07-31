@@ -1,13 +1,13 @@
 import React from 'react';
-import { RefreshCw, Heart, Layers, Clock, Store, HelpCircle } from 'lucide-react';
+import { RefreshCw, Heart, Layers, Calculator, Store, HelpCircle, Wallet, Clock } from 'lucide-react';
 
 interface NavbarProps {
   lastUpdated: number | null;
   loading: boolean;
   bookmarkCount: number;
   compareCount: number;
-  activeMainTab: 'all' | 'bookmarks' | 'compare' | 'about';
-  onSelectTab: (tab: 'all' | 'bookmarks' | 'compare' | 'about') => void;
+  activeMainTab: 'all' | 'bookmarks' | 'compare' | 'fare' | 'about';
+  onSelectTab: (tab: 'all' | 'bookmarks' | 'compare' | 'fare' | 'about') => void;
   onGlobalRefresh: () => void;
 }
 
@@ -101,6 +101,19 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span className="hidden sm:inline">門市比較</span>
             <span className="sm:hidden">比較</span>
             <span>({compareCount})</span>
+          </button>
+
+          <button
+            onClick={() => onSelectTab('fare')}
+            className={`px-2.5 sm:px-3 py-1.5 rounded-full font-black text-xs transition-all cursor-pointer flex items-center gap-1 whitespace-nowrap shrink-0 ${
+              activeMainTab === 'fare'
+                ? 'bg-white text-[#aa151b] shadow-sm'
+                : 'text-white hover:bg-white/10'
+            }`}
+          >
+            <Wallet className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">價格計算器</span>
+            <span className="sm:hidden">價格</span>
           </button>
 
           <button

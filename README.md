@@ -34,6 +34,11 @@ Compare 2–4 stores side-by-side with automatic fastest/least-crowded badges.
 
 Enter your ticket number to calculate groups ahead and estimated wait based on live calling progress.
 
+### 價格計算器 / Fare Calculator
+選擇壽司菜品，設定目標預算，系統自動計算含稅總額、剩餘金額，並推薦接近預算的菜品組合。
+
+Select sushi items and set a target budget to calculate the total cost with tax, remaining budget, and suggested combinations.
+
 ### GPS 定位排序 / GPS Distance Sorting
 授權地理位置後，自動計算各門市與您之直線距離，支援「距離最近」排序。
 

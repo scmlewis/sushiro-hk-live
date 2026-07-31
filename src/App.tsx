@@ -14,6 +14,7 @@ import { StoreMap } from './components/StoreMap';
 import { StoreDetailModal } from './components/StoreDetailModal';
 import { CompareView } from './components/CompareView';
 import { AboutSection } from './components/AboutSection';
+import { FareCalculator } from './components/FareCalculator';
 import { Toast } from './components/Toast';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { AlertCircle } from 'lucide-react';
@@ -347,6 +348,19 @@ export default function App() {
 
           <div className="relative">
             <AnimatePresence mode="wait">
+              {activeMainTab === 'fare' && (
+                <motion.div
+                  key="fare"
+                  variants={tabVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ duration: 0.15, ease: 'easeOut' }}
+                >
+                  <FareCalculator onToast={showToast} />
+                </motion.div>
+              )}
+
               {activeMainTab === 'about' && (
                 <motion.div
                   key="about"

@@ -42,7 +42,7 @@ export type SortOption = 'wait-asc' | 'wait-desc' | 'groups-desc' | 'distance-as
 
 export type ViewMode = 'list' | 'map';
 
-export type TabId = 'all' | 'bookmarks' | 'compare' | 'about';
+export type TabId = 'all' | 'bookmarks' | 'compare' | 'fare' | 'about';
 
 export interface ToastMessage {
   id: string;
