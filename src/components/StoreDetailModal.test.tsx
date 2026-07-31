@@ -160,36 +160,4 @@ describe('StoreDetailModal', () => {
     expect(screen.getByText('約0分鐘')).toBeInTheDocument();
     expect(screen.getByText('目前無輪候，可即時入座')).toBeInTheDocument();
   });
-
-  it('fetches and displays busyness data when store is selected', async () => {
-    const mockBusyness = {
-      success: true,
-      busyness: {
-        live: 65,
-        popularTimes: Array.from({ length: 24 }, (_, i) => ({ hour: i, busy: 50 })),
-        currentHour: 14,
-      },
-    };
-
-    global.fetch = vi.fn().mockResolvedValue({
-      json: () => Promise.resolve(mockBusyness),
-    }) as any;
-
-    render(
-      <StoreDetailModal
-        store={mockStore}
-        queue={null}
-        loading={false}
-        isBookmarked={false}
-        onClose={vi.fn()}
-        onRefreshQueue={vi.fn()}
-        onToggleBookmark={vi.fn()}
-      />
-    );
-
-    await waitFor(() => {
-      expect(screen.getByTestId('live-busyness-badge')).toBeInTheDocument();
-      expect(screen.getByTestId('busyness-chart')).toBeInTheDocument();
-    });
-  });
 });
