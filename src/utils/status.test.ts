@@ -297,7 +297,7 @@ it('returns 非營業中 for OPEN + offline + local OFF + 0 wait + 0 group', () 
         wait,
       }).accentColor;
 
-    expect(getAccent(0)).toBe('neutral');
+    expect(getAccent(0)).toBe('blue');
     expect(getAccent(5)).toBe('emerald');
     expect(getAccent(20)).toBe('yellow');
     expect(getAccent(45)).toBe('orange');

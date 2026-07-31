@@ -130,8 +130,8 @@ export function getStoreDisplayStatus(store: SushiroStore): StoreDisplayStatus {
     };
   }
 
-  // 2. 非營業中 (No one waiting — store is effectively done for the day)
-  if (store.wait === 0 && store.waitingGroup === 0) {
+  // 2. 非營業中 (Closed for the day — walk-in stopped and no one waiting)
+  if (isStopFly && store.wait === 0 && store.waitingGroup === 0) {
     return {
       waitText: '非營業中',
       groupText: '--',
