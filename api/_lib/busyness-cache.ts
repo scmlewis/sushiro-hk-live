@@ -27,11 +27,13 @@ async function findPlaceId(
   apiKey: string
 ): Promise<string | null> {
   // searchText with "Sushiro" + location bias — Google matches the brand reliably
-  const url = `https://places.googleapis.com/v1/places:searchText?fields=id,displayName,types,location&key=${apiKey}`;
-
-  const res = await fetch(url, {
+  const res = await fetch('https://places.googleapis.com/v1/places:searchText', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Goog-Api-Key': apiKey,
+      'X-Goog-FieldMask': 'places.id,places.displayName,places.types,places.location',
+    },
     body: JSON.stringify({
       textQuery: 'Sushiro',
       locationBias: {
@@ -70,10 +72,13 @@ async function findPlaceId(
   if (bestPlace) return bestPlace.id;
 
   // Fallback: try Chinese name
-  const fallbackUrl = `https://places.googleapis.com/v1/places:searchText?fields=id,displayName,types,location&key=${apiKey}`;
-  const fallbackRes = await fetch(fallbackUrl, {
+  const fallbackRes = await fetch('https://places.googleapis.com/v1/places:searchText', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Goog-Api-Key': apiKey,
+      'X-Goog-FieldMask': 'places.id,places.displayName,places.types,places.location',
+    },
     body: JSON.stringify({
       textQuery: '壽司郎',
       locationBias: {
@@ -105,10 +110,12 @@ async function getPlaceBusyness(
   placeId: string,
   apiKey: string
 ): Promise<{ live: number | null; popularTimes: PopularTimesHour[] | null }> {
-  const fields = 'currentOpeningHours,popularTimes';
-  const url = `https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}?fields=${fields}&key=${apiKey}`;
-
-  const res = await fetch(url);
+  const res = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}`, {
+    headers: {
+      'X-Goog-Api-Key': apiKey,
+      'X-Goog-FieldMask': 'currentOpeningHours,popularTimes',
+    },
+  });
 
   if (!res.ok) return { live: null, popularTimes: null };
 
