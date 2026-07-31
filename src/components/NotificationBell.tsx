@@ -89,7 +89,6 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
   }, [storeId, onToast]);
 
   if (groupsAhead <= 0) return null;
-  if (!supported) return null;
 
   if (state === 'subscribed') {
     return (
