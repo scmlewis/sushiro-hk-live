@@ -95,21 +95,21 @@ describe('StoreDetailModal', () => {
     expect(numpadBtn).toHaveClass('cursor-not-allowed');
   });
 
-   it('renders non-servicing state when store is finished (非營業中)', () => {
-    const finishedStore = {
-      ...mockStore,
-      storeStatus: 'OPEN' as const,
-      netTicketStatus: 'OFFLINE_MANUAL' as const,
-      localTicketingStatus: 'OFF' as const,
-      wait: 0,
-      waitingGroup: 0,
-    };
-    render(<StoreDetailModal {...defaultProps} store={finishedStore} />);
+it('renders non-servicing state with 停籌 label for OPEN store with local OFF and no queues', () => {
+     const finishedStore = {
+       ...mockStore,
+       storeStatus: 'OPEN' as const,
+       netTicketStatus: 'OFFLINE_MANUAL' as const,
+       localTicketingStatus: 'OFF' as const,
+       wait: 0,
+       waitingGroup: 0,
+     };
+     render(<StoreDetailModal {...defaultProps} store={finishedStore} />);
 
-     expect(screen.getByText('門市非營業中，籌號計算器暫停使用')).toBeInTheDocument();
-     expect(screen.getAllByText('非營業中').length).toBeGreaterThan(0);
-     expect(screen.getByText('等待開門')).toBeInTheDocument();
-  });
+      expect(screen.getByText('門市停籌，籌號計算器暫停使用')).toBeInTheDocument();
+      expect(screen.getAllByText('停籌').length).toBeGreaterThan(0);
+      expect(screen.getByText('等待開門')).toBeInTheDocument();
+   });
 
    it('renders calculator for walk-in stopped store (停籌) with waiting groups', () => {
     const stoppedStore = {

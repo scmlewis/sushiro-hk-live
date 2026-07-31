@@ -53,23 +53,23 @@ describe('CompactStoreRow', () => {
      expect(screen.getByText('停籌')).toBeInTheDocument();
   });
 
-   it('renders 非營業中 when store has finished servicing', () => {
-    render(
-      <CompactStoreRow
-        {...defaultProps}
-        store={{
-          ...mockStore,
-          storeStatus: 'OPEN',
-          netTicketStatus: 'OFFLINE_MANUAL',
-          localTicketingStatus: 'OFF',
-          wait: 0,
-          waitingGroup: 0,
-        }}
-      />
-    );
-      expect(screen.getByText('非營業中')).toBeInTheDocument();
-    expect(screen.getByText('--')).toBeInTheDocument();
-  });
+it('renders 停籌 when localTicketingStatus is OFF and no queues', () => {
+     render(
+       <CompactStoreRow
+         {...defaultProps}
+         store={{
+           ...mockStore,
+           storeStatus: 'OPEN',
+           netTicketStatus: 'OFFLINE_MANUAL',
+           localTicketingStatus: 'OFF',
+           wait: 0,
+           waitingGroup: 0,
+         }}
+       />
+     );
+       expect(screen.getByText('停籌')).toBeInTheDocument();
+     expect(screen.getByText('0組')).toBeInTheDocument();
+   });
 
   it('renders group count for open store', () => {
     render(<CompactStoreRow {...defaultProps} />);
