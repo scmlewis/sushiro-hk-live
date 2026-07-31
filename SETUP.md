@@ -43,16 +43,24 @@ In the Vercel dashboard for `sushiro-hk-live`:
 vercel --prod
 ```
 
-## 5. Verify
+## 5. Set Up External Cron (Required for Real-Time Notifications)
 
-After deploying:
+Vercel's free (hobby) plan doesn't support frequent cron jobs. Use a free external cron service:
+
+1. Go to [https://cron-job.org](https://cron-job.org) (free, no account needed)
+2. Create a new job with URL: `https://your-project.vercel.app/api/notify`
+3. Set schedule to: `*/5 * * * *` (every 5 minutes)
+4. Optional: Add `Authorization` header: `Bearer <CRON_SECRET>`
+
+## 6. Verify
+
 1. Visit the site and open a store with an active queue
 2. Enter a ticket number with groups ahead > 0
 3. Click "通知我 / Notify me" and grant notification permission
-4. Wait for the cron job to fire (every 5 minutes) or trigger manually via Vercel dashboard → Functions → `/api/notify` → Run
+4. The external cron service will check every 5 minutes and send push notifications when your ticket is close
 
 ## Troubleshooting
 
-- **Notifications not arriving**: Check Vercel dashboard → Functions → `/api/notify` for errors
-- **"Subscription expired" errors**: Normal — stale registrations are pruned automatically by the cron job
+- **Notifications not arriving**: Check the external cron service logs for errors hitting `/api/notify`
+- **"Subscription expired" errors**: Normal — stale registrations are pruned automatically by the notify endpoint
 - **KV connection errors**: Verify `KV_REST_API_URL` and `KV_REST_API_TOKEN` are set correctly in the Vercel environment variables
