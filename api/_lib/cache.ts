@@ -1,16 +1,3 @@
-interface CacheEntry<T> {
-  data: T;
-  timestamp: number;
-}
-
-const storesCache: { current: CacheEntry<unknown> | null } = { current: null };
-const queuesCache = new Map<string, CacheEntry<unknown>>();
-
-// Cache TTLs and fetch timeout (ms)
-const STORES_CACHE_TTL = 30_000;
-const QUEUE_CACHE_TTL = 15_000;
-const FETCH_TIMEOUT_MS = 8_000;
-
 export async function fetchWithTimeout(url: string, options: RequestInit = {}): Promise<Response> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
@@ -23,6 +10,7 @@ export async function fetchWithTimeout(url: string, options: RequestInit = {}): 
         'Accept': 'application/json, text/plain, */*',
         'Accept-Language': 'zh-HK,zh;q=0.9,en-US;q=0.8,en;q=0.7',
         ...options.headers,
+        'Cache-Control': 's-maxage=15, stale-while-revalidate=60',
       },
     });
   } finally {
@@ -102,4 +90,5 @@ export async function getQueueData(storeId: string, forceFresh = false) {
     };
     return { data: emptyQueue, cached: false, timestamp: now, error: err.message };
   }
+}
 }
