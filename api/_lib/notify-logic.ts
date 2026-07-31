@@ -1,4 +1,4 @@
-import { GroupQueue } from '../../src/types';
+import type { GroupQueue } from '../../src/types';
 
 export interface NotificationTier {
   shouldNotify: boolean;

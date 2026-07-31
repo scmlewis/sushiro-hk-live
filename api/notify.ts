@@ -3,7 +3,7 @@ import { kvGet, kvSet, kvDel } from './_lib/kv.js';
 import { sendPushNotification } from './_lib/push.js';
 import { calculateTicketPosition, getNotificationTier } from './_lib/notify-logic.js';
 import { getQueueData } from './_lib/cache.js';
-import { GroupQueue } from '../src/types';
+import type { GroupQueue } from '../src/types';
 
 const TTL_MS = 4 * 60 * 60 * 1000; // 4 hours
 
