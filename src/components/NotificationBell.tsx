@@ -36,7 +36,12 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
 
   const handleSubscribe = useCallback(async () => {
     if (!supported) {
-      onToast('您的瀏覽器不支援推播通知', 'warning');
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      if (isIOS) {
+        onToast('請將此網站加入主畫面以啟用推播通知 / Add to Home Screen to enable push notifications', 'warning');
+      } else {
+        onToast('您的瀏覽器不支援推播通知', 'warning');
+      }
       return;
     }
 
