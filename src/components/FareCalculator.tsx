@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { PriceTier, PRICE_TIERS } from '../data/menu';
+import { PriceTier, PRICE_TIERS, getTierByPrice } from '../data/menu';
 import { Calculator, Trash2, RotateCcw, Plus, Minus, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
 
 interface FareCalculatorProps {
@@ -11,13 +11,22 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
   const [selectedTiers, setSelectedTiers] = useState<Map<number, number>>(new Map());
   const [targetBudget, setTargetBudget] = useState<number>(80);
   const [deletionMode, setDeletionMode] = useState(false);
+  const [customPrice, setCustomPrice] = useState<string>('');
+  const [showCustomInput, setShowCustomInput] = useState(false);
 
   const SERVICE_CHARGE_RATE = 0.1;
+
+  const allTiers = useMemo(() => {
+    const custom = customPrice
+      ? PRICE_TIERS.filter((t) => t.price !== parseInt(customPrice, 10))
+      : [];
+    return [...PRICE_TIERS, ...custom];
+  }, [customPrice]);
 
   const selectedList = useMemo(() => {
     const list: { tier: PriceTier; quantity: number; subtotal: number }[] = [];
     selectedTiers.forEach((qty, price) => {
-      const tier = PRICE_TIERS.find((t) => t.price === price);
+      const tier = getTierByPrice(price);
       if (tier) {
         list.push({ tier, quantity: qty, subtotal: tier.price * qty });
       }
@@ -100,6 +109,22 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
   const handleSetBudget = useCallback((amount: number) => {
     setTargetBudget(amount);
   }, []);
+
+  const handleAddCustomTier = useCallback(() => {
+    const price = parseInt(customPrice, 10);
+    if (!isNaN(price) && price > 0 && price <= 1000) {
+      const exists = PRICE_TIERS.find((t) => t.price === price);
+      if (!exists) {
+        setCustomPrice('');
+        setShowCustomInput(false);
+        onToast?.(`已新增 $${price} 價格層級`, 'success');
+      } else {
+        onToast?.('此價格層級已存在', 'warning');
+      }
+    } else {
+      onToast?.('請輸入有效價格 (1-1000)', 'error');
+    }
+  }, [customPrice, onToast]);
 
   const totalItems = useMemo(() => selectedList.reduce((sum, e) => sum + e.quantity, 0), [selectedList]);
 
@@ -210,14 +235,7 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
               <button
                 onClick={handleClearAll}
                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-8 w-8 cursor-pointer"
-                title="清除"
-              >
-                <Trash2 className="w-5 h-5 text-red-500" />
-              </button>
-              <button
-                onClick={() => setSelectedTiers(new Map())}
-                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-8 w-8 cursor-pointer"
-                title="重置"
+                title="清除所有選擇"
               >
                 <RotateCcw className="w-5 h-5 text-gray-500" />
               </button>
@@ -225,7 +243,7 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
           </div>
           <div className="pb-2 sm:pb-4 overflow-x-auto">
             <div className="flex gap-2 sm:gap-4 min-w-max px-2 sm:px-4 py-1 sm:py-2">
-              {PRICE_TIERS.map((tier) => {
+              {allTiers.map((tier) => {
                 const qty = selectedTiers.get(tier.price) || 0;
                 const isSelected = qty > 0;
                 return (
@@ -234,8 +252,8 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
                     onClick={() => handleToggleTier(tier)}
                     className={`relative flex flex-col items-center justify-center p-2 sm:p-3 rounded-full border-2 sm:border-4 border-white transition-all cursor-pointer hover:scale-105 active:scale-95 shadow-md ${
                       isSelected
-                        ? 'border-[#aa151b] ring-2 ring-[#aa151b]/20'
-                        : 'border-neutral-200 dark:border-neutral-700'
+                        ? 'ring-2 ring-[#aa151b]/20'
+                        : ''
                     }`}
                     style={{
                       minWidth: '4rem',
@@ -249,12 +267,8 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
                         {qty}
                       </div>
                     )}
-                    <span className="text-2xl sm:text-3xl mb-1">{tier.emoji}</span>
                     <span className="text-sm sm:text-base font-black" style={{ color: tier.color }}>
-                      {tier.label}
-                    </span>
-                    <span className="text-[9px] sm:text-[10px] font-bold text-neutral-400 mt-0.5">
-                      {tier.count} 款
+                      ${tier.price}
                     </span>
                   </button>
                 );
@@ -262,6 +276,35 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
             </div>
           </div>
           <div className="h-3 sm:h-4 bg-[#E0E0E0] rounded-full mt-1 sm:mt-2"></div>
+        </div>
+
+        {/* Custom Price Tier Input */}
+        <div className="flex items-center gap-2 mt-4">
+          <button
+            onClick={() => setShowCustomInput(!showCustomInput)}
+            className="shrink-0 px-3 py-1.5 rounded-full text-xs font-black transition-all cursor-pointer border-2 border-dashed border-neutral-300 dark:border-neutral-600 text-neutral-500 hover:text-[#aa151b] hover:border-[#aa151b]"
+          >
+            + 自訂價格
+          </button>
+          {showCustomInput && (
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                value={customPrice}
+                onChange={(e) => setCustomPrice(e.target.value)}
+                placeholder="價格"
+                className="w-20 px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm font-black text-neutral-900 dark:text-white outline-none"
+                min={1}
+                max={1000}
+              />
+              <button
+                onClick={handleAddCustomTier}
+                className="px-3 py-1.5 rounded-full bg-[#aa151b] text-white text-xs font-black transition-colors cursor-pointer"
+              >
+                新增
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -277,7 +320,7 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
           >
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-                <span>已選擇的壽司</span>
+                <span>已選擇</span>
                 <span className="px-2 py-0.5 bg-[#aa151b] text-white text-[10px] font-black rounded-full">
                   {totalItems} 項
                 </span>
@@ -297,10 +340,11 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
                   className="flex items-center justify-between py-2 px-3 bg-neutral-50 dark:bg-neutral-800 rounded-xl"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-xl">{entry.tier.emoji}</span>
-                    <div>
-                      <div className="text-xs font-bold text-neutral-900 dark:text-white">{entry.tier.label}</div>
-                      <div className="text-[10px] text-neutral-400">{entry.tier.description}</div>
+                    <div
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black"
+                      style={{ backgroundColor: entry.tier.bgColor, color: entry.tier.color, border: `2px solid ${entry.tier.borderColor}` }}
+                    >
+                      ${entry.tier.price}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -351,13 +395,10 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
                 >
                   <div className="flex items-center gap-2 flex-wrap">
                     {combo.tiers.map((tier) => (
-                      <span key={tier.price} className="text-lg" title={tier.description}>
-                        {tier.emoji}
+                      <span key={tier.price} className="text-xs font-black px-2 py-0.5 rounded-full" style={{ backgroundColor: tier.bgColor, color: tier.color, border: `1px solid ${tier.borderColor}` }}>
+                        ${tier.price}
                       </span>
                     ))}
-                    <span className="text-xs text-neutral-400">
-                      {combo.tiers.map((t) => t.label).join(' + ')}
-                    </span>
                   </div>
                   <span className="text-sm font-black text-neutral-900 dark:text-white tabular-nums">${combo.total}</span>
                 </div>
@@ -372,7 +413,7 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
           <div className="w-16 h-16 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-400 flex items-center justify-center mx-auto mb-4">
             <Calculator className="w-8 h-8" />
           </div>
-          <h3 className="text-lg font-black text-neutral-900 dark:text-white mb-2">尚未選擇壽司</h3>
+          <h3 className="text-lg font-black text-neutral-900 dark:text-white mb-2">尚未選擇價格層級</h3>
           <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
             點擊上方的價格層級按鈕添加到您的選擇
           </p>

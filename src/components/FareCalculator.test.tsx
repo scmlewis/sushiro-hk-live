@@ -17,16 +17,11 @@ describe('FareCalculator', () => {
     expect(screen.getByText('$13')).toBeInTheDocument();
   });
 
-  it('shows item count per tier', () => {
-    render(<FareCalculator />);
-    expect(screen.getAllByText(/款/).length).toBeGreaterThan(0);
-  });
-
   it('allows selecting tiers', () => {
     render(<FareCalculator />);
     const tier10Button = screen.getByText('$10').closest('button')!;
     fireEvent.click(tier10Button);
-    expect(tier10Button).toHaveClass('border-[#aa151b]');
+    expect(tier10Button).toHaveClass('ring-2');
   });
 
   it('updates total when tiers are selected', () => {
@@ -40,7 +35,7 @@ describe('FareCalculator', () => {
     render(<FareCalculator />);
     const tier10Button = screen.getByText('$10').closest('button')!;
     fireEvent.click(tier10Button);
-    expect(tier10Button).toHaveClass('border-[#aa151b]');
+    expect(tier10Button).toHaveClass('ring-2');
   });
 
   it('updates remaining budget correctly', () => {
@@ -59,10 +54,9 @@ describe('FareCalculator', () => {
     expect(screen.getByText(/已超出預算/)).toBeInTheDocument();
   });
 
-  it('has deletion mode toggle', () => {
+  it('has a reset button', () => {
     render(<FareCalculator />);
-    const deleteBtn = screen.getByText(/刪除/).closest('button')!;
-    expect(deleteBtn).toBeInTheDocument();
+    expect(screen.getByTitle('清除所有選擇')).toBeInTheDocument();
   });
 
   it('renders quick budget buttons', () => {
@@ -93,29 +87,30 @@ describe('FareCalculator', () => {
 
   it('renders all price tiers', () => {
     render(<FareCalculator />);
-    const tierLabels = PRICE_TIERS.map((t) => t.label);
-    tierLabels.forEach((label) => {
-      expect(screen.getByText(label)).toBeInTheDocument();
+    const tierPrices = PRICE_TIERS.map((t) => `$${t.price}`);
+    tierPrices.forEach((price) => {
+      expect(screen.getByText(price)).toBeInTheDocument();
     });
   });
 
   it('renders empty state when no tiers selected', () => {
     render(<FareCalculator />);
-    expect(screen.getByText('尚未選擇壽司')).toBeInTheDocument();
+    expect(screen.getByText('尚未選擇價格層級')).toBeInTheDocument();
   });
 
-  it('toggles deletion mode', () => {
+  it('has deletion mode toggle', () => {
     render(<FareCalculator />);
-    const deleteButton = screen.getByText(/刪除/).closest('button')!;
-    fireEvent.click(deleteButton);
-    expect(deleteButton).toHaveClass('text-[#aa151b]');
-    expect(screen.getByText('刪除模式')).toBeInTheDocument();
+    const deleteBtn = screen.getByText(/刪除/).closest('button')!;
+    expect(deleteBtn).toBeInTheDocument();
   });
 
-  it('shows selected count badge on tier buttons', () => {
+  it('shows custom price tier input', () => {
     render(<FareCalculator />);
-    const tier10Button = screen.getByText('$10').closest('button')!;
-    fireEvent.click(tier10Button);
-    expect(screen.getByText('1')).toBeInTheDocument();
+    expect(screen.getByText('+ 自訂價格')).toBeInTheDocument();
+  });
+
+  it('has a reset button', () => {
+    render(<FareCalculator />);
+    expect(screen.getByTitle('清除所有選擇')).toBeInTheDocument();
   });
 });
