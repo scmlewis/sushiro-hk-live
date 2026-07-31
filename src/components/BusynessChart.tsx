@@ -7,7 +7,7 @@ interface BusynessChartProps {
   currentHour: number;
 }
 
-const getBarColor = (hour: number, currentHour: number, busy: number): string => {
+export const getBarColor = (hour: number, currentHour: number, busy: number): string => {
   if (hour < currentHour) return '#d4d4d4'; // past: neutral-300
   if (hour === currentHour) return '#aa151b'; // current: brand red
   if (busy >= 75) return '#aa151b';
@@ -16,7 +16,7 @@ const getBarColor = (hour: number, currentHour: number, busy: number): string =>
   return '#10b981';
 };
 
-const CustomTooltip = ({ active, payload }: any) => {
+export const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     const hour = payload[0].payload.hour;
     const busy = payload[0].value;

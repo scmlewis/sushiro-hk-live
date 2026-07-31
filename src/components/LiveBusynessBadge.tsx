@@ -4,7 +4,7 @@ interface LiveBusynessBadgeProps {
   live: number | null;
 }
 
-const getBusynessLevel = (live: number): { label: string; color: string; bgColor: string; borderColor: string } => {
+export const getBusynessLevel = (live: number): { label: string; color: string; bgColor: string; borderColor: string } => {
   if (live >= 75) return {
     label: '非常繁忙',
     color: 'text-red-700 dark:text-red-300',
