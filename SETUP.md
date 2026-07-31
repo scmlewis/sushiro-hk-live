@@ -48,7 +48,7 @@ vercel --prod
 Vercel's free (hobby) plan doesn't support frequent cron jobs. Use a free external cron service:
 
 1. Go to [https://cron-job.org](https://cron-job.org) (free, no account needed)
-2. Create a new job with URL: `https://your-project.vercel.app/api/notify`
+2. Create a new job with URL: `https://sushiqueue.vercel.app/api/notify`
 3. Set schedule to: `*/5 * * * *` (every 5 minutes)
 4. Optional: Add `Authorization` header: `Bearer <CRON_SECRET>`
 
