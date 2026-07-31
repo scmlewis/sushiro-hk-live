@@ -491,6 +491,7 @@ export default function App() {
               onClose={() => setSelectedStoreModal(null)}
               onRefreshQueue={handleManualStoreRefresh}
               onToggleBookmark={handleToggleBookmark}
+              onToast={showToast}
             />
           )}
         </AnimatePresence>
