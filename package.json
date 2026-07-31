@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.14",
-    "@vercel/kv": "^3.0.0",
+    "@upstash/redis": "^1.38.0",
     "@vitejs/plugin-react": "^5.0.4",
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",

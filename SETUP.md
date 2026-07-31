@@ -1,8 +1,16 @@
 # Setup Guide — Ticket Notification System
 
-Before deploying, configure these Vercel environment variables for the notification system to work.
+Before deploying, configure Upstash Redis and VAPID keys for the notification system to work.
 
-## 1. Generate VAPID Keys
+## 1. Create an Upstash Redis Instance
+
+1. Go to [https://console.upstash.com](https://console.upstash.com)
+2. Sign in with GitHub
+3. Click **Create Database**
+4. Choose a region closest to your users (e.g., Asia Pacific for Hong Kong)
+5. Note the **REST URL** and **AUTH token**
+
+## 2. Generate VAPID Keys
 
 Run in any terminal (not this one):
 
@@ -12,21 +20,7 @@ npx web-push generate-vapid-keys
 
 Copy the **Public Key** and **Private Key** output.
 
-## 2. Create a Vercel KV Store
-
-1. Go to [https://vercel.com/dashboard](https://vercel.com/dashboard)
-2. Open your `sushiro-hk-live` project
-3. Click **Settings** (gear icon, bottom-left of sidebar)
-4. In the left panel, scroll to **Storage**
-5. Click **Create Database** → **KV**
-6. Note the **REST API URL** and **REST API Token** shown after creation
-
-If you don't see "Storage" in the sidebar:
-- Make sure you're on the **Settings** page (not General or Analytics)
-- Scroll the left sidebar — it's near the bottom, above "General"
-- If your plan doesn't support KV, upgrade to any paid Vercel plan
-
-## 3. Configure Environment Variables
+## 3. Configure Environment Variables in Vercel
 
 In the Vercel dashboard for `sushiro-hk-live`:
 
@@ -36,8 +30,8 @@ In the Vercel dashboard for `sushiro-hk-live`:
 
 | Variable Name | Value |
 |---|---|
-| `KV_REST_API_URL` | From step 2 (REST API URL) |
-| `KV_REST_API_TOKEN` | From step 2 (REST API Token) |
+| `KV_REST_API_URL` | Upstash REST URL from step 1 |
+| `KV_REST_API_TOKEN` | Upstash AUTH token from step 1 |
 | `VAPID_PUBLIC_KEY` | Public key from `web-push generate-vapid-keys` |
 | `VAPID_PRIVATE_KEY` | Private key from `web-push generate-vapid-keys` |
 | `VAPID_EMAIL` | `mailto:your-email@example.com` |
@@ -60,5 +54,5 @@ After deploying:
 ## Troubleshooting
 
 - **Notifications not arriving**: Check Vercel dashboard → Functions → `/api/notify` for errors
-- **"Subscription expired" errors**: Normal — stale registrations are pruned automatically
-- **KV quota exceeded**: Free tier allows 10K reads/day and 100K writes/month; should be sufficient for this app's scale
+- **"Subscription expired" errors**: Normal — stale registrations are pruned automatically by the cron job
+- **KV connection errors**: Verify `KV_REST_API_URL` and `KV_REST_API_TOKEN` are set correctly in the Vercel environment variables
