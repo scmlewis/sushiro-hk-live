@@ -47,7 +47,6 @@ export function getTicketStatusInfo(
   waitingGroup = 0
 ): StatusBadge {
   const isStopFly = isLocalTicketingOff(localTicketingStatus);
-  const isOffline = !isStoreIssuing(netTicketStatus, storeStatus, localTicketingStatus);
 
   // 1. 門市非營業中
   if (storeStatus !== 'OPEN') {
@@ -60,18 +59,7 @@ export function getTicketStatusInfo(
     };
   }
 
-  // 2. 非營業中 (Closed for the day — walk-in stopped and no one waiting)
-  if (isStopFly && wait === 0 && waitingGroup === 0) {
-    return {
-      label: '非營業中',
-      bgColor: 'bg-slate-500/10',
-      textColor: 'text-slate-500',
-      borderColor: 'border-slate-500/20',
-      dotColor: 'bg-slate-400',
-    };
-  }
-
-  // 3. 停籌 (Walk-in stopped — people still waiting)
+  // 2. 停籌 (Walk-in stopped — store is open but not accepting walk-ins)
   if (isStopFly) {
     return {
       label: '停籌',
@@ -79,6 +67,17 @@ export function getTicketStatusInfo(
       textColor: 'text-[#8b5cf6] dark:text-violet-400',
       borderColor: 'border-[#8b5cf6]/20',
       dotColor: 'bg-[#8b5cf6]',
+    };
+  }
+
+  // 3. 非營業中 — no one waiting (defensive: OPEN + ON + 0/0, likely stale upstream data)
+  if (wait === 0 && waitingGroup === 0) {
+    return {
+      label: '非營業中',
+      bgColor: 'bg-slate-500/10',
+      textColor: 'text-slate-500',
+      borderColor: 'border-slate-500/20',
+      dotColor: 'bg-slate-400',
     };
   }
 
@@ -101,18 +100,15 @@ export interface StoreDisplayStatus {
 
 export function isStoreServicing(store: SushiroStore): boolean {
   if (store.storeStatus !== 'OPEN') return false;
-  const isStopFly = isLocalTicketingOff(store.localTicketingStatus);
-  
-  // 停籌 (Stop walk-in — either finished or serving remaining groups)
-  if (isStopFly && store.wait === 0 && store.waitingGroup === 0) {
-    return false;
-  }
-  
-  // 停飛 (Walk-in stopped) — but people are still in queue, calculator should work
-  if (isStopFly) {
+
+  // No one waiting — nothing to service
+  if (store.wait === 0 && store.waitingGroup === 0) return false;
+
+  // Walk-in stopped but still has queue
+  if (isLocalTicketingOff(store.localTicketingStatus)) {
     return store.waitingGroup > 0;
   }
-  
+
   return true;
 }
 
@@ -130,23 +126,23 @@ export function getStoreDisplayStatus(store: SushiroStore): StoreDisplayStatus {
     };
   }
 
-  // 2. 非營業中 (Closed for the day — walk-in stopped and no one waiting)
-  if (isStopFly && store.wait === 0 && store.waitingGroup === 0) {
-    return {
-      waitText: '非營業中',
-      groupText: '--',
-      isClosed: true,
-      accentColor: 'neutral',
-    };
-  }
-
-  // 3. 停籌 (Walk-in stopped — people still waiting)
+  // 2. 停籌 (Walk-in stopped — store is open but not accepting walk-ins)
   if (isStopFly) {
     return {
       waitText: '停籌',
       groupText: `${store.waitingGroup}組`,
       isClosed: true,
       accentColor: 'purple',
+    };
+  }
+
+  // 3. 非營業中 — no one waiting (defensive: OPEN + ON + 0/0, likely stale upstream data)
+  if (store.wait === 0 && store.waitingGroup === 0) {
+    return {
+      waitText: '非營業中',
+      groupText: '--',
+      isClosed: true,
+      accentColor: 'neutral',
     };
   }
 
