@@ -19,7 +19,7 @@ export const MAX_COMPARE_STORES = 4;
 /** Total number of Sushiro stores in HK (display-only, not enforced) */
 export const TOTAL_STORE_COUNT = 44;
 
-// ── Cache TTLs ──
+// ── Cache TTLs (api/_lib/cache.ts) ──
 
 /** Stores list cache TTL (ms) */
 export const STORES_CACHE_TTL = 30_000;

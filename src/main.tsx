@@ -20,5 +20,12 @@ if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
         console.warn('[ServiceWorker] Registration failed:', err);
       });
   });
+} else if ('serviceWorker' in navigator) {
+  // Also register in dev mode so offline caching works in preview
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('/sw.js')
+      .catch(() => {});
+  });
 }
 

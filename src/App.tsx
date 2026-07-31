@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { SushiroStore, StoreQueueMap, ToastMessage, TabId } from './types';
 import { FALLBACK_LOCATION, TEXT_SIZE_MAP, TOTAL_STORE_COUNT, MAX_COMPARE_STORES, POLL_INTERVAL_MS, BRAND_COLOR } from './config';
 import { calculateDistanceKm, getCurrentPosition } from './utils/geolocation';
-import { getStoreRegion, isStoreServicing, isStoreIssuing } from './utils/status';
+import { getStoreRegion, isStoreServicing } from './utils/status';
 import { useBookmarks } from './hooks/useBookmarks';
 import { useTextSize, useViewMode, useFilters } from './hooks/useFilters';
 import { Navbar } from './components/Navbar';
@@ -273,7 +273,7 @@ export default function App() {
     }
 
     if (filters.onlyIssuingTickets) {
-      list = list.filter((s) => isStoreIssuing(s.netTicketStatus, s.storeStatus, s.localTicketingStatus));
+      list = list.filter((s) => isStoreServicing(s));
     }
 
     list.sort((a, b) => {
