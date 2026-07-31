@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PriceTier, PRICE_TIERS } from '../data/menu';
-import { Calculator, Filter, Trash2, RotateCcw, Plus, Minus, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
+import { Calculator, Trash2, RotateCcw, Plus, Minus, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
 
 interface FareCalculatorProps {
   onToast?: (text: string, type: 'success' | 'info' | 'warning' | 'error') => void;
@@ -10,8 +10,9 @@ interface FareCalculatorProps {
 export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
   const [selectedTiers, setSelectedTiers] = useState<Map<number, number>>(new Map());
   const [targetBudget, setTargetBudget] = useState<number>(80);
+  const [deletionMode, setDeletionMode] = useState(false);
 
-  const TAX_RATE = 0.1;
+  const SERVICE_CHARGE_RATE = 0.1;
 
   const selectedList = useMemo(() => {
     const list: { tier: PriceTier; quantity: number; subtotal: number }[] = [];
@@ -25,8 +26,8 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
   }, [selectedTiers]);
 
   const subtotal = useMemo(() => selectedList.reduce((sum, entry) => sum + entry.subtotal, 0), [selectedList]);
-  const tax = useMemo(() => Math.round(subtotal * TAX_RATE), [subtotal]);
-  const total = useMemo(() => subtotal + tax, [subtotal, tax]);
+  const serviceCharge = useMemo(() => Math.round(subtotal * SERVICE_CHARGE_RATE), [subtotal]);
+  const total = useMemo(() => subtotal + serviceCharge, [subtotal, serviceCharge]);
   const remaining = useMemo(() => targetBudget - total, [targetBudget, total]);
 
   const combinations = useMemo(() => {
@@ -50,21 +51,25 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
   }, [remaining, total]);
 
   const handleToggleTier = useCallback((tier: PriceTier) => {
-    setSelectedTiers((prev) => {
-      const next = new Map(prev);
-      const current = next.get(tier.price) || 0;
-      if (current > 0) {
-        if (current === 1) {
+    if (deletionMode) {
+      setSelectedTiers((prev) => {
+        const next = new Map(prev);
+        const current = next.get(tier.price) || 0;
+        if (current <= 1) {
           next.delete(tier.price);
         } else {
           next.set(tier.price, current - 1);
         }
-      } else {
-        next.set(tier.price, 1);
-      }
-      return next;
-    });
-  }, []);
+        return next;
+      });
+    } else {
+      setSelectedTiers((prev) => {
+        const next = new Map(prev);
+        next.set(tier.price, (next.get(tier.price) || 0) + 1);
+        return next;
+      });
+    }
+  }, [deletionMode]);
 
   const handleIncrement = useCallback((tier: PriceTier) => {
     setSelectedTiers((prev) => {
@@ -108,11 +113,15 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
             <span>價格計算器</span>
           </h3>
           <button
-            onClick={handleClearAll}
-            className="flex items-center gap-1 text-xs font-bold text-neutral-500 hover:text-[#aa151b] transition-colors cursor-pointer"
+            onClick={() => setDeletionMode(!deletionMode)}
+            className={`flex items-center gap-1 text-xs font-bold transition-colors cursor-pointer ${
+              deletionMode
+                ? 'text-[#aa151b] bg-red-50 dark:bg-red-950/40 px-2 py-1 rounded-lg border border-red-200 dark:border-red-800'
+                : 'text-neutral-500 hover:text-[#aa151b]'
+            }`}
           >
             <Trash2 className="w-3.5 h-3.5" />
-            <span>清除</span>
+            <span>{deletionMode ? '刪除模式' : '刪除'}</span>
           </button>
         </div>
 
@@ -139,7 +148,7 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
             <div className="text-lg font-black text-[#aa151b] tabular-nums">${subtotal}</div>
           </div>
           <div className="bg-neutral-50 dark:bg-neutral-800 rounded-xl p-3 border border-neutral-200 dark:border-neutral-700 text-center">
-            <div className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1">含稅 (+10%)</div>
+            <div className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1">加一服務費 (+10%)</div>
             <div className="text-lg font-black text-neutral-900 dark:text-white tabular-nums">${total}</div>
           </div>
           <div className="bg-neutral-50 dark:bg-neutral-800 rounded-xl p-3 border border-neutral-200 dark:border-neutral-700 text-center">
@@ -218,16 +227,22 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
             <div className="flex gap-2 sm:gap-4 min-w-max px-2 sm:px-4 py-1 sm:py-2">
               {PRICE_TIERS.map((tier) => {
                 const qty = selectedTiers.get(tier.price) || 0;
+                const isSelected = qty > 0;
                 return (
                   <button
                     key={tier.price}
                     onClick={() => handleToggleTier(tier)}
                     className={`relative flex flex-col items-center justify-center p-2 sm:p-3 rounded-full border-2 sm:border-4 border-white transition-all cursor-pointer hover:scale-105 active:scale-95 shadow-md ${
-                      qty > 0
-                        ? 'border-[#aa151b] bg-red-50 dark:bg-red-950/30'
-                        : 'bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700'
+                      isSelected
+                        ? 'border-[#aa151b] ring-2 ring-[#aa151b]/20'
+                        : 'border-neutral-200 dark:border-neutral-700'
                     }`}
-                    style={{ minWidth: '4rem', minHeight: '4rem' }}
+                    style={{
+                      minWidth: '4rem',
+                      minHeight: '4rem',
+                      backgroundColor: tier.bgColor,
+                      borderColor: isSelected ? '#aa151b' : tier.borderColor,
+                    }}
                   >
                     {qty > 0 && (
                       <div className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-[#aa151b] text-white text-[10px] font-black rounded-full flex items-center justify-center">
@@ -235,7 +250,7 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
                       </div>
                     )}
                     <span className="text-2xl sm:text-3xl mb-1">{tier.emoji}</span>
-                    <span className="text-sm sm:text-base font-black text-neutral-900 dark:text-white">
+                    <span className="text-sm sm:text-base font-black" style={{ color: tier.color }}>
                       {tier.label}
                     </span>
                     <span className="text-[9px] sm:text-[10px] font-bold text-neutral-400 mt-0.5">
@@ -308,7 +323,7 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
               ))}
             </div>
             <div className="mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-700 flex items-center justify-between">
-              <span className="text-xs font-bold text-neutral-500">小計 (含稅)</span>
+              <span className="text-xs font-bold text-neutral-500">小計 (加一服務費)</span>
               <span className="text-lg font-black text-[#aa151b] tabular-nums">${total}</span>
             </div>
           </motion.div>
@@ -326,7 +341,6 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
             className="bg-white dark:bg-neutral-900 border-2 border-neutral-200 dark:border-neutral-800 rounded-2xl p-4 sm:p-6 shadow-sm"
           >
             <h3 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2 mb-3">
-              <Filter className="w-4 h-4 text-[#aa151b]" />
               <span>接近預算的組合</span>
             </h3>
             <div className="space-y-2">

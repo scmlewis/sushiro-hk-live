@@ -22,11 +22,11 @@ describe('FareCalculator', () => {
     expect(screen.getAllByText(/款/).length).toBeGreaterThan(0);
   });
 
-  it('allows selecting and deselecting tiers', () => {
+  it('allows selecting tiers', () => {
     render(<FareCalculator />);
     const tier10Button = screen.getByText('$10').closest('button')!;
     fireEvent.click(tier10Button);
-    expect(screen.getByText('已選 1 項')).toBeInTheDocument();
+    expect(tier10Button).toHaveClass('border-[#aa151b]');
   });
 
   it('updates total when tiers are selected', () => {
@@ -36,13 +36,11 @@ describe('FareCalculator', () => {
     expect(screen.getByText('當前總額')).toBeInTheDocument();
   });
 
-  it('toggles tier selection on click', () => {
+  it('adds tier on click', () => {
     render(<FareCalculator />);
     const tier10Button = screen.getByText('$10').closest('button')!;
     fireEvent.click(tier10Button);
     expect(tier10Button).toHaveClass('border-[#aa151b]');
-    fireEvent.click(tier10Button);
-    expect(tier10Button).not.toHaveClass('border-[#aa151b]');
   });
 
   it('updates remaining budget correctly', () => {
@@ -61,13 +59,10 @@ describe('FareCalculator', () => {
     expect(screen.getByText(/已超出預算/)).toBeInTheDocument();
   });
 
-  it('clears all selections', () => {
+  it('has deletion mode toggle', () => {
     render(<FareCalculator />);
-    const tier10Button = screen.getByText('$10').closest('button')!;
-    fireEvent.click(tier10Button);
-    const clearButton = screen.getByText('清除').closest('button')!;
-    fireEvent.click(clearButton);
-    expect(screen.getByText('尚未選擇壽司')).toBeInTheDocument();
+    const deleteBtn = screen.getByText(/刪除/).closest('button')!;
+    expect(deleteBtn).toBeInTheDocument();
   });
 
   it('renders quick budget buttons', () => {
@@ -91,24 +86,30 @@ describe('FareCalculator', () => {
     expect(screen.getByDisplayValue('100')).toBeInTheDocument();
   });
 
-  it('renders tax calculation correctly', () => {
+  it('renders service charge label', () => {
     render(<FareCalculator />);
-    const tier10Button = screen.getByText('$10').closest('button')!;
-    fireEvent.click(tier10Button);
-    expect(screen.getByText('含稅 (+10%)')).toBeInTheDocument();
+    expect(screen.getByText('加一服務費 (+10%)')).toBeInTheDocument();
   });
 
   it('renders all price tiers', () => {
     render(<FareCalculator />);
-    const tierPrices = PRICE_TIERS.map((t) => t.label);
-    tierPrices.forEach((price) => {
-      expect(screen.getByText(price)).toBeInTheDocument();
+    const tierLabels = PRICE_TIERS.map((t) => t.label);
+    tierLabels.forEach((label) => {
+      expect(screen.getByText(label)).toBeInTheDocument();
     });
   });
 
   it('renders empty state when no tiers selected', () => {
     render(<FareCalculator />);
     expect(screen.getByText('尚未選擇壽司')).toBeInTheDocument();
+  });
+
+  it('toggles deletion mode', () => {
+    render(<FareCalculator />);
+    const deleteButton = screen.getByText(/刪除/).closest('button')!;
+    fireEvent.click(deleteButton);
+    expect(deleteButton).toHaveClass('text-[#aa151b]');
+    expect(screen.getByText('刪除模式')).toBeInTheDocument();
   });
 
   it('shows selected count badge on tier buttons', () => {
