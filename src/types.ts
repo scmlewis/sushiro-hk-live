@@ -49,3 +49,21 @@ export interface ToastMessage {
   text: string;
   type: 'success' | 'info' | 'warning' | 'error';
 }
+
+export interface PopularTimesHour {
+  hour: number;       // 0-23
+  busy: number;       // 0-100
+}
+
+export interface BusynessData {
+  live: number | null;                    // 0-100, current occupancy vs typical
+  popularTimes: PopularTimesHour[] | null; // 24 entries, one per hour
+  currentHour: number;                     // 0-23, HK timezone
+}
+
+export interface BusynessApiResponse {
+  success: boolean;
+  busyness: BusynessData | null;
+  cached: boolean;
+  timestamp: number;
+}
