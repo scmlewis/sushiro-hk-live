@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { SushiroStore, GroupQueue } from '../types';
 import { getStoreStatusInfo, getTicketStatusInfo, formatGoogleMapsUrl, isStoreServicing, getStoreDisplayStatus, isLocalTicketingOff } from '../utils/status';
 import { X, RefreshCw, Heart, MapPin, ExternalLink, Info, Calculator } from 'lucide-react';
+import { NotificationBell } from './NotificationBell';
 
 interface StoreDetailModalProps {
   store: SushiroStore | null;
@@ -12,6 +13,7 @@ interface StoreDetailModalProps {
   onClose: () => void;
   onRefreshQueue: (storeId: number, storeName: string) => void;
   onToggleBookmark: (store: SushiroStore) => void;
+  onToast?: (text: string, type: 'success' | 'info' | 'warning' | 'error') => void;
 }
 
 export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
@@ -22,6 +24,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   onClose,
   onRefreshQueue,
   onToggleBookmark,
+  onToast,
 }) => {
   const [myTicket, setMyTicket] = useState<string>('');
 
@@ -376,8 +379,20 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                     </div>
                   </div>
                 )}
-              </div>
             </div>
+          </div>
+
+            {/* Notification Bell */}
+            {ticketValidationState === 'valid' && groupsAhead > 0 && (
+              <div className="px-5 sm:px-6 py-4 border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50">
+                <NotificationBell
+                  storeId={store.id}
+                  ticketNumber={myTicketNum}
+                  groupsAhead={groupsAhead}
+                  onToast={onToast || (() => {})}
+                />
+              </div>
+            )}
 
         </div>
 
