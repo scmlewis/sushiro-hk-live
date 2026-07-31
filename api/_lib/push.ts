@@ -1,4 +1,4 @@
-import * as webPush from 'web-push';
+import webPush from 'web-push';
 
 const vapidPublicKey = process.env.VAPID_PUBLIC_KEY;
 const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
