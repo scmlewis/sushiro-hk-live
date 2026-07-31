@@ -3,27 +3,27 @@ import { calculateTicketPosition, getNotificationTier } from './notify-logic';
 
 describe('calculateTicketPosition', () => {
   it('returns negative when ticket is already called', () => {
-    const queue = { boothQueue: ['10', '11', '12'], counterQueue: ['10', '11'] };
+    const queue = { boothQueue: ['10', '11', '12'], counterQueue: ['10', '11'], storeQueue: [], mixedQueue: [] };
     expect(calculateTicketPosition(10, queue)).toBe(-2);
   });
 
   it('returns 0 when ticket is next', () => {
-    const queue = { boothQueue: ['10', '11'], counterQueue: ['10'] };
+    const queue = { boothQueue: ['10', '11'], counterQueue: ['10'], storeQueue: [], mixedQueue: [] };
     expect(calculateTicketPosition(12, queue)).toBe(1);
   });
 
   it('returns positive when ticket is ahead', () => {
-    const queue = { boothQueue: ['10'], counterQueue: ['10'] };
+    const queue = { boothQueue: ['10'], counterQueue: ['10'], storeQueue: [], mixedQueue: [] };
     expect(calculateTicketPosition(15, queue)).toBe(5);
   });
 
   it('handles empty queues', () => {
-    const queue = { boothQueue: [], counterQueue: [] };
+    const queue = { boothQueue: [], counterQueue: [], storeQueue: [], mixedQueue: [] };
     expect(calculateTicketPosition(5, queue)).toBe(5);
   });
 
   it('handles reservation numbers (>= 1000) by excluding them', () => {
-    const queue = { boothQueue: ['10', '1001'], counterQueue: ['10'] };
+    const queue = { boothQueue: ['10', '1001'], counterQueue: ['10'], storeQueue: [], mixedQueue: [] };
     expect(calculateTicketPosition(12, queue)).toBe(2);
   });
 });

@@ -13,7 +13,6 @@ const REGISTRATION_STORAGE_KEY = 'sushiro_hk_push_registrations';
 describe('isPushSupported', () => {
   it('returns false when navigator is undefined (SSR)', () => {
     const originalNavigator = globalThis.navigator;
-    // @ts-expect-error - simulating SSR
     delete (globalThis as any).navigator;
     expect(isPushSupported()).toBe(false);
     globalThis.navigator = originalNavigator;
@@ -21,7 +20,6 @@ describe('isPushSupported', () => {
 
   it('returns false when serviceWorker is missing', () => {
     const originalNavigator = globalThis.navigator;
-    // @ts-expect-error - simulating partial navigator
     globalThis.navigator = {} as Navigator;
     expect(isPushSupported()).toBe(false);
     globalThis.navigator = originalNavigator;
