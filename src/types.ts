@@ -50,3 +50,14 @@ export interface ToastMessage {
   type: 'success' | 'info' | 'warning' | 'error';
 }
 
+export interface NotificationRegistration {
+  subscription: {
+    endpoint: string;
+    keys: { p256dh: string; auth: string };
+  };
+  storeId: number;
+  ticketNumber: number;
+  createdAt: number;
+  expiresAt: number;
+}
+
