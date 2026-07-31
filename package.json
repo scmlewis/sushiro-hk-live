@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.14",
+    "@vercel/kv": "^3.0.0",
     "@vitejs/plugin-react": "^5.0.4",
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",
@@ -24,7 +25,8 @@
     "react-leaflet": "^5.0.0",
     "react-leaflet-markercluster": "^5.0.0-rc.0",
     "recharts": "^3.10.1",
-    "vite": "^6.2.3"
+    "vite": "^6.2.3",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^7.0.0",
@@ -34,6 +36,7 @@
     "@types/node": "^22.14.0",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
+    "@types/web-push": "^3.6.4",
     "@vercel/node": "^3.0.0",
     "autoprefixer": "^10.4.21",
     "jsdom": "^29.1.1",
