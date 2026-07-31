@@ -28,7 +28,7 @@ describe('FareCalculator', () => {
     render(<FareCalculator />);
     const tier10Button = screen.getByText('$10').closest('button')!;
     fireEvent.click(tier10Button);
-    expect(screen.getByText('當前總額')).toBeInTheDocument();
+    expect(screen.getByText('目前金額')).toBeInTheDocument();
   });
 
   it('adds tier on click', () => {
@@ -82,7 +82,7 @@ describe('FareCalculator', () => {
 
   it('renders service charge label', () => {
     render(<FareCalculator />);
-    expect(screen.getByText('加一服務費 (+10%)')).toBeInTheDocument();
+    expect(screen.getByText('實際賬單 (+10%)')).toBeInTheDocument();
   });
 
   it('renders all price tiers', () => {
@@ -104,9 +104,9 @@ describe('FareCalculator', () => {
     expect(deleteBtn).toBeInTheDocument();
   });
 
-  it('shows custom price tier input', () => {
+  it('shows custom price tier button', () => {
     render(<FareCalculator />);
-    expect(screen.getByText('+ 自訂價格')).toBeInTheDocument();
+    expect(screen.getByText('新增')).toBeInTheDocument();
   });
 
   it('has a reset button', () => {

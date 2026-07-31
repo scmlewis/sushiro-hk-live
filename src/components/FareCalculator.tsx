@@ -17,10 +17,15 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
   const SERVICE_CHARGE_RATE = 0.1;
 
   const allTiers = useMemo(() => {
-    const custom = customPrice
-      ? PRICE_TIERS.filter((t) => t.price !== parseInt(customPrice, 10))
-      : [];
-    return [...PRICE_TIERS, ...custom];
+    const parsed = parseInt(customPrice, 10);
+    if (!isNaN(parsed) && parsed > 0) {
+      const exists = PRICE_TIERS.some((t) => t.price === parsed);
+      if (!exists) {
+        const custom: PriceTier = { price: parsed, color: '#000000', bgColor: '#E5E7EB', borderColor: '#D1D5DB' };
+        return [...PRICE_TIERS, custom];
+      }
+    }
+    return PRICE_TIERS;
   }, [customPrice]);
 
   const selectedList = useMemo(() => {
@@ -150,36 +155,47 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
           </button>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-          <div className="bg-neutral-50 dark:bg-neutral-800 rounded-xl p-3 border border-neutral-200 dark:border-neutral-700 text-center">
-            <div className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1">目標預算</div>
-            <div className="flex items-center justify-center gap-1">
-              <span className="text-lg font-black text-neutral-900 dark:text-white">$</span>
-              <input
-                type="number"
-                value={targetBudget}
-                onChange={(e) => {
-                  const val = parseInt(e.target.value, 10);
-                  if (!isNaN(val) && val > 0 && val <= 1000) setTargetBudget(val);
-                }}
-                className="w-16 bg-transparent text-center text-lg font-black text-neutral-900 dark:text-white outline-none border-none"
-                min={1}
-                max={1000}
-              />
+        {/* Input Group */}
+        <div className="bg-neutral-100 dark:bg-neutral-800/60 rounded-xl border border-neutral-200 dark:border-neutral-700 p-3 sm:p-4 mb-3">
+          <div className="text-[9px] font-black text-neutral-400 uppercase tracking-widest mb-2 px-1">輸入</div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-white dark:bg-neutral-800 rounded-xl p-3 border border-neutral-200 dark:border-neutral-700 text-center shadow-sm">
+              <div className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1">目標價格</div>
+              <div className="flex items-center justify-center gap-1">
+                <span className="text-lg font-black text-neutral-900 dark:text-white">$</span>
+                <input
+                  type="number"
+                  value={targetBudget}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value, 10);
+                    if (!isNaN(val) && val > 0 && val <= 1000) setTargetBudget(val);
+                  }}
+                  className="w-16 bg-transparent text-center text-lg font-black text-neutral-900 dark:text-white outline-none border-none"
+                  min={1}
+                  max={1000}
+                />
+              </div>
+            </div>
+            <div className="bg-white dark:bg-neutral-800 rounded-xl p-3 border border-neutral-200 dark:border-neutral-700 text-center shadow-sm">
+              <div className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1">實際賬單 (+10%)</div>
+              <div className="text-lg font-black text-neutral-900 dark:text-white tabular-nums">${total}</div>
             </div>
           </div>
-          <div className="bg-neutral-50 dark:bg-neutral-800 rounded-xl p-3 border border-neutral-200 dark:border-neutral-700 text-center">
-            <div className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1">當前總額</div>
-            <div className="text-lg font-black text-[#aa151b] tabular-nums">${subtotal}</div>
-          </div>
-          <div className="bg-neutral-50 dark:bg-neutral-800 rounded-xl p-3 border border-neutral-200 dark:border-neutral-700 text-center">
-            <div className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1">加一服務費 (+10%)</div>
-            <div className="text-lg font-black text-neutral-900 dark:text-white tabular-nums">${total}</div>
-          </div>
-          <div className="bg-neutral-50 dark:bg-neutral-800 rounded-xl p-3 border border-neutral-200 dark:border-neutral-700 text-center">
-            <div className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1">剩餘金額</div>
-            <div className={`text-lg font-black tabular-nums ${remaining >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'}`}>
-              ${Math.abs(remaining)}
+        </div>
+
+        {/* Output Group */}
+        <div className="bg-neutral-100 dark:bg-neutral-800/60 rounded-xl border border-neutral-200 dark:border-neutral-700 p-3 sm:p-4">
+          <div className="text-[9px] font-black text-neutral-400 uppercase tracking-widest mb-2 px-1">輸出</div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-white dark:bg-neutral-800 rounded-xl p-3 border border-neutral-200 dark:border-neutral-700 text-center shadow-sm">
+              <div className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1">目前金額</div>
+              <div className="text-lg font-black text-[#aa151b] tabular-nums">${subtotal}</div>
+            </div>
+            <div className="bg-white dark:bg-neutral-800 rounded-xl p-3 border border-neutral-200 dark:border-neutral-700 text-center shadow-sm">
+              <div className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1">剩餘金額</div>
+              <div className={`text-lg font-black tabular-nums ${remaining >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'}`}>
+                ${Math.abs(remaining)}
+              </div>
             </div>
           </div>
         </div>
@@ -229,7 +245,6 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
         </div>
         <div className="relative mb-6 sm:mb-12">
           <div className="absolute inset-0 bg-gradient-to-r from-black/5 via-transparent to-black/5 pointer-events-none"></div>
-          <div className="h-3 sm:h-4 bg-[#E0E0E0] rounded-full mb-1 sm:mb-2"></div>
           <div className="flex justify-end items-center mb-2 px-2">
             <div className="flex space-x-2">
               <button
@@ -275,36 +290,39 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
               })}
             </div>
           </div>
-          <div className="h-3 sm:h-4 bg-[#E0E0E0] rounded-full mt-1 sm:mt-2"></div>
         </div>
 
-        {/* Custom Price Tier Input */}
+        {/* Custom Price Tier Button */}
         <div className="flex items-center gap-2 mt-4">
-          <button
-            onClick={() => setShowCustomInput(!showCustomInput)}
-            className="shrink-0 px-3 py-1.5 rounded-full text-xs font-black transition-all cursor-pointer border-2 border-dashed border-neutral-300 dark:border-neutral-600 text-neutral-500 hover:text-[#aa151b] hover:border-[#aa151b]"
-          >
-            + 自訂價格
-          </button>
-          {showCustomInput && (
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                value={customPrice}
-                onChange={(e) => setCustomPrice(e.target.value)}
-                placeholder="價格"
-                className="w-20 px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm font-black text-neutral-900 dark:text-white outline-none"
-                min={1}
-                max={1000}
-              />
-              <button
-                onClick={handleAddCustomTier}
-                className="px-3 py-1.5 rounded-full bg-[#aa151b] text-white text-xs font-black transition-colors cursor-pointer"
-              >
-                新增
-              </button>
-            </div>
-          )}
+          <div className="flex gap-2 sm:gap-4">
+            <button
+              onClick={() => { setShowCustomInput(!showCustomInput); setCustomPrice(''); }}
+              className="flex flex-col items-center justify-center w-14 h-14 sm:w-20 sm:h-20 rounded-full border-2 border-dashed border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-[#aa151b] font-black shadow-md transition-all hover:scale-105 cursor-pointer"
+            >
+              <Plus className="w-5 h-5 sm:w-6 sm:h-6" />
+              <span className="text-[9px] sm:text-[10px] mt-0.5">新增</span>
+            </button>
+            {showCustomInput && (
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  value={customPrice}
+                  onChange={(e) => setCustomPrice(e.target.value)}
+                  placeholder="價格"
+                  className="w-20 px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm font-black text-neutral-900 dark:text-white outline-none"
+                  min={1}
+                  max={1000}
+                  autoFocus
+                />
+                <button
+                  onClick={handleAddCustomTier}
+                  className="px-3 py-1.5 rounded-full bg-[#aa151b] text-white text-xs font-black transition-colors cursor-pointer"
+                >
+                  新增
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
