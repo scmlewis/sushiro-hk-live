@@ -11,6 +11,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const storeId = Number(req.query.storeid);
   const name = req.query.name as string;
+  const nameEn = (req.query.nameEn as string) || '';
   const lat = Number(req.query.lat);
   const lng = Number(req.query.lng);
 
@@ -20,7 +21,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const force = req.query.force === 'true';
-    const result = await getBusynessData(storeId, name, lat, lng, force);
+    const result = await getBusynessData(storeId, name, nameEn, lat, lng, force);
 
     return res.json({
       success: true,

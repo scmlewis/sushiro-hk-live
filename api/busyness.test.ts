@@ -94,7 +94,7 @@ describe('/api/busyness endpoint', () => {
     expect(res._status).toBe(200);
     expect(res._body.success).toBe(true);
     expect(res._body.busyness.live).toBe(50);
-    expect(getBusynessData).toHaveBeenCalledWith(1, '荃灣廣場', 22.37, 114.11, false);
+    expect(getBusynessData).toHaveBeenCalledWith(1, '荃灣廣場', '', 22.37, 114.11, false);
   });
 
   it('passes force=true to getBusynessData', async () => {
@@ -108,7 +108,7 @@ describe('/api/busyness endpoint', () => {
     const res = createMockRes();
     await handler(req, res);
 
-    expect(getBusynessData).toHaveBeenCalledWith(1, '荃灣廣場', 22.37, 114.11, true);
+    expect(getBusynessData).toHaveBeenCalledWith(1, '荃灣廣場', '', 22.37, 114.11, true);
   });
 
   it('returns 502 when getBusynessData throws', async () => {

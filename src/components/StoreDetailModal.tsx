@@ -44,6 +44,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
     const params = new URLSearchParams({
       storeid: String(store.id),
       name: store.name,
+      nameEn: store.nameEn || '',
       lat: String(store.latitude),
       lng: String(store.longitude),
     });

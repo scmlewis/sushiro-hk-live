@@ -19,14 +19,14 @@ describe('getBusynessData', () => {
 
   it('returns null data when API key is missing', async () => {
     delete process.env.GOOGLE_MAPS_API_KEY;
-    const result = await getBusynessData(1, '荃灣廣場', 22.37, 114.11);
+    const result = await getBusynessData(1, '荃灣廣場', 'Tsuen Wan Plaza', 22.37, 114.11);
     expect(result.data).toBeNull();
     expect(result.cached).toBe(false);
   });
 
   it('calls Google Places API and returns busyness data', async () => {
     const mockPlacesResponse = {
-      places: [{ id: 'ChIJ_test_place_id' }],
+      places: [{ id: 'ChIJ_test_place_id', displayName: { text: 'Sushiro Tsuen Wan' }, types: ['restaurant'] }],
     };
 
     const today = new Date().getDay(); // 0=Sunday
@@ -47,7 +47,7 @@ describe('getBusynessData', () => {
         json: () => Promise.resolve(mockDetailsResponse),
       } as Response);
 
-    const result = await getBusynessData(1, '荃灣廣場', 22.37, 114.11);
+    const result = await getBusynessData(1, '荃灣廣場', 'Tsuen Wan Plaza', 22.37, 114.11);
 
     expect(result.data).not.toBeNull();
     expect(result.data!.live).toBe(65);
@@ -62,17 +62,17 @@ describe('getBusynessData', () => {
     vi.spyOn(global, 'fetch')
       .mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({ places: [{ id: 'ChIJ_cached' }] }),
+        json: () => Promise.resolve({ places: [{ id: 'ChIJ_cached', displayName: { text: 'Sushiro' }, types: ['restaurant'] }] }),
       } as Response)
       .mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve({ currentOpeningHours: { busyNow: 42 } }),
       } as Response);
 
-    const result1 = await getBusynessData(2, '屯門市廣場', 22.39, 113.97);
+    const result1 = await getBusynessData(2, '屯門市廣場', 'Tuen Mun Plaza', 22.39, 113.97);
     expect(result1.cached).toBe(false);
 
-    const result2 = await getBusynessData(2, '屯門市廣場', 22.39, 113.97);
+    const result2 = await getBusynessData(2, '屯門市廣場', 'Tuen Mun Plaza', 22.39, 113.97);
     expect(result2.cached).toBe(true);
     expect(result2.data!.live).toBe(42);
   });
@@ -82,35 +82,37 @@ describe('getBusynessData', () => {
       .mockResolvedValue({
         ok: true,
         json: () => Promise.resolve({
-          places: [{ id: 'ChIJ_fresh' }],
+          places: [{ id: 'ChIJ_fresh', displayName: { text: 'Sushiro' }, types: ['restaurant'] }],
           currentOpeningHours: { busyNow: 80 },
         }),
       } as Response);
 
-    await getBusynessData(3, '元朗廣場', 22.44, 114.03);
-    await getBusynessData(3, '元朗廣場', 22.44, 114.03, true);
+    await getBusynessData(3, '元朗廣場', 'Yuen Long Plaza', 22.44, 114.03);
+    await getBusynessData(3, '元朗廣場', 'Yuen Long Plaza', 22.44, 114.03, true);
 
-    expect(fetchSpy).toHaveBeenCalledTimes(3); // findPlace + getDetails on first, getDetails on second (placeId cached)
+    // First call: 1 findPlace + 1 getDetails = 2
+    // Second call: forceFresh bypasses cache, reuses placeId, 1 getDetails = 1
+    expect(fetchSpy).toHaveBeenCalledTimes(3);
   });
 
   it('returns null when place not found', async () => {
-    vi.spyOn(global, 'fetch').mockResolvedValueOnce({
+    vi.spyOn(global, 'fetch').mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({ places: [] }),
     } as Response);
 
-    const result = await getBusynessData(99, '不存在的店', 22.30, 114.17);
+    const result = await getBusynessData(99, '不存在的店', 'Nonexistent', 22.30, 114.17);
     expect(result.data).toBeNull();
   });
 
   it('returns null when Google API returns error', async () => {
-    vi.spyOn(global, 'fetch').mockResolvedValueOnce({
+    vi.spyOn(global, 'fetch').mockResolvedValue({
       ok: false,
       status: 403,
       json: () => Promise.resolve({ error: 'Forbidden' }),
     } as Response);
 
-    const result = await getBusynessData(4, '假的地方', 22.30, 114.17);
+    const result = await getBusynessData(4, '假的地方', 'Fake Place', 22.30, 114.17);
     expect(result.data).toBeNull();
   });
 
@@ -119,19 +121,19 @@ describe('getBusynessData', () => {
     vi.spyOn(global, 'fetch')
       .mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({ places: [{ id: 'ChIJ_stale' }] }),
+        json: () => Promise.resolve({ places: [{ id: 'ChIJ_stale', displayName: { text: 'Sushiro' }, types: ['restaurant'] }] }),
       } as Response)
       .mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve({ currentOpeningHours: { busyNow: 55 } }),
       } as Response);
 
-    await getBusynessData(5, '太古城中心', 22.28, 114.22);
+    await getBusynessData(5, '太古城中心', 'Taikoo Shing', 22.28, 114.22);
 
     // Second call fails (simulating network error after cache populated)
     vi.spyOn(global, 'fetch').mockRejectedValueOnce(new Error('Network error'));
 
-    const result = await getBusynessData(5, '太古城中心', 22.28, 114.22, true);
+    const result = await getBusynessData(5, '太古城中心', 'Taikoo Shing', 22.28, 114.22, true);
     expect(result.data).not.toBeNull();
     expect(result.data!.live).toBe(55);
   });

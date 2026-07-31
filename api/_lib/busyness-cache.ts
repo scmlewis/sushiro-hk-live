@@ -21,31 +21,58 @@ function getHkHour(): number {
 
 async function findPlaceId(
   storeName: string,
+  nameEn: string,
   lat: number,
   lng: number,
   apiKey: string
 ): Promise<string | null> {
-  const url = `https://places.googleapis.com/v1/places:searchText?fields=id&key=${apiKey}`;
+  // Try multiple search strategies
+  const queries = [
+    `壽司郎 ${storeName}`,
+    `Sushiro ${storeName}`,
+    `Sushiro ${nameEn || storeName}`,
+    `壽司郎`,
+  ];
 
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      textQuery: `壽司郎 ${storeName}`,
-      locationBias: {
-        circle: {
-          center: { latitude: lat, longitude: lng },
-          radius: 5000.0,
+  for (const textQuery of queries) {
+    const url = `https://places.googleapis.com/v1/places:searchText?fields=id,displayName,types&key=${apiKey}`;
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        textQuery,
+        locationBias: {
+          circle: {
+            center: { latitude: lat, longitude: lng },
+            radius: 10000.0, // 10km radius
+          },
         },
-      },
-      maxResultCount: 1,
-    }),
-  });
+        maxResultCount: 3,
+      }),
+    });
 
-  if (!res.ok) return null;
+    if (!res.ok) continue;
 
-  const data = await res.json();
-  return data.places?.[0]?.id ?? null;
+    const data = await res.json();
+    const places = data.places ?? [];
+
+    // Find a place that looks like a Sushiro restaurant
+    for (const place of places) {
+      const name = (place.displayName?.text ?? '').toLowerCase();
+      const types = place.types ?? [];
+      const isRestaurant = types.some((t: string) =>
+        ['restaurant', 'food', 'point_of_interest'].includes(t)
+      );
+      const isSushiro = name.includes('sushiro') || name.includes('壽司郎') || name.includes('すしろ') || name.includes('寿司郎');
+
+      if (isSushiro || (isRestaurant && (name.includes('sushi') || name.includes('壽司')))) {
+        return place.id;
+      }
+    }
+  }
+
+  return null;
 }
 
 async function getPlaceBusyness(
@@ -84,6 +111,7 @@ async function getPlaceBusyness(
 export async function getBusynessData(
   storeId: number,
   storeName: string,
+  nameEn: string,
   lat: number,
   lng: number,
   forceFresh = false
@@ -103,7 +131,7 @@ export async function getBusynessData(
   try {
     let placeId = cached?.placeId;
     if (!placeId) {
-      placeId = await findPlaceId(storeName, lat, lng, apiKey) ?? undefined;
+      placeId = await findPlaceId(storeName, nameEn, lat, lng, apiKey) ?? undefined;
       if (!placeId) {
         const entry: BusynessCacheEntry = { data: null, timestamp: Date.now() };
         busynessCache.set(cacheKey, entry);
