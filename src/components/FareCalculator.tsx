@@ -1,37 +1,28 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { SushiItem, SushiCategory, CATEGORY_LABELS, CATEGORY_EMOJIS, MENU_ITEMS } from '../data/menu';
-import { Calculator, Filter, Trash2, RotateCcw, Plus, Minus, CheckCircle2, AlertCircle } from 'lucide-react';
+import { PriceTier, PRICE_TIERS } from '../data/menu';
+import { Calculator, Filter, Trash2, RotateCcw, Plus, Minus, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
 
 interface FareCalculatorProps {
   onToast?: (text: string, type: 'success' | 'info' | 'warning' | 'error') => void;
 }
 
-type FilterCategory = SushiCategory | 'all';
-
 export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
-  const [selectedItems, setSelectedItems] = useState<Map<string, number>>(new Map());
+  const [selectedTiers, setSelectedTiers] = useState<Map<number, number>>(new Map());
   const [targetBudget, setTargetBudget] = useState<number>(80);
-  const [activeCategory, setActiveCategory] = useState<FilterCategory>('all');
-  const [showFilter, setShowFilter] = useState(false);
 
   const TAX_RATE = 0.1;
 
-  const filteredItems = useMemo(() => {
-    if (activeCategory === 'all') return MENU_ITEMS;
-    return MENU_ITEMS.filter((item) => item.category === activeCategory);
-  }, [activeCategory]);
-
   const selectedList = useMemo(() => {
-    const list: { item: SushiItem; quantity: number; subtotal: number }[] = [];
-    selectedItems.forEach((qty, id) => {
-      const item = MENU_ITEMS.find((i) => i.id === id);
-      if (item) {
-        list.push({ item, quantity: qty, subtotal: item.price * qty });
+    const list: { tier: PriceTier; quantity: number; subtotal: number }[] = [];
+    selectedTiers.forEach((qty, price) => {
+      const tier = PRICE_TIERS.find((t) => t.price === price);
+      if (tier) {
+        list.push({ tier, quantity: qty, subtotal: tier.price * qty });
       }
     });
     return list;
-  }, [selectedItems]);
+  }, [selectedTiers]);
 
   const subtotal = useMemo(() => selectedList.reduce((sum, entry) => sum + entry.subtotal, 0), [selectedList]);
   const tax = useMemo(() => Math.round(subtotal * TAX_RATE), [subtotal]);
@@ -40,17 +31,17 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
 
   const combinations = useMemo(() => {
     if (total === 0 || remaining < 0) return [];
-    const results: { items: SushiItem[]; total: number }[] = [];
-    const items = MENU_ITEMS.filter((i) => i.price <= remaining);
-    const findCombinations = (startIdx: number, current: SushiItem[], currentTotal: number) => {
+    const results: { tiers: PriceTier[]; total: number }[] = [];
+    const tiers = PRICE_TIERS.filter((t) => t.price <= remaining);
+    const findCombinations = (startIdx: number, current: PriceTier[], currentTotal: number) => {
       if (currentTotal >= remaining - 5 && currentTotal <= remaining + 5) {
-        results.push({ items: [...current], total: currentTotal });
+        results.push({ tiers: [...current], total: currentTotal });
         return;
       }
       if (currentTotal > remaining + 5) return;
-      for (let i = startIdx; i < items.length; i++) {
-        current.push(items[i]);
-        findCombinations(i, current, currentTotal + items[i].price);
+      for (let i = startIdx; i < tiers.length; i++) {
+        current.push(tiers[i]);
+        findCombinations(i, current, currentTotal + tiers[i].price);
         current.pop();
       }
     };
@@ -58,46 +49,46 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
     return results.slice(0, 6);
   }, [remaining, total]);
 
-  const handleToggleItem = useCallback((item: SushiItem) => {
-    setSelectedItems((prev) => {
+  const handleToggleTier = useCallback((tier: PriceTier) => {
+    setSelectedTiers((prev) => {
       const next = new Map(prev);
-      const current = next.get(item.id) || 0;
+      const current = next.get(tier.price) || 0;
       if (current > 0) {
         if (current === 1) {
-          next.delete(item.id);
+          next.delete(tier.price);
         } else {
-          next.set(item.id, current - 1);
+          next.set(tier.price, current - 1);
         }
       } else {
-        next.set(item.id, 1);
+        next.set(tier.price, 1);
       }
       return next;
     });
   }, []);
 
-  const handleIncrement = useCallback((item: SushiItem) => {
-    setSelectedItems((prev) => {
+  const handleIncrement = useCallback((tier: PriceTier) => {
+    setSelectedTiers((prev) => {
       const next = new Map(prev);
-      next.set(item.id, (next.get(item.id) || 0) + 1);
+      next.set(tier.price, (next.get(tier.price) || 0) + 1);
       return next;
     });
   }, []);
 
-  const handleDecrement = useCallback((item: SushiItem) => {
-    setSelectedItems((prev) => {
+  const handleDecrement = useCallback((tier: PriceTier) => {
+    setSelectedTiers((prev) => {
       const next = new Map(prev);
-      const current = next.get(item.id) || 0;
+      const current = next.get(tier.price) || 0;
       if (current <= 1) {
-        next.delete(item.id);
+        next.delete(tier.price);
       } else {
-        next.set(item.id, current - 1);
+        next.set(tier.price, current - 1);
       }
       return next;
     });
   }, []);
 
   const handleClearAll = useCallback(() => {
-    setSelectedItems(new Map());
+    setSelectedTiers(new Map());
     onToast?.('已清除所有選擇', 'info');
   }, [onToast]);
 
@@ -105,13 +96,7 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
     setTargetBudget(amount);
   }, []);
 
-  const categoryCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    MENU_ITEMS.forEach((item) => {
-      counts[item.category] = (counts[item.category] || 0) + 1;
-    });
-    return counts;
-  }, []);
+  const totalItems = useMemo(() => selectedList.reduce((sum, e) => sum + e.quantity, 0), [selectedList]);
 
   return (
     <div className="space-y-4 animate-fade-in">
@@ -197,64 +182,72 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
         ))}
       </div>
 
-      {/* Category Filter */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1">
-        <button
-          onClick={() => { setActiveCategory('all'); setShowFilter(false); }}
-          className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-black transition-all cursor-pointer border-2 ${
-            activeCategory === 'all'
-              ? 'bg-[#aa151b] text-white border-[#aa151b]'
-              : 'bg-white dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border-neutral-200 dark:border-neutral-700'
-          }`}
-        >
-          全部
-        </button>
-        {(Object.keys(CATEGORY_LABELS) as SushiCategory[]).map((cat) => (
-          <button
-            key={cat}
-            onClick={() => { setActiveCategory(cat); setShowFilter(false); }}
-            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-black transition-all cursor-pointer border-2 flex items-center gap-1 ${
-              activeCategory === cat
-                ? 'bg-[#aa151b] text-white border-[#aa151b]'
-                : 'bg-white dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border-neutral-200 dark:border-neutral-700'
-            }`}
-          >
-            <span>{CATEGORY_EMOJIS[cat]}</span>
-            <span>{CATEGORY_LABELS[cat]}</span>
-            <span className="opacity-60">({categoryCounts[cat]})</span>
-          </button>
-        ))}
-      </div>
-
-      {/* Menu Items Grid */}
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
-        {filteredItems.map((item) => {
-          const qty = selectedItems.get(item.id) || 0;
-          return (
-            <button
-              key={item.id}
-              onClick={() => handleToggleItem(item)}
-              className={`relative flex flex-col items-center justify-center p-2 sm:p-3 rounded-xl border-2 transition-all cursor-pointer aspect-square ${
-                qty > 0
-                  ? 'border-[#aa151b] bg-red-50 dark:bg-red-950/30 shadow-sm'
-                  : 'bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600'
-              }`}
-            >
-              <span className="text-2xl sm:text-3xl mb-1">{item.emoji}</span>
-              <span className={`text-[10px] sm:text-xs font-bold text-center leading-tight ${qty > 0 ? 'text-[#aa151b]' : 'text-neutral-700 dark:text-neutral-300'}`}>
-                {item.name}
-              </span>
-              <span className={`text-xs font-black mt-0.5 ${qty > 0 ? 'text-[#aa151b]' : 'text-neutral-400'}`}>
-                ${item.price}
-              </span>
-              {qty > 0 && (
-                <div className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-[#aa151b] text-white text-[10px] font-black rounded-full flex items-center justify-center">
-                  {qty}
-                </div>
-              )}
-            </button>
-          );
-        })}
+      {/* Price Tier Buttons */}
+      <div className="bg-white dark:bg-neutral-900 border-2 border-neutral-200 dark:border-neutral-800 rounded-2xl p-4 sm:p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-[#aa151b]" />
+            <span>價格層級</span>
+          </h3>
+          <span className="text-xs font-bold text-neutral-400">
+            已選 {totalItems} 項
+          </span>
+        </div>
+        <div className="relative mb-6 sm:mb-12">
+          <div className="absolute inset-0 bg-gradient-to-r from-black/5 via-transparent to-black/5 pointer-events-none"></div>
+          <div className="h-3 sm:h-4 bg-[#E0E0E0] rounded-full mb-1 sm:mb-2"></div>
+          <div className="flex justify-end items-center mb-2 px-2">
+            <div className="flex space-x-2">
+              <button
+                onClick={handleClearAll}
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-8 w-8 cursor-pointer"
+                title="清除"
+              >
+                <Trash2 className="w-5 h-5 text-red-500" />
+              </button>
+              <button
+                onClick={() => setSelectedTiers(new Map())}
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-8 w-8 cursor-pointer"
+                title="重置"
+              >
+                <RotateCcw className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+          </div>
+          <div className="pb-2 sm:pb-4 overflow-x-auto">
+            <div className="flex gap-2 sm:gap-4 min-w-max px-2 sm:px-4 py-1 sm:py-2">
+              {PRICE_TIERS.map((tier) => {
+                const qty = selectedTiers.get(tier.price) || 0;
+                return (
+                  <button
+                    key={tier.price}
+                    onClick={() => handleToggleTier(tier)}
+                    className={`relative flex flex-col items-center justify-center p-2 sm:p-3 rounded-full border-2 sm:border-4 border-white transition-all cursor-pointer hover:scale-105 active:scale-95 shadow-md ${
+                      qty > 0
+                        ? 'border-[#aa151b] bg-red-50 dark:bg-red-950/30'
+                        : 'bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700'
+                    }`}
+                    style={{ minWidth: '4rem', minHeight: '4rem' }}
+                  >
+                    {qty > 0 && (
+                      <div className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-[#aa151b] text-white text-[10px] font-black rounded-full flex items-center justify-center">
+                        {qty}
+                      </div>
+                    )}
+                    <span className="text-2xl sm:text-3xl mb-1">{tier.emoji}</span>
+                    <span className="text-sm sm:text-base font-black text-neutral-900 dark:text-white">
+                      {tier.label}
+                    </span>
+                    <span className="text-[9px] sm:text-[10px] font-bold text-neutral-400 mt-0.5">
+                      {tier.count} 款
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <div className="h-3 sm:h-4 bg-[#E0E0E0] rounded-full mt-1 sm:mt-2"></div>
+        </div>
       </div>
 
       {/* Selected Items */}
@@ -271,7 +264,7 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
               <h3 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
                 <span>已選擇的壽司</span>
                 <span className="px-2 py-0.5 bg-[#aa151b] text-white text-[10px] font-black rounded-full">
-                  {selectedList.reduce((sum, e) => sum + e.quantity, 0)} 項
+                  {totalItems} 項
                 </span>
               </h3>
               <button
@@ -285,26 +278,27 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
             <div className="space-y-2">
               {selectedList.map((entry) => (
                 <div
-                  key={entry.item.id}
+                  key={entry.tier.price}
                   className="flex items-center justify-between py-2 px-3 bg-neutral-50 dark:bg-neutral-800 rounded-xl"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-xl">{entry.item.emoji}</span>
+                    <span className="text-xl">{entry.tier.emoji}</span>
                     <div>
-                      <div className="text-xs font-bold text-neutral-900 dark:text-white">{entry.item.name}</div>
-                      <div className="text-[10px] text-neutral-400">${entry.item.price} × {entry.quantity}</div>
+                      <div className="text-xs font-bold text-neutral-900 dark:text-white">{entry.tier.label}</div>
+                      <div className="text-[10px] text-neutral-400">{entry.tier.description}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
+                    <span className="text-xs text-neutral-400">×{entry.quantity}</span>
                     <span className="text-sm font-black text-neutral-900 dark:text-white tabular-nums">${entry.subtotal}</span>
                     <button
-                      onClick={() => handleDecrement(entry.item)}
+                      onClick={() => handleDecrement(entry.tier)}
                       className="w-6 h-6 rounded-full bg-white dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 flex items-center justify-center text-xs font-bold text-neutral-600 hover:text-[#aa151b] transition-colors cursor-pointer"
                     >
                       <Minus className="w-3 h-3" />
                     </button>
                     <button
-                      onClick={() => handleIncrement(entry.item)}
+                      onClick={() => handleIncrement(entry.tier)}
                       className="w-6 h-6 rounded-full bg-white dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 flex items-center justify-center text-xs font-bold text-neutral-600 hover:text-[#aa151b] transition-colors cursor-pointer"
                     >
                       <Plus className="w-3 h-3" />
@@ -342,13 +336,13 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
                   className="flex items-center justify-between py-2 px-3 bg-neutral-50 dark:bg-neutral-800 rounded-xl"
                 >
                   <div className="flex items-center gap-2 flex-wrap">
-                    {combo.items.map((item) => (
-                      <span key={item.id} className="text-lg" title={item.name}>
-                        {item.emoji}
+                    {combo.tiers.map((tier) => (
+                      <span key={tier.price} className="text-lg" title={tier.description}>
+                        {tier.emoji}
                       </span>
                     ))}
                     <span className="text-xs text-neutral-400">
-                      {combo.items.map((i) => i.name).join(' + ')}
+                      {combo.tiers.map((t) => t.label).join(' + ')}
                     </span>
                   </div>
                   <span className="text-sm font-black text-neutral-900 dark:text-white tabular-nums">${combo.total}</span>
@@ -366,7 +360,7 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
           </div>
           <h3 className="text-lg font-black text-neutral-900 dark:text-white mb-2">尚未選擇壽司</h3>
           <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
-            點擊上方的壽司項目添加到您的選擇
+            點擊上方的價格層級按鈕添加到您的選擇
           </p>
         </div>
       )}
