@@ -103,3 +103,41 @@ self.addEventListener('fetch', (event) => {
     })
   );
 });
+
+// Push Notification Handler
+self.addEventListener('push', (event) => {
+  if (!event.data) return;
+
+  const data = event.data.json();
+
+  event.waitUntil(
+    self.registration.showNotification(data.title || '壽司郎排隊通知', {
+      body: data.body || '',
+      icon: '/icon.svg',
+      badge: '/icon.svg',
+      tag: `ticket-${data.storeId}`,
+      renotify: true,
+      data: { url: `/` },
+    })
+  );
+});
+
+// Notification Click Handler
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  const url = event.notification.data?.url || '/';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+      // Focus existing window if open
+      for (const client of windowClients) {
+        if (client.url.includes(self.location.origin) && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      // Otherwise open new window
+      return clients.openWindow(url);
+    })
+  );
+});
