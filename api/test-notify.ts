@@ -1,0 +1,16 @@
+import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { kvGet } from './_lib/kv.js';
+import { sendPushNotification } from './_lib/push.js';
+import { calculateTicketPosition } from './_lib/notify-logic.js';
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  
+  try {
+    const index = await kvGet('notification:index');
+    const pos = calculateTicketPosition(100, { boothQueue: [], counterQueue: [] });
+    return res.json({ ok: true, index, pos });
+  } catch (err: any) {
+    return res.status(500).json({ ok: false, error: err.message });
+  }
+}
