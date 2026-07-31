@@ -19,7 +19,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     for (const storeId of storeIds) {
       const subIds = (await kvGet<string[]>(`notification:store:${storeId}`)) || [];
-      if (subIds.length === 0) continue;
+      if (subIds.length === 0) {
+        const updatedStoreIds = storeIds.filter((id) => id !== storeId);
+        await kvSet('notification:index', updatedStoreIds);
+        continue;
+      }
 
       let queueData;
       try {
@@ -38,11 +42,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (Date.now() > reg.expiresAt) { await kvDel(`notification:${subId}`); results.pruned++; continue; }
 
         const position = calculateTicketPosition(reg.ticketNumber, queueData as any);
+        const tier = getNotificationTier(position);
 
-        if (position <= 3) {
-          results.notified++;
+        if (tier.shouldNotify) {
+          try {
+            await sendPushNotification(reg.subscription, {
+              title: '壽司郎排隊通知',
+              body: tier.message,
+              storeId: storeId,
+            });
+            results.notified++;
+          } catch (err: any) {
+            if (err.message === 'SUBSCRIPTION_EXPIRED') {
+              await kvDel(`notification:${subId}`);
+              results.pruned++;
+              continue;
+            }
+            results.errors++;
+          }
         }
-        if (position <= 0) {
+
+        if (tier.tier === 'called') {
           await kvDel(`notification:${subId}`);
           results.pruned++;
         } else {
@@ -52,6 +72,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       if (survivingSubIds.length === 0) {
         await kvDel(`notification:store:${storeId}`);
+        const updatedStoreIds = storeIds.filter((id) => id !== storeId);
+        await kvSet('notification:index', updatedStoreIds);
       } else {
         await kvSet(`notification:store:${storeId}`, survivingSubIds);
       }
