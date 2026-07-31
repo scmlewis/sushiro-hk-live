@@ -7,6 +7,9 @@ interface FareCalculatorProps {
   onToast?: (text: string, type: 'success' | 'info' | 'warning' | 'error') => void;
 }
 
+const MAIN_PLATINUM_TIERS = [12, 17, 22, 27];
+const OTHER_PLATINUM_TIERS = [10, 13, 18, 19, 22, 27, 28, 33, 38, 39];
+
 export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
   const [selectedTiers, setSelectedTiers] = useState<Map<number, number>>(new Map());
   const [targetBudget, setTargetBudget] = useState<number>(80);
@@ -31,13 +34,13 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
   const selectedList = useMemo(() => {
     const list: { tier: PriceTier; quantity: number; subtotal: number }[] = [];
     selectedTiers.forEach((qty, price) => {
-      const tier = getTierByPrice(price);
+      const tier = getTierByPrice(price) || allTiers.find((t) => t.price === price);
       if (tier) {
         list.push({ tier, quantity: qty, subtotal: tier.price * qty });
       }
     });
     return list;
-  }, [selectedTiers]);
+  }, [selectedTiers, allTiers]);
 
   const subtotal = useMemo(() => selectedList.reduce((sum, entry) => sum + entry.subtotal, 0), [selectedList]);
   const serviceCharge = useMemo(() => Math.round(subtotal * SERVICE_CHARGE_RATE), [subtotal]);
@@ -47,7 +50,7 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
   const combinations = useMemo(() => {
     if (total === 0 || remaining < 0) return [];
     const results: { tiers: PriceTier[]; total: number }[] = [];
-    const tiers = PRICE_TIERS.filter((t) => t.price <= remaining);
+    const tiers = allTiers.filter((t) => t.price <= remaining);
     const findCombinations = (startIdx: number, current: PriceTier[], currentTotal: number) => {
       if (currentTotal >= remaining - 5 && currentTotal <= remaining + 5) {
         results.push({ tiers: [...current], total: currentTotal });
@@ -62,28 +65,7 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
     };
     findCombinations(0, [], 0);
     return results.slice(0, 6);
-  }, [remaining, total]);
-
-  const handleToggleTier = useCallback((tier: PriceTier) => {
-    if (deletionMode) {
-      setSelectedTiers((prev) => {
-        const next = new Map(prev);
-        const current = next.get(tier.price) || 0;
-        if (current <= 1) {
-          next.delete(tier.price);
-        } else {
-          next.set(tier.price, current - 1);
-        }
-        return next;
-      });
-    } else {
-      setSelectedTiers((prev) => {
-        const next = new Map(prev);
-        next.set(tier.price, (next.get(tier.price) || 0) + 1);
-        return next;
-      });
-    }
-  }, [deletionMode]);
+  }, [remaining, total, allTiers]);
 
   const handleIncrement = useCallback((tier: PriceTier) => {
     setSelectedTiers((prev) => {
@@ -232,97 +214,106 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
         ))}
       </div>
 
-      {/* Price Tier Buttons */}
+      {/* Main Plate Tiers */}
       <div className="bg-white dark:bg-neutral-900 border-2 border-neutral-200 dark:border-neutral-800 rounded-2xl p-4 sm:p-6 shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-[#aa151b]" />
-            <span>價格層級</span>
+            <span>主要碟子</span>
           </h3>
           <span className="text-xs font-bold text-neutral-400">
             已選 {totalItems} 項
           </span>
         </div>
-        <div className="relative mb-6 sm:mb-12">
-          <div className="absolute inset-0 bg-gradient-to-r from-black/5 via-transparent to-black/5 pointer-events-none"></div>
-          <div className="flex justify-end items-center mb-2 px-2">
-            <div className="flex space-x-2">
-              <button
-                onClick={handleClearAll}
-                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-8 w-8 cursor-pointer"
-                title="清除所有選擇"
+
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          {MAIN_PLATINUM_TIERS.map((price) => {
+            const tier = allTiers.find((t) => t.price === price);
+            if (!tier) return null;
+            const qty = selectedTiers.get(price) || 0;
+            return (
+              <div
+                key={price}
+                className="bg-white dark:bg-neutral-800 rounded-xl p-4 border border-neutral-200 dark:border-neutral-700 shadow-sm"
               >
-                <RotateCcw className="w-5 h-5 text-gray-500" />
-              </button>
-            </div>
-          </div>
-          <div className="pb-2 sm:pb-4 overflow-x-auto">
-            <div className="flex gap-2 sm:gap-4 min-w-max px-2 sm:px-4 py-1 sm:py-2">
-              {allTiers.map((tier) => {
-                const qty = selectedTiers.get(tier.price) || 0;
-                const isSelected = qty > 0;
-                return (
-                  <button
-                    key={tier.price}
-                    onClick={() => handleToggleTier(tier)}
-                    className={`relative flex flex-col items-center justify-center p-2 sm:p-3 rounded-full border-2 sm:border-4 border-white transition-all cursor-pointer hover:scale-105 active:scale-95 shadow-md ${
-                      isSelected
-                        ? 'ring-2 ring-[#aa151b]/20'
-                        : ''
-                    }`}
-                    style={{
-                      minWidth: '4rem',
-                      minHeight: '4rem',
-                      backgroundColor: tier.bgColor,
-                      borderColor: isSelected ? '#aa151b' : tier.borderColor,
-                    }}
-                  >
-                    {qty > 0 && (
-                      <div className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-[#aa151b] text-white text-[10px] font-black rounded-full flex items-center justify-center">
-                        {qty}
-                      </div>
-                    )}
-                    <span className="text-sm sm:text-base font-black" style={{ color: tier.color }}>
-                      ${tier.price}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-black"
+                      style={{ backgroundColor: tier.bgColor, color: tier.color, border: `2px solid ${tier.borderColor}` }}
+                    >
+                      ${price}
+                    </div>
+                    <span className="text-sm font-black text-neutral-900 dark:text-white">${price}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleDecrement(tier)}
+                      disabled={qty === 0}
+                      className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
+                        qty === 0
+                          ? 'bg-neutral-100 dark:bg-neutral-700 text-neutral-300 dark:text-neutral-600 cursor-not-allowed'
+                          : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600'
+                      }`}
+                    >
+                      <Minus className="w-4 h-4" />
+                    </button>
+                    <span className="w-8 text-center text-lg font-black text-neutral-900 dark:text-white tabular-nums">{qty}</span>
+                    <button
+                      onClick={() => handleIncrement(tier)}
+                      className="w-8 h-8 rounded-full bg-[#aa151b] text-white flex items-center justify-center transition-colors cursor-pointer hover:bg-red-700"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Other Price Tiers */}
+        <div className="mb-6">
+          <div className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-3 px-1">熱食 / 甜品 / 其他</div>
+          <div className="flex flex-wrap gap-2">
+            {OTHER_PLATINUM_TIERS.map((price) => {
+              const tier = allTiers.find((t) => t.price === price);
+              if (!tier) return null;
+              const qty = selectedTiers.get(price) || 0;
+              return (
+                <button
+                  key={price}
+                  onClick={() => handleIncrement(tier)}
+                  className={`px-4 py-2 rounded-lg text-sm font-black transition-all cursor-pointer border-2 ${
+                    qty > 0
+                      ? 'bg-[#aa151b] text-white border-[#aa151b]'
+                      : 'bg-white dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border-neutral-200 dark:border-neutral-700 hover:border-[#aa151b]'
+                  }`}
+                >
+                  ${price}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* Custom Price Tier Button */}
-        <div className="flex items-center gap-2 mt-4">
-          <div className="flex gap-2 sm:gap-4">
-            <button
-              onClick={() => { setShowCustomInput(!showCustomInput); setCustomPrice(''); }}
-              className="flex flex-col items-center justify-center w-14 h-14 sm:w-20 sm:h-20 rounded-full border-2 border-dashed border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-[#aa151b] font-black shadow-md transition-all hover:scale-105 cursor-pointer"
-            >
-              <Plus className="w-5 h-5 sm:w-6 sm:h-6" />
-              <span className="text-[9px] sm:text-[10px] mt-0.5">新增</span>
-            </button>
-            {showCustomInput && (
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  value={customPrice}
-                  onChange={(e) => setCustomPrice(e.target.value)}
-                  placeholder="價格"
-                  className="w-20 px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm font-black text-neutral-900 dark:text-white outline-none"
-                  min={1}
-                  max={1000}
-                  autoFocus
-                />
-                <button
-                  onClick={handleAddCustomTier}
-                  className="px-3 py-1.5 rounded-full bg-[#aa151b] text-white text-xs font-black transition-colors cursor-pointer"
-                >
-                  新增
-                </button>
-              </div>
-            )}
-          </div>
+        {/* Custom Price Input */}
+        <div className="flex items-center gap-2">
+          <input
+            type="number"
+            value={customPrice}
+            onChange={(e) => setCustomPrice(e.target.value)}
+            placeholder="自訂 $"
+            className="flex-1 px-4 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm font-black text-neutral-900 dark:text-white outline-none"
+            min={1}
+            max={1000}
+          />
+          <button
+            onClick={() => { setShowCustomInput(!showCustomInput); handleAddCustomTier(); }}
+            className="w-10 h-10 rounded-lg bg-[#1a1a2e] text-white flex items-center justify-center transition-colors cursor-pointer hover:bg-[#16213e]"
+          >
+            <Plus className="w-5 h-5" />
+          </button>
         </div>
       </div>
 
@@ -364,21 +355,36 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
                     >
                       ${entry.tier.price}
                     </div>
+                    <div>
+                      <div className="text-xs font-bold text-neutral-900 dark:text-white">{entry.tier.label}</div>
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-neutral-400">×{entry.quantity}</span>
-                    <span className="text-sm font-black text-neutral-900 dark:text-white tabular-nums">${entry.subtotal}</span>
                     <button
                       onClick={() => handleDecrement(entry.tier)}
-                      className="w-6 h-6 rounded-full bg-white dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 flex items-center justify-center text-xs font-bold text-neutral-600 hover:text-[#aa151b] transition-colors cursor-pointer"
+                      className="w-7 h-7 rounded-full bg-white dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 flex items-center justify-center text-xs font-bold text-neutral-600 hover:text-[#aa151b] transition-colors cursor-pointer"
                     >
                       <Minus className="w-3 h-3" />
                     </button>
+                    <span className="w-8 text-center text-sm font-black text-neutral-900 dark:text-white tabular-nums">{entry.quantity}</span>
                     <button
                       onClick={() => handleIncrement(entry.tier)}
-                      className="w-6 h-6 rounded-full bg-white dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 flex items-center justify-center text-xs font-bold text-neutral-600 hover:text-[#aa151b] transition-colors cursor-pointer"
+                      className="w-7 h-7 rounded-full bg-white dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 flex items-center justify-center text-xs font-bold text-neutral-600 hover:text-[#aa151b] transition-colors cursor-pointer"
                     >
                       <Plus className="w-3 h-3" />
+                    </button>
+                    <span className="text-sm font-black text-neutral-900 dark:text-white tabular-nums">${entry.subtotal}</span>
+                    <button
+                      onClick={() => {
+                        setSelectedTiers((prev) => {
+                          const next = new Map(prev);
+                          next.delete(entry.tier.price);
+                          return next;
+                        });
+                      }}
+                      className="w-6 h-6 rounded-full text-neutral-400 hover:text-[#aa151b] transition-colors cursor-pointer flex items-center justify-center"
+                    >
+                      <span className="text-lg leading-none">×</span>
                     </button>
                   </div>
                 </div>

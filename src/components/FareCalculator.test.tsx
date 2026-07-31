@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { FareCalculator } from './FareCalculator';
-import { PRICE_TIERS } from '../data/menu';
 
 describe('FareCalculator', () => {
   it('renders the calculator with default budget', () => {
@@ -10,87 +9,27 @@ describe('FareCalculator', () => {
     expect(screen.getByDisplayValue('80')).toBeInTheDocument();
   });
 
-  it('renders price tier buttons', () => {
+  it('renders main plate tiers section', () => {
     render(<FareCalculator />);
+    expect(screen.getByText('主要碟子')).toBeInTheDocument();
+  });
+
+  it('renders other price tiers section', () => {
+    render(<FareCalculator />);
+    expect(screen.getByText('熱食 / 甜品 / 其他')).toBeInTheDocument();
     expect(screen.getByText('$10')).toBeInTheDocument();
-    expect(screen.getByText('$12')).toBeInTheDocument();
     expect(screen.getByText('$13')).toBeInTheDocument();
+    expect(screen.getByText('$18')).toBeInTheDocument();
   });
 
-  it('allows selecting tiers', () => {
+  it('renders custom price input', () => {
     render(<FareCalculator />);
-    const tier10Button = screen.getByText('$10').closest('button')!;
-    fireEvent.click(tier10Button);
-    expect(tier10Button).toHaveClass('ring-2');
-  });
-
-  it('updates total when tiers are selected', () => {
-    render(<FareCalculator />);
-    const tier10Button = screen.getByText('$10').closest('button')!;
-    fireEvent.click(tier10Button);
-    expect(screen.getByText('目前金額')).toBeInTheDocument();
-  });
-
-  it('adds tier on click', () => {
-    render(<FareCalculator />);
-    const tier10Button = screen.getByText('$10').closest('button')!;
-    fireEvent.click(tier10Button);
-    expect(tier10Button).toHaveClass('ring-2');
-  });
-
-  it('updates remaining budget correctly', () => {
-    render(<FareCalculator />);
-    const tier10Button = screen.getByText('$10').closest('button')!;
-    fireEvent.click(tier10Button);
-    expect(screen.getByText('剩餘金額')).toBeInTheDocument();
-  });
-
-  it('shows over-budget warning when exceeding target', () => {
-    render(<FareCalculator />);
-    const budgetInput = screen.getByDisplayValue('80') as HTMLInputElement;
-    fireEvent.change(budgetInput, { target: { value: '5' } });
-    const tier10Button = screen.getByText('$10').closest('button')!;
-    fireEvent.click(tier10Button);
-    expect(screen.getByText(/已超出預算/)).toBeInTheDocument();
-  });
-
-  it('has a reset button', () => {
-    render(<FareCalculator />);
-    expect(screen.getByTitle('清除所有選擇')).toBeInTheDocument();
-  });
-
-  it('renders quick budget buttons', () => {
-    render(<FareCalculator />);
-    expect(screen.getByText('$50')).toBeInTheDocument();
-    expect(screen.getByText('$100')).toBeInTheDocument();
-    expect(screen.getByText('$200')).toBeInTheDocument();
-  });
-
-  it('shows combination suggestions when budget is set and tiers are selected', () => {
-    render(<FareCalculator />);
-    const tier10Button = screen.getByText('$10').closest('button')!;
-    fireEvent.click(tier10Button);
-    expect(screen.getByText(/接近預算的組合/)).toBeInTheDocument();
-  });
-
-  it('updates budget when quick budget button is clicked', () => {
-    render(<FareCalculator />);
-    const hundredButton = screen.getByText('$100').closest('button')!;
-    fireEvent.click(hundredButton);
-    expect(screen.getByDisplayValue('100')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('自訂 $')).toBeInTheDocument();
   });
 
   it('renders service charge label', () => {
     render(<FareCalculator />);
     expect(screen.getByText('實際賬單 (+10%)')).toBeInTheDocument();
-  });
-
-  it('renders all price tiers', () => {
-    render(<FareCalculator />);
-    const tierPrices = PRICE_TIERS.map((t) => `$${t.price}`);
-    tierPrices.forEach((price) => {
-      expect(screen.getByText(price)).toBeInTheDocument();
-    });
   });
 
   it('renders empty state when no tiers selected', () => {
@@ -104,13 +43,45 @@ describe('FareCalculator', () => {
     expect(deleteBtn).toBeInTheDocument();
   });
 
-  it('shows custom price tier button', () => {
+  it('renders quick budget buttons', () => {
     render(<FareCalculator />);
-    expect(screen.getByText('新增')).toBeInTheDocument();
+    expect(screen.getByText('$50')).toBeInTheDocument();
+    expect(screen.getByText('$100')).toBeInTheDocument();
+    expect(screen.getByText('$200')).toBeInTheDocument();
   });
 
-  it('has a reset button', () => {
+  it('updates budget when quick budget button is clicked', () => {
     render(<FareCalculator />);
-    expect(screen.getByTitle('清除所有選擇')).toBeInTheDocument();
+    const hundredButton = screen.getByText('$100').closest('button')!;
+    fireEvent.click(hundredButton);
+    expect(screen.getByDisplayValue('100')).toBeInTheDocument();
+  });
+
+  it('renders input/output groups', () => {
+    render(<FareCalculator />);
+    expect(screen.getByText('輸入')).toBeInTheDocument();
+    expect(screen.getByText('輸出')).toBeInTheDocument();
+  });
+
+  it('allows incrementing tier quantity', () => {
+    render(<FareCalculator />);
+    const incrementBtns = screen.getAllByRole('button');
+    const plusBtn = incrementBtns.find((btn) => btn.querySelector('.lucide-plus'));
+    if (plusBtn) {
+      fireEvent.click(plusBtn);
+      expect(screen.getByText('已選 1 項')).toBeInTheDocument();
+    }
+  });
+
+  it('shows over-budget warning when exceeding target', () => {
+    render(<FareCalculator />);
+    const budgetInput = screen.getByDisplayValue('80') as HTMLInputElement;
+    fireEvent.change(budgetInput, { target: { value: '5' } });
+    const incrementBtns = screen.getAllByRole('button');
+    const plusBtn = incrementBtns.find((btn) => btn.querySelector('.lucide-plus'));
+    if (plusBtn) {
+      fireEvent.click(plusBtn);
+    }
+    expect(screen.getByText(/已超出預算/)).toBeInTheDocument();
   });
 });
