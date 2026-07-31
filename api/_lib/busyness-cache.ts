@@ -26,49 +26,75 @@ async function findPlaceId(
   lng: number,
   apiKey: string
 ): Promise<string | null> {
-  // Try multiple search strategies
-  const queries = [
-    `壽司郎 ${storeName}`,
-    `Sushiro ${storeName}`,
-    `Sushiro ${nameEn || storeName}`,
-    `壽司郎`,
-  ];
+  // Use nearbySearch — much more reliable than textSearch for finding stores by coordinates
+  const url = `https://places.googleapis.com/v1/places:searchNearby?fields=id,displayName,types&key=${apiKey}`;
 
-  for (const textQuery of queries) {
-    const url = `https://places.googleapis.com/v1/places:searchText?fields=id,displayName,types&key=${apiKey}`;
-
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        textQuery,
-        locationBias: {
-          circle: {
-            center: { latitude: lat, longitude: lng },
-            radius: 10000.0, // 10km radius
-          },
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      locationBias: {
+        circle: {
+          center: { latitude: lat, longitude: lng },
+          radius: 5000.0,
         },
-        maxResultCount: 3,
-      }),
-    });
+      },
+      includedTypes: ['restaurant'],
+      maxResultCount: 20,
+    }),
+  });
 
-    if (!res.ok) continue;
+  if (!res.ok) return null;
 
-    const data = await res.json();
-    const places = data.places ?? [];
+  const data = await res.json();
+  const places = data.places ?? [];
 
-    // Find a place that looks like a Sushiro restaurant
-    for (const place of places) {
-      const name = (place.displayName?.text ?? '').toLowerCase();
-      const types = place.types ?? [];
-      const isRestaurant = types.some((t: string) =>
-        ['restaurant', 'food', 'point_of_interest'].includes(t)
+  // Find the closest Sushiro
+  let bestPlace: { id: string; distance: number } | null = null;
+
+  for (const place of places) {
+    const name = (place.displayName?.text ?? '').toLowerCase();
+    const isSushiro = name.includes('sushiro') || name.includes('壽司郎') || name.includes('すしろ') || name.includes('寿司郎');
+
+    if (isSushiro && place.location?.latitude && place.location?.longitude) {
+      const dist = Math.sqrt(
+        Math.pow(place.location.latitude - lat, 2) +
+        Math.pow(place.location.longitude - lng, 2)
       );
-      const isSushiro = name.includes('sushiro') || name.includes('壽司郎') || name.includes('すしろ') || name.includes('寿司郎');
-
-      if (isSushiro || (isRestaurant && (name.includes('sushi') || name.includes('壽司')))) {
-        return place.id;
+      if (!bestPlace || dist < bestPlace.distance) {
+        bestPlace = { id: place.id, distance: dist };
       }
+    }
+  }
+
+  if (bestPlace) return bestPlace.id;
+
+  // Fallback: textSearch with just the brand name
+  const textUrl = `https://places.googleapis.com/v1/places:searchText?fields=id,displayName,types&key=${apiKey}`;
+  const textRes = await fetch(textUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      textQuery: `壽司郎 ${nameEn || storeName}`,
+      locationBias: {
+        circle: {
+          center: { latitude: lat, longitude: lng },
+          radius: 10000.0,
+        },
+      },
+      maxResultCount: 5,
+    }),
+  });
+
+  if (!textRes.ok) return null;
+
+  const textData = await textRes.json();
+  const textPlaces = textData.places ?? [];
+
+  for (const place of textPlaces) {
+    const name = (place.displayName?.text ?? '').toLowerCase();
+    if (name.includes('sushiro') || name.includes('壽司郎') || name.includes('すしろ') || name.includes('寿司郎')) {
+      return place.id;
     }
   }
 

@@ -25,11 +25,16 @@ describe('getBusynessData', () => {
   });
 
   it('calls Google Places API and returns busyness data', async () => {
-    const mockPlacesResponse = {
-      places: [{ id: 'ChIJ_test_place_id', displayName: { text: 'Sushiro Tsuen Wan' }, types: ['restaurant'] }],
+    const mockNearbyResponse = {
+      places: [{
+        id: 'ChIJ_test_place_id',
+        displayName: { text: 'Sushiro Tsuen Wan' },
+        types: ['restaurant'],
+        location: { latitude: 22.371, longitude: 114.111 },
+      }],
     };
 
-    const today = new Date().getDay(); // 0=Sunday
+    const today = new Date().getDay();
     const mockDetailsResponse = {
       currentOpeningHours: { busyNow: 65 },
       popularTimes: Array.from({ length: 7 }, (_, i) => ({
@@ -40,7 +45,7 @@ describe('getBusynessData', () => {
     const fetchSpy = vi.spyOn(global, 'fetch')
       .mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(mockPlacesResponse),
+        json: () => Promise.resolve(mockNearbyResponse),
       } as Response)
       .mockResolvedValueOnce({
         ok: true,
@@ -62,7 +67,14 @@ describe('getBusynessData', () => {
     vi.spyOn(global, 'fetch')
       .mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({ places: [{ id: 'ChIJ_cached', displayName: { text: 'Sushiro' }, types: ['restaurant'] }] }),
+        json: () => Promise.resolve({
+          places: [{
+            id: 'ChIJ_cached',
+            displayName: { text: 'Sushiro' },
+            types: ['restaurant'],
+            location: { latitude: 22.39, longitude: 113.97 },
+          }],
+        }),
       } as Response)
       .mockResolvedValueOnce({
         ok: true,
@@ -82,7 +94,12 @@ describe('getBusynessData', () => {
       .mockResolvedValue({
         ok: true,
         json: () => Promise.resolve({
-          places: [{ id: 'ChIJ_fresh', displayName: { text: 'Sushiro' }, types: ['restaurant'] }],
+          places: [{
+            id: 'ChIJ_fresh',
+            displayName: { text: 'Sushiro' },
+            types: ['restaurant'],
+            location: { latitude: 22.44, longitude: 114.03 },
+          }],
           currentOpeningHours: { busyNow: 80 },
         }),
       } as Response);
@@ -90,7 +107,7 @@ describe('getBusynessData', () => {
     await getBusynessData(3, '元朗廣場', 'Yuen Long Plaza', 22.44, 114.03);
     await getBusynessData(3, '元朗廣場', 'Yuen Long Plaza', 22.44, 114.03, true);
 
-    // First call: 1 findPlace + 1 getDetails = 2
+    // First call: 1 nearbySearch + 1 getDetails = 2
     // Second call: forceFresh bypasses cache, reuses placeId, 1 getDetails = 1
     expect(fetchSpy).toHaveBeenCalledTimes(3);
   });
@@ -121,7 +138,14 @@ describe('getBusynessData', () => {
     vi.spyOn(global, 'fetch')
       .mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({ places: [{ id: 'ChIJ_stale', displayName: { text: 'Sushiro' }, types: ['restaurant'] }] }),
+        json: () => Promise.resolve({
+          places: [{
+            id: 'ChIJ_stale',
+            displayName: { text: 'Sushiro' },
+            types: ['restaurant'],
+            location: { latitude: 22.28, longitude: 114.22 },
+          }],
+        }),
       } as Response)
       .mockResolvedValueOnce({
         ok: true,
@@ -130,7 +154,7 @@ describe('getBusynessData', () => {
 
     await getBusynessData(5, '太古城中心', 'Taikoo Shing', 22.28, 114.22);
 
-    // Second call fails (simulating network error after cache populated)
+    // Second call fails
     vi.spyOn(global, 'fetch').mockRejectedValueOnce(new Error('Network error'));
 
     const result = await getBusynessData(5, '太古城中心', 'Taikoo Shing', 22.28, 114.22, true);
