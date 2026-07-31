@@ -3,6 +3,9 @@ import { motion } from 'motion/react';
 import { SushiroStore, GroupQueue } from '../types';
 import { getStoreStatusInfo, getTicketStatusInfo, formatGoogleMapsUrl, isStoreServicing, getStoreDisplayStatus, isLocalTicketingOff } from '../utils/status';
 import { X, RefreshCw, Heart, MapPin, ExternalLink, Info, Calculator } from 'lucide-react';
+import { BusynessChart } from './BusynessChart';
+import { LiveBusynessBadge } from './LiveBusynessBadge';
+import type { BusynessData } from '../types';
 
 interface StoreDetailModalProps {
   store: SushiroStore | null;
@@ -24,9 +27,37 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   onToggleBookmark,
 }) => {
   const [myTicket, setMyTicket] = useState<string>('');
+  const [busyness, setBusyness] = useState<BusynessData | null>(null);
+  const [busynessLoading, setBusynessLoading] = useState(false);
 
   useEffect(() => {
     setMyTicket('');
+  }, [store?.id]);
+
+  useEffect(() => {
+    if (!store) {
+      setBusyness(null);
+      return;
+    }
+
+    setBusynessLoading(true);
+    const params = new URLSearchParams({
+      storeid: String(store.id),
+      name: store.name,
+      lat: String(store.latitude),
+      lng: String(store.longitude),
+    });
+    fetch(`/api/busyness?${params}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.busyness) {
+          setBusyness(data.busyness);
+        } else {
+          setBusyness(null);
+        }
+      })
+      .catch(() => setBusyness(null))
+      .finally(() => setBusynessLoading(false));
   }, [store?.id]);
 
   const handleNumpad = (key: string) => {
@@ -378,6 +409,30 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                 )}
               </div>
             </div>
+
+            {/* Busyness Data from Google Maps */}
+            {(busynessLoading || (busyness && (busyness.live !== null || busyness.popularTimes))) && (
+              <div className="p-5 border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
+                {busynessLoading ? (
+                  <div className="space-y-3">
+                    <div className="h-4 w-24 bg-neutral-200 dark:bg-neutral-700 rounded animate-pulse" />
+                    <div className="h-40 w-full bg-neutral-200 dark:bg-neutral-700 rounded animate-pulse" />
+                  </div>
+                ) : busyness ? (
+                  <div className="space-y-4">
+                    {busyness.live !== null && (
+                      <LiveBusynessBadge live={busyness.live} />
+                    )}
+                    {busyness.popularTimes && (
+                      <BusynessChart
+                        popularTimes={busyness.popularTimes}
+                        currentHour={busyness.currentHour}
+                      />
+                    )}
+                  </div>
+                ) : null}
+              </div>
+            )}
 
         </div>
 

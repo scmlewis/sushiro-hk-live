@@ -1,7 +1,23 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
 import { StoreDetailModal } from './StoreDetailModal';
 import type { SushiroStore, GroupQueue } from '../types';
+
+vi.mock('./BusynessChart', () => ({
+  BusynessChart: ({ popularTimes, currentHour }: any) => (
+    <div data-testid="busyness-chart">
+      {popularTimes ? `Chart with ${popularTimes.length} hours` : 'No data'}
+    </div>
+  ),
+}));
+
+vi.mock('./LiveBusynessBadge', () => ({
+  LiveBusynessBadge: ({ live }: any) => (
+    <div data-testid="live-busyness-badge">
+      {live !== null ? `Live: ${live}%` : 'No data'}
+    </div>
+  ),
+}));
 
 const mockStore: SushiroStore = {
   id: 1,
@@ -38,6 +54,10 @@ const defaultProps = {
 };
 
 describe('StoreDetailModal', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('renders store details correctly in active state', () => {
     render(<StoreDetailModal {...defaultProps} />);
     expect(screen.getByText('旺角店')).toBeInTheDocument();
@@ -139,5 +159,37 @@ describe('StoreDetailModal', () => {
     expect(screen.getByText('即時入座')).toBeInTheDocument();
     expect(screen.getByText('約0分鐘')).toBeInTheDocument();
     expect(screen.getByText('目前無輪候，可即時入座')).toBeInTheDocument();
+  });
+
+  it('fetches and displays busyness data when store is selected', async () => {
+    const mockBusyness = {
+      success: true,
+      busyness: {
+        live: 65,
+        popularTimes: Array.from({ length: 24 }, (_, i) => ({ hour: i, busy: 50 })),
+        currentHour: 14,
+      },
+    };
+
+    global.fetch = vi.fn().mockResolvedValue({
+      json: () => Promise.resolve(mockBusyness),
+    }) as any;
+
+    render(
+      <StoreDetailModal
+        store={mockStore}
+        queue={null}
+        loading={false}
+        isBookmarked={false}
+        onClose={vi.fn()}
+        onRefreshQueue={vi.fn()}
+        onToggleBookmark={vi.fn()}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('live-busyness-badge')).toBeInTheDocument();
+      expect(screen.getByTestId('busyness-chart')).toBeInTheDocument();
+    });
   });
 });
