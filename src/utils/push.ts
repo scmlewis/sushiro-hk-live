@@ -1,4 +1,5 @@
 const REGISTRATION_STORAGE_KEY = 'sushiro_hk_push_registrations';
+let vapidPublicKeyCache: string | null = null;
 
 export function isPushSupported(): boolean {
   if (typeof navigator === 'undefined') return false;
@@ -10,18 +11,36 @@ export function getNotificationPermission(): NotificationPermission {
   return Notification.permission;
 }
 
+async function getVapidPublicKey(): Promise<string> {
+  if (vapidPublicKeyCache) return vapidPublicKeyCache;
+  try {
+    const res = await fetch('/api/vapid-public-key');
+    const data = await res.json();
+    if (data.publicKey) {
+      vapidPublicKeyCache = data.publicKey;
+      return data.publicKey;
+    }
+  } catch (err) {
+    console.error('[Push] Failed to fetch VAPID key:', err);
+  }
+  return '';
+}
+
 export async function requestPushSubscription(): Promise<PushSubscription | null> {
   if (!isPushSupported()) return null;
 
   const permission = await Notification.requestPermission();
   if (permission !== 'granted') return null;
 
+  const publicKey = await getVapidPublicKey();
+  if (!publicKey) {
+    throw new Error('VAPID public key not available');
+  }
+
   const registration = await navigator.serviceWorker.ready;
   const subscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
-    applicationServerKey: urlBase64ToUint8Array(
-      import.meta.env.VITE_VAPID_PUBLIC_KEY || ''
-    ),
+    applicationServerKey: urlBase64ToUint8Array(publicKey),
   });
 
   return subscription;
