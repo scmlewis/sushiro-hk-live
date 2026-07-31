@@ -58,7 +58,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     };
 
     // Save registration
+    console.log('[Register] Saving registration for store', body.storeId, 'ticket', body.ticketNumber);
     await kvSet(`notification:${subId}`, registration);
+    console.log('[Register] Saved notification:', subId);
 
     // Update store index
     const storeKey = `notification:store:${body.storeId}`;
@@ -67,6 +69,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       existingIds.push(subId);
       await kvSet(storeKey, existingIds);
     }
+    console.log('[Register] Updated store index for store', body.storeId);
 
     // Update global index
     const globalIndexKey = 'notification:index';
@@ -75,6 +78,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       storeIds.push(body.storeId);
       await kvSet(globalIndexKey, storeIds);
     }
+    console.log('[Register] Updated global index');
 
     return res.json({
       success: true,
@@ -82,9 +86,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   } catch (err: any) {
     console.error('[Register Error]', err.message || err);
+    console.error('[Register Error] Stack:', err.stack);
     return res.status(500).json({
       success: false,
-      error: '註冊失敗，請稍後再試',
+      error: err.message || '註冊失敗，請稍後再試',
     });
   }
 }

@@ -75,9 +75,10 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
       } else {
         throw new Error(data.error || 'Registration failed');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('[NotificationBell] Subscribe error:', err);
-      onToast('註冊通知失敗，請稍後再試', 'error');
+      const detail = err?.message || String(err);
+      onToast(`註冊通知失敗：${detail}`, 'error');
       setState('idle');
     }
   }, [supported, storeId, ticketNumber, onToast]);
