@@ -34,7 +34,7 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <div className="min-h-[60vh] flex items-center justify-center p-8">
           <div className="text-center max-w-md">
-            <div className="w-16 h-16 rounded-full bg-red-50 dark:bg-red-950/60 text-red-500 flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 rounded-2xl bg-red-50 dark:bg-red-950/60 text-red-500 flex items-center justify-center mx-auto mb-4">
               <AlertTriangle className="w-8 h-8" />
             </div>
             <h2 className="text-xl font-black text-neutral-900 dark:text-white mb-2">
@@ -45,7 +45,7 @@ export class ErrorBoundary extends Component<Props, State> {
             </p>
             <button
               onClick={this.handleReset}
-              className="px-6 py-2.5 rounded-full bg-[#aa151b] text-white font-black text-xs uppercase tracking-wider transition-all hover:bg-red-700 cursor-pointer inline-flex items-center gap-2"
+              className="px-6 py-2.5 rounded-xl bg-[#aa151b] text-white font-black text-xs uppercase tracking-wider transition-all duration-150 hover:bg-[#8e171d] active:scale-95 cursor-pointer inline-flex items-center gap-2"
             >
               <RefreshCw className="w-4 h-4" />
               重新嘗試

@@ -114,7 +114,7 @@ describe('App integration flow', () => {
     });
 
     // Switch to About tab
-    await user.click(screen.getByText('關於'));
+    await user.click(screen.getAllByText('關於')[0].closest('button')!);
 
     // AnimatePresence delays rendering, wait for it
     await waitFor(() => {
@@ -173,7 +173,7 @@ describe('App integration flow', () => {
     });
 
     // Go to About
-    await user.click(screen.getByText('關於'));
+    await user.click(screen.getAllByText('關於')[0].closest('button')!);
 
     await waitFor(() => {
       expect(screen.getByText('文字大小')).toBeInTheDocument();

@@ -154,17 +154,17 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.92, opacity: 0, y: 20 }}
         transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-        className="relative w-full max-w-2xl max-h-[92vh] flex flex-col bg-white dark:bg-neutral-900 shadow-2xl overflow-hidden border-2 border-neutral-800 rounded-2xl my-auto"
+        className="relative w-full max-w-2xl max-h-[92vh] flex flex-col bg-white dark:bg-neutral-900 shadow-2xl overflow-hidden border border-neutral-200 dark:border-neutral-800/60 rounded-2xl my-auto"
       >
         {/* Fixed Header */}
         <div className="shrink-0 p-4 sm:p-6 bg-[#141414] text-white relative border-b-4 border-[#aa151b]">
           <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
             <button
               onClick={() => onToggleBookmark(store)}
-              className={`p-2 rounded-full transition-all cursor-pointer ${
+              className={`p-2 rounded-full transition-all duration-150 cursor-pointer active:scale-90 ${
                 isBookmarked
                   ? 'bg-[#aa151b] text-white'
-                  : 'bg-neutral-800 text-neutral-400 hover:text-[#aa151b]'
+                  : 'bg-neutral-800 text-neutral-400 hover:text-[#aa151b] hover:bg-neutral-700'
               }`}
               title={isBookmarked ? '已加入關注' : '加入關注'}
             >
@@ -172,7 +172,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
             </button>
             <button
               onClick={onClose}
-              className="p-2 rounded-full bg-neutral-800 hover:bg-[#aa151b] text-white transition-colors cursor-pointer"
+              className="p-2 rounded-full bg-neutral-800 hover:bg-[#aa151b] text-white transition-all duration-150 cursor-pointer active:scale-90"
               aria-label="關閉"
             >
               <X className="w-5 h-5" />

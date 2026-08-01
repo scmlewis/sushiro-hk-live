@@ -29,11 +29,11 @@ export const Navbar: React.FC<NavbarProps> = ({
     : '--:--:--';
 
   return (
-    <header className="sticky top-0 z-40 bg-[#aa151b] text-white shadow-lg backdrop-blur-md pt-[env(safe-area-inset-top)]">
+    <header className="sticky top-0 z-40 bg-[#aa151b] text-white shadow-lg shadow-[#aa151b]/20 backdrop-blur-md pt-[env(safe-area-inset-top)]">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2 flex flex-col sm:flex-row items-center justify-between gap-2">
         {/* Brand & Clock */}
         <div className="flex items-center justify-between w-full sm:w-auto gap-3">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <img src="/icon.svg" alt="壽司郎 HK Live" className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg" />
             <h1 className="text-xl sm:text-2xl font-black tracking-tighter text-white">
               壽司郎 HK
@@ -52,7 +52,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={onGlobalRefresh}
               disabled={loading}
-              className="p-2 rounded-full bg-white text-[#aa151b] transition-all cursor-pointer disabled:opacity-60"
+              className="p-2 rounded-full bg-white text-[#aa151b] transition-all duration-150 cursor-pointer disabled:opacity-60 active:scale-95"
               title="更新資料"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -61,72 +61,29 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Center Main Tab Navigation (Single Source of Truth) */}
-        <nav className="flex items-center gap-1 bg-black/20 p-1 rounded-full border border-white/20 w-full sm:w-auto overflow-x-auto no-scrollbar justify-between sm:justify-center">
-          <button
-            onClick={() => onSelectTab('all')}
-            className={`px-2.5 sm:px-3 py-1.5 rounded-full font-black text-xs transition-all cursor-pointer flex items-center gap-1 whitespace-nowrap shrink-0 ${
-              activeMainTab === 'all'
-                ? 'bg-white text-[#aa151b] shadow-sm'
-                : 'text-white hover:bg-white/10'
-            }`}
-          >
-            <Store className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">全港門市</span>
-            <span className="sm:hidden">門市</span>
-          </button>
-
-          <button
-            onClick={() => onSelectTab('bookmarks')}
-            className={`px-2.5 sm:px-3 py-1.5 rounded-full font-black text-xs transition-all cursor-pointer flex items-center gap-1 whitespace-nowrap shrink-0 ${
-              activeMainTab === 'bookmarks'
-                ? 'bg-white text-[#aa151b] shadow-sm'
-                : 'text-white hover:bg-white/10'
-            }`}
-          >
-            <Heart className={`w-3.5 h-3.5 ${activeMainTab === 'bookmarks' ? 'fill-[#aa151b]' : ''}`} />
-            <span className="hidden sm:inline">我的關注</span>
-            <span className="sm:hidden">關注</span>
-            <span>({bookmarkCount})</span>
-          </button>
-
-          <button
-            onClick={() => onSelectTab('compare')}
-            className={`px-2.5 sm:px-3 py-1.5 rounded-full font-black text-xs transition-all cursor-pointer flex items-center gap-1 whitespace-nowrap shrink-0 ${
-              activeMainTab === 'compare'
-                ? 'bg-white text-[#aa151b] shadow-sm'
-                : 'text-white hover:bg-white/10'
-            }`}
-          >
-            <Layers className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">門市比較</span>
-            <span className="sm:hidden">比較</span>
-            <span>({compareCount})</span>
-          </button>
-
-          <button
-            onClick={() => onSelectTab('fare')}
-            className={`px-2.5 sm:px-3 py-1.5 rounded-full font-black text-xs transition-all cursor-pointer flex items-center gap-1 whitespace-nowrap shrink-0 ${
-              activeMainTab === 'fare'
-                ? 'bg-white text-[#aa151b] shadow-sm'
-                : 'text-white hover:bg-white/10'
-            }`}
-          >
-            <Wallet className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">價格計算器</span>
-            <span className="sm:hidden">價格</span>
-          </button>
-
-          <button
-            onClick={() => onSelectTab('about')}
-            className={`px-2.5 sm:px-3 py-1.5 rounded-full font-black text-xs transition-all cursor-pointer flex items-center gap-1 whitespace-nowrap shrink-0 ${
-              activeMainTab === 'about'
-                ? 'bg-white text-[#aa151b] shadow-sm'
-                : 'text-white hover:bg-white/10'
-            }`}
-          >
-            <HelpCircle className="w-3.5 h-3.5" />
-            <span>關於</span>
-          </button>
+        <nav className="flex items-center gap-0.5 bg-black/20 p-1 rounded-full border border-white/10 w-full sm:w-auto overflow-x-auto no-scrollbar justify-between sm:justify-center">
+          {([
+            { id: 'all' as const, icon: Store, labelFull: '全港門市', labelShort: '門市' },
+            { id: 'bookmarks' as const, icon: Heart, labelFull: '我的關注', labelShort: '關注', count: bookmarkCount, fill: activeMainTab === 'bookmarks' },
+            { id: 'compare' as const, icon: Layers, labelFull: '門市比較', labelShort: '比較', count: compareCount },
+            { id: 'fare' as const, icon: Wallet, labelFull: '價格計算器', labelShort: '價格' },
+            { id: 'about' as const, icon: HelpCircle, labelFull: '關於', labelShort: '關於' },
+          ]).map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => onSelectTab(tab.id)}
+              className={`px-2.5 sm:px-3 py-1.5 rounded-full font-black text-xs transition-all duration-150 cursor-pointer flex items-center gap-1 whitespace-nowrap shrink-0 active:scale-95 ${
+                activeMainTab === tab.id
+                  ? 'bg-white text-[#aa151b] shadow-sm'
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              <tab.icon className={`w-3.5 h-3.5 ${tab.fill ? 'fill-[#aa151b]' : ''}`} />
+              <span className="hidden sm:inline">{tab.labelFull}</span>
+              <span className="sm:hidden">{tab.labelShort}</span>
+              {tab.count !== undefined && <span>({tab.count})</span>}
+            </button>
+          ))}
         </nav>
 
         {/* Right Status & Refresh Button */}
@@ -140,7 +97,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             onClick={onGlobalRefresh}
             disabled={loading}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-white text-[#aa151b] font-black text-xs transition-all cursor-pointer disabled:opacity-60 hover:bg-red-50 shadow-sm"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-white text-[#aa151b] font-black text-xs transition-all duration-150 cursor-pointer disabled:opacity-60 hover:bg-red-50 active:scale-95 shadow-sm"
             title="重新載入全港門市即時資料"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />

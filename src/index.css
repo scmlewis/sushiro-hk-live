@@ -1,9 +1,22 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: 'Outfit', ui-sans-serif, system-ui, -apple-system, 'Noto Sans HK', 'PingFang HK', 'Microsoft JhengHei', sans-serif;
+  --color-brand: #b51d24;
+  --color-brand-dark: #8e171d;
+  --color-surface: #f5f5f5;
+  --color-surface-dark: #0e0e10;
+  --color-surface-raised: #ffffff;
+  --color-surface-raised-dark: #18181b;
+  --color-surface-overlay: #fafafa;
+  --color-surface-overlay-dark: #1c1c1f;
+}
+
 html, body {
-  background-color: #141414;
+  background-color: var(--color-surface-dark);
   min-height: -webkit-fill-available;
   min-height: 100dvh;
+  scroll-behavior: smooth;
 }
 
 #root {
@@ -15,6 +28,24 @@ html, body {
   html, body {
     padding-bottom: env(safe-area-inset-bottom);
   }
+}
+
+::selection {
+  background-color: var(--color-brand);
+  color: white;
+}
+
+/* Subtle grain overlay for texture */
+.grain-overlay::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
 }
 
 .sushiro-tooltip {

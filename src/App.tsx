@@ -309,7 +309,7 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen flex flex-col bg-slate-100/70 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-red-500 selection:text-white transition-colors" style={{ fontSize: TEXT_SIZE_MAP[textSize] }}>
+      <div className="min-h-screen flex flex-col bg-surface dark:bg-surface-dark text-neutral-900 dark:text-neutral-100 font-sans antialiased transition-colors grain-overlay" style={{ fontSize: TEXT_SIZE_MAP[textSize] }}>
         <Navbar
           lastUpdated={lastUpdated}
           loading={loadingStores}
@@ -433,17 +433,17 @@ export default function App() {
                   {loadingStores && stores.length === 0 ? (
                     <div className="flex flex-col space-y-3">
                       {[1, 2, 3, 4, 5, 6].map((idx) => (
-                        <div key={`skeleton-${idx}`} className="bg-white dark:bg-neutral-900 rounded-xl p-4 border border-neutral-200 dark:border-neutral-800 animate-pulse flex justify-between items-center">
-                          <div className="space-y-2">
-                            <div className="h-4 bg-neutral-200 dark:bg-neutral-800 rounded-full w-24" />
-                            <div className="h-6 bg-neutral-200 dark:bg-neutral-800 rounded-full w-48" />
+                        <div key={`skeleton-${idx}`} className="bg-white dark:bg-neutral-900 rounded-xl p-4 border border-neutral-100 dark:border-neutral-800/60 animate-pulse flex justify-between items-center">
+                          <div className="space-y-2.5">
+                            <div className="h-3.5 bg-neutral-200 dark:bg-neutral-800 rounded-full w-24" />
+                            <div className="h-5 bg-neutral-200 dark:bg-neutral-800 rounded-full w-48" />
                           </div>
-                          <div className="h-10 bg-neutral-200 dark:bg-neutral-800 rounded-xl w-24" />
+                          <div className="h-9 bg-neutral-200 dark:bg-neutral-800 rounded-lg w-24" />
                         </div>
                       ))}
                     </div>
                   ) : processedStores.length === 0 ? (
-                    <div className="text-center py-12 px-6 bg-white dark:bg-neutral-900 border-2 border-neutral-200 dark:border-neutral-800 shadow-xl max-w-xl mx-auto my-6 rounded-2xl">
+                    <div className="text-center py-12 px-6 bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2)] max-w-xl mx-auto my-6 rounded-2xl">
                       <div className="w-36 h-36 sm:w-44 sm:h-44 mx-auto mb-4 overflow-hidden rounded-2xl bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center p-2">
                         <img src={noStoresFoundImg} alt="未找到搜尋門市" referrerPolicy="no-referrer" className="w-full h-full object-contain" />
                       </div>

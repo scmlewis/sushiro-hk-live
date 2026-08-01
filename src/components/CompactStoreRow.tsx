@@ -35,7 +35,7 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
   const waitColorClass = getWaitTextColor(displayStatus.waitText, displayStatus.accentColor);
 
   return (
-    <div className="group relative bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 hover:border-neutral-400 dark:hover:border-neutral-600 transition-all shadow-xs overflow-hidden">
+    <div className="group relative bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700 hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_2px_8px_rgba(0,0,0,0.3)] transition-all duration-200 overflow-hidden">
       {/* Left Accent Bar */}
       <div className={`absolute left-0 top-0 bottom-0 w-1 ${accentColorClass}`} />
 
@@ -43,7 +43,7 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
       <div className="flex items-center gap-2 px-3 py-2.5 ml-1">
         <h4
           onClick={() => onSelectStore(store)}
-          className="text-sm font-black text-neutral-900 dark:text-white truncate cursor-pointer hover:text-[#aa151b] transition-colors min-w-0 flex-1"
+          className="text-sm font-black text-neutral-900 dark:text-white truncate cursor-pointer hover:text-[#aa151b] transition-colors duration-150 min-w-0 flex-1"
         >
           {store.name}
         </h4>
@@ -60,7 +60,7 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
              <Users className="w-3 h-3 text-sky-500" />
              <span className="text-sm font-black text-neutral-900 dark:text-white tabular-nums whitespace-nowrap">
                 {displayStatus.groupText}
-             </span>
+              </span>
            </div>
         </div>
       </div>
@@ -72,7 +72,7 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
           target="_blank"
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
-          className="text-neutral-400 hover:text-[#aa151b] transition-colors p-1 shrink-0"
+          className="text-neutral-400 hover:text-[#aa151b] transition-colors duration-150 p-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-950/40 shrink-0"
           title="Google 地圖"
         >
           <MapPin className="w-3.5 h-3.5" />
@@ -81,7 +81,7 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
         <button
           onClick={() => onRefreshQueue(store.id, store.name)}
           disabled={queueLoading}
-          className="p-1.5 rounded text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-all cursor-pointer"
+          className="p-1.5 rounded-md text-neutral-500 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all duration-150 cursor-pointer disabled:opacity-50"
           title="更新叫號"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${queueLoading ? 'animate-spin text-[#aa151b]' : ''}`} />
@@ -89,10 +89,10 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
 
         <button
           onClick={() => onToggleBookmark(store)}
-          className={`p-1.5 rounded transition-all cursor-pointer ${
+          className={`p-1.5 rounded-md transition-all duration-150 cursor-pointer ${
             isBookmarked
-              ? 'text-[#aa151b]'
-              : 'text-neutral-500 hover:text-[#aa151b]'
+              ? 'text-[#aa151b] bg-red-50 dark:bg-red-950/40'
+              : 'text-neutral-500 hover:text-[#aa151b] hover:bg-red-50 dark:hover:bg-red-950/40'
           }`}
           title={isBookmarked ? '取消關注' : '加入關注'}
         >
@@ -101,10 +101,10 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
 
         <button
           onClick={() => onToggleCompare(store)}
-          className={`p-1.5 rounded transition-all cursor-pointer ${
+          className={`p-1.5 rounded-md transition-all duration-150 cursor-pointer ${
             isComparing
-              ? 'text-[#141414] dark:text-white'
-              : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
+              ? 'text-[#141414] dark:text-white bg-neutral-100 dark:bg-neutral-800'
+              : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800'
           }`}
           title={isComparing ? '取消比較' : '加入比較'}
         >
@@ -115,7 +115,7 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
 
         <button
           onClick={() => onSelectStore(store, 'live')}
-          className="flex items-center gap-0.5 px-2.5 py-1 bg-[#aa151b] hover:bg-red-700 text-white text-[10px] font-black uppercase transition-all cursor-pointer rounded"
+          className="flex items-center gap-0.5 px-2.5 py-1 bg-[#aa151b] hover:bg-[#8e171d] active:scale-[0.97] text-white text-[10px] font-black uppercase transition-all duration-150 cursor-pointer rounded"
         >
           <span>詳情</span>
           <ChevronRight className="w-3 h-3" />

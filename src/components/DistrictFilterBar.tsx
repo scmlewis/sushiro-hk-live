@@ -66,7 +66,7 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
     (sortBy !== 'wait-asc' ? 1 : 0);
 
   return (
-    <div className="sticky top-20 z-30 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 mb-4 space-y-3 shadow-sm transition-all rounded-xl">
+    <div className="sticky top-20 z-30 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800/60 p-3 sm:p-4 mb-4 space-y-3 shadow-[0_1px_3px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2)] transition-all rounded-xl">
       {/* Top Main Row: Search Input + Mobile Filter Toggle Button */}
       <div className="flex items-center gap-2">
         {/* Search Input */}
@@ -77,15 +77,15 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="搜尋門市（如：旺角、葵芳、銅鑼灣）..."
-            className="w-full pl-10 pr-4 py-2 rounded-full bg-neutral-100 dark:bg-neutral-800 border-2 border-transparent focus:border-[#aa151b] text-xs sm:text-sm font-bold text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none transition-all"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-800/80 border border-transparent focus:border-[#aa151b] focus:bg-white dark:focus:bg-neutral-800 text-xs sm:text-sm font-bold text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none transition-all duration-150"
           />
         </div>
 
         {/* List / Map Toggle */}
-        <div className="flex items-center bg-neutral-100 dark:bg-neutral-800 rounded-full p-0.5 shrink-0 border border-neutral-200 dark:border-neutral-700">
+        <div className="flex items-center bg-neutral-100 dark:bg-neutral-800/80 rounded-xl p-0.5 shrink-0 border border-neutral-200 dark:border-neutral-700/60">
           <button
             onClick={() => onViewModeChange('list')}
-            className={`px-3 py-2 rounded-full text-[11px] font-black uppercase transition-all cursor-pointer ${
+            className={`px-3 py-2 rounded-lg text-[11px] font-black uppercase transition-all duration-150 cursor-pointer ${
               viewMode === 'list'
                 ? 'bg-[#141414] text-white dark:bg-white dark:text-[#141414] shadow-xs'
                 : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
@@ -95,7 +95,7 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
           </button>
           <button
             onClick={() => onViewModeChange('map')}
-            className={`px-3 py-2 rounded-full text-[11px] font-black uppercase transition-all cursor-pointer ${
+            className={`px-3 py-2 rounded-lg text-[11px] font-black uppercase transition-all duration-150 cursor-pointer ${
               viewMode === 'map'
                 ? 'bg-[#141414] text-white dark:bg-white dark:text-[#141414] shadow-xs'
                 : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
@@ -108,10 +108,10 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
         {/* Mobile Filter Options Expand Toggle Button (Visible on mobile, hidden on desktop md:hidden) */}
         <button
           onClick={toggleExpand}
-          className={`md:hidden flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-black transition-all shrink-0 cursor-pointer border ${
+          className={`md:hidden flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black transition-all duration-150 shrink-0 cursor-pointer border ${
             isExpanded || activeFiltersCount > 0
               ? 'bg-[#141414] text-white dark:bg-white dark:text-[#141414] border-transparent shadow-xs'
-              : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border-neutral-200 dark:border-neutral-700'
+              : 'bg-neutral-100 dark:bg-neutral-800/80 text-neutral-700 dark:text-neutral-300 border-neutral-200 dark:border-neutral-700/60'
           }`}
           title="切換篩選選項"
         >
@@ -144,7 +144,7 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
             <select
               value={sortBy}
               onChange={(e) => onSortChange(e.target.value as SortOption)}
-              className="w-full pl-10 pr-8 py-2 rounded-full bg-neutral-100 dark:bg-neutral-800 border-2 border-transparent focus:border-[#aa151b] text-xs font-extrabold text-neutral-800 dark:text-neutral-200 focus:outline-none cursor-pointer appearance-none uppercase"
+              className="w-full pl-10 pr-8 py-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-800/80 border border-transparent focus:border-[#aa151b] text-xs font-extrabold text-neutral-800 dark:text-neutral-200 focus:outline-none cursor-pointer appearance-none uppercase transition-all duration-150"
             >
               <option value="wait-asc">等候時間：由短至長</option>
               <option value="wait-desc">等候時間：由長至短</option>
@@ -159,10 +159,10 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
           <button
             onClick={onRequestLocation}
             disabled={locationLoading}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-black transition-all w-full sm:w-auto justify-center cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-black transition-all duration-150 w-full sm:w-auto justify-center cursor-pointer active:scale-95 ${
               userLocation
                 ? 'bg-sky-500 text-white shadow-xs'
-                : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 hover:bg-neutral-200'
+                : 'bg-neutral-100 dark:bg-neutral-800/80 text-neutral-800 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700'
             }`}
             title="開啟 GPS 尋找附近門市"
           >
@@ -182,10 +182,10 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
 
           <button
             onClick={() => onSelectArea('')}
-            className={`inline-flex items-center justify-center px-3.5 py-1.5 rounded-full text-xs font-extrabold transition-all whitespace-nowrap cursor-pointer ${
+            className={`inline-flex items-center justify-center px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all duration-150 whitespace-nowrap cursor-pointer ${
               selectedArea === ''
                 ? 'bg-[#141414] text-white shadow-md dark:bg-white dark:text-[#141414]'
-                : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200'
+                : 'bg-neutral-100 dark:bg-neutral-800/80 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200'
             }`}
           >
             全港 ({regionCounts.all})
@@ -193,10 +193,10 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
 
           <button
             onClick={() => onSelectArea('港島')}
-            className={`inline-flex items-center justify-center px-3.5 py-1.5 rounded-full text-xs font-extrabold transition-all whitespace-nowrap cursor-pointer ${
+            className={`inline-flex items-center justify-center px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all duration-150 whitespace-nowrap cursor-pointer ${
               selectedArea === '港島'
                 ? 'bg-[#141414] text-white shadow-md dark:bg-white dark:text-[#141414]'
-                : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200'
+                : 'bg-neutral-100 dark:bg-neutral-800/80 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200'
             }`}
           >
             港島 ({regionCounts.hkIsland})
@@ -204,10 +204,10 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
 
           <button
             onClick={() => onSelectArea('九龍')}
-            className={`inline-flex items-center justify-center px-3.5 py-1.5 rounded-full text-xs font-extrabold transition-all whitespace-nowrap cursor-pointer ${
+            className={`inline-flex items-center justify-center px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all duration-150 whitespace-nowrap cursor-pointer ${
               selectedArea === '九龍'
                 ? 'bg-[#141414] text-white shadow-md dark:bg-white dark:text-[#141414]'
-                : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200'
+                : 'bg-neutral-100 dark:bg-neutral-800/80 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200'
             }`}
           >
             九龍 ({regionCounts.kowloon})
@@ -215,10 +215,10 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
 
           <button
             onClick={() => onSelectArea('新界')}
-            className={`inline-flex items-center justify-center px-3.5 py-1.5 rounded-full text-xs font-extrabold transition-all whitespace-nowrap cursor-pointer ${
+            className={`inline-flex items-center justify-center px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all duration-150 whitespace-nowrap cursor-pointer ${
               selectedArea === '新界'
                 ? 'bg-[#141414] text-white shadow-md dark:bg-white dark:text-[#141414]'
-                : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200'
+                : 'bg-neutral-100 dark:bg-neutral-800/80 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200'
             }`}
           >
             新界 ({regionCounts.nt})
@@ -227,10 +227,10 @@ export const DistrictFilterBar: React.FC<DistrictFilterBarProps> = ({
           {/* Filter Toggle: Only issuing tickets */}
           <button
             onClick={onToggleOnlyIssuing}
-            className={`ml-auto inline-flex items-center justify-center px-3.5 py-1.5 rounded-full font-extrabold text-xs transition-all whitespace-nowrap cursor-pointer gap-1 ${
+            className={`ml-auto inline-flex items-center justify-center px-3.5 py-1.5 rounded-xl font-extrabold text-xs transition-all duration-150 whitespace-nowrap cursor-pointer gap-1 ${
               onlyIssuingTickets
                 ? 'bg-[#aa151b] text-white shadow-md'
-                : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200'
+                : 'bg-neutral-100 dark:bg-neutral-800/80 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200'
             }`}
           >
             {onlyIssuingTickets && <Check className="w-3 h-3" />}

@@ -32,7 +32,7 @@ describe('Navbar', () => {
     expect(screen.getAllByText(/關注/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/比較/).length).toBeGreaterThan(0);
     expect(screen.getByText('價格')).toBeInTheDocument();
-    expect(screen.getByText('關於')).toBeInTheDocument();
+    expect(screen.getAllByText('關於').length).toBeGreaterThan(0);
   });
 
   it('displays formatted time', () => {
@@ -52,7 +52,8 @@ describe('Navbar', () => {
     const onSelectTab = vi.fn();
     render(<Navbar {...defaultProps} onSelectTab={onSelectTab} />);
 
-    await user.click(screen.getByText('關於'));
+    // Click the first "關於" element (button contains both mobile/desktop labels)
+    await user.click(screen.getAllByText('關於')[0].closest('button')!);
     expect(onSelectTab).toHaveBeenCalledWith('about');
   });
 

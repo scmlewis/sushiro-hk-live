@@ -31,12 +31,12 @@ export const Toast: React.FC<ToastProps> = ({ toast, onDismiss }) => {
 
   return (
     <div className="fixed bottom-20 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 sm:max-w-sm z-50 animate-bounce-short">
-      <div className="relative bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-800 dark:border-slate-200 overflow-hidden">
+      <div className="relative bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 px-4 py-3 rounded-xl shadow-2xl shadow-neutral-900/30 dark:shadow-neutral-100/20 flex items-center gap-3 border border-neutral-800 dark:border-neutral-200 overflow-hidden">
         {iconMap[toast.type || 'info']}
         <span className="text-sm font-medium flex-1">{toast.text}</span>
         <button
           onClick={onDismiss}
-          className="text-slate-400 hover:text-white dark:hover:text-slate-900 transition-colors p-1"
+          className="text-neutral-400 hover:text-white dark:hover:text-neutral-900 transition-colors duration-150 p-1 rounded-md hover:bg-neutral-800 dark:hover:bg-neutral-200"
           aria-label="Close message"
         >
           <X className="w-4 h-4" />
