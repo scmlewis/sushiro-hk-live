@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import { Calculator } from 'lucide-react';
 import { PriceTier, PRICE_TIERS } from '../data/menu';
 import {
   useFareCalculator,
@@ -8,7 +7,7 @@ import {
 } from '../hooks/useFareCalculator';
 import { FareSummary } from './FareSummary';
 import { TierGrid } from './TierGrid';
-import { SelectedList } from './SelectedList';
+import { FareBottomBar } from './FareBottomBar';
 import { CombinationSuggestions } from './CombinationSuggestions';
 
 interface FareCalculatorProps {
@@ -61,7 +60,7 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in max-w-5xl mx-auto">
+    <div className="space-y-6 animate-fade-in max-w-5xl mx-auto pb-20">
       <FareSummary
         targetBudget={targetBudget}
         actualBill={actualBill}
@@ -84,28 +83,13 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
         onToast={onToast}
       />
 
-      <SelectedList
-        items={selectedList}
+      <FareBottomBar
+        totalItems={totalItems}
         total={total}
-        onIncrement={incrementTier}
-        onDecrement={decrementTier}
-        onRemove={removeTier}
-        onClearAll={handleClearAll}
+        onClear={handleClearAll}
       />
 
       <CombinationSuggestions combinations={combinations} />
-
-      {totalItems === 0 && (
-        <div className="bg-white dark:bg-neutral-900 border-2 border-neutral-200 dark:border-neutral-800 rounded-2xl sm:rounded-[1.75rem] p-8 sm:p-12 text-center shadow-sm">
-          <div className="w-16 h-16 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-400 flex items-center justify-center mx-auto mb-4">
-            <Calculator className="w-8 h-8" />
-          </div>
-          <h3 className="text-lg font-black text-neutral-900 dark:text-white mb-2">尚未選擇價格層級</h3>
-          <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
-            點擊上方的「+」按鈕添加碟子到您的訂單
-          </p>
-        </div>
-      )}
     </div>
   );
 };
