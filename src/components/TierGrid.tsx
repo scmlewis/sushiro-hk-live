@@ -28,7 +28,7 @@ const CounterCard: React.FC<{
           <div className="text-xs font-black text-neutral-900 dark:text-white truncate">
             ${tier.price}
           </div>
-          <div className="text-[10px] font-bold text-neutral-400 truncate">每件</div>
+          <div className="text-[10px] font-bold text-neutral-400 truncate">{tier.label}</div>
         </div>
       </div>
       <div className="flex items-center gap-1">
