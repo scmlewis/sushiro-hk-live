@@ -24,6 +24,18 @@ export const FareBottomBar: React.FC<FareBottomBarProps> = ({
   const [expanded, setExpanded] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const confirmTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const barRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!expanded) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (barRef.current && !barRef.current.contains(e.target as Node)) {
+        setExpanded(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [expanded]);
 
   useEffect(() => {
     if (totalItems === 0) setExpanded(false);
@@ -59,7 +71,7 @@ export const FareBottomBar: React.FC<FareBottomBarProps> = ({
   };
 
   const bar = (
-    <div className="fixed bottom-0 left-0 right-0 z-40 px-2 pb-2">
+    <div ref={barRef} className="fixed bottom-0 left-0 right-0 z-40 px-2 pb-2">
       <div className="relative">
         <AnimatePresence>
           {expanded && (
