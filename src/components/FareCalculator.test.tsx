@@ -1,8 +1,11 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { FareCalculator } from './FareCalculator';
 
 describe('FareCalculator', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
   it('renders the calculator with default target budget', () => {
     render(<FareCalculator />);
     expect(screen.getByText('價格計算器')).toBeInTheDocument();

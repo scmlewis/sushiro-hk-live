@@ -95,11 +95,17 @@ const findCombinations = (
 
 export const useFareCalculator = (
   customTiers: PriceTier[] = [],
-  initialBudget = 80
+  initialBudget = 80,
+  initialSelectedTiers?: Map<number, number>,
+  initialActualBill?: number,
 ): UseFareCalculator => {
-  const [selectedTiers, setSelectedTiers] = useState<Map<number, number>>(new Map());
+  const [selectedTiers, setSelectedTiers] = useState<Map<number, number>>(
+    () => initialSelectedTiers ? new Map(initialSelectedTiers) : new Map(),
+  );
   const [targetBudget, setInternalTarget] = useState<number>(initialBudget);
-  const [actualBill, setInternalActual] = useState<number>(Math.round(initialBudget * (1 + SERVICE_CHARGE_RATE)));
+  const [actualBill, setInternalActual] = useState<number>(
+    initialActualBill ?? Math.round(initialBudget * (1 + SERVICE_CHARGE_RATE)),
+  );
 
   const allTiersMap = useMemo(() => {
     const map = new Map<number, PriceTier>();

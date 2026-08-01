@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { PriceTier, PRICE_TIERS } from '../data/menu';
 import {
   useFareCalculator,
@@ -10,12 +10,43 @@ import { TierGrid } from './TierGrid';
 import { FareBottomBar } from './FareBottomBar';
 import { CombinationSuggestions } from './CombinationSuggestions';
 
+const STORAGE_KEY = 'sushiro-fare-calc';
+
+interface PersistedState {
+  selectedTiers: [number, number][];
+  targetBudget: number;
+  actualBill: number;
+  customTiers: PriceTier[];
+}
+
+function loadState(): PersistedState | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (parsed && Array.isArray(parsed.selectedTiers)) return parsed;
+  } catch { /* corrupted data — ignore */ }
+  return null;
+}
+
+function saveState(state: PersistedState): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch { /* storage full or unavailable */ }
+}
+
+const DEFAULT_BUDGET = 80;
+const DEFAULT_ACTUAL = Math.round(DEFAULT_BUDGET * 1.1);
+
 interface FareCalculatorProps {
   onToast?: (text: string, type: 'success' | 'info' | 'warning' | 'error') => void;
 }
 
 export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
-  const [customTiersState, setCustomTiersState] = useState<PriceTier[]>([]);
+  const saved = loadState();
+  const [customTiersState, setCustomTiersState] = useState<PriceTier[]>(
+    () => saved?.customTiers ?? [],
+  );
 
   const {
     selectedTiers,
@@ -36,7 +67,21 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
     totalItems,
     combinations,
     addCustomTier,
-  } = useFareCalculator(customTiersState, 80);
+  } = useFareCalculator(
+    customTiersState,
+    saved?.targetBudget ?? DEFAULT_BUDGET,
+    saved ? new Map(saved.selectedTiers) : undefined,
+    saved?.actualBill,
+  );
+
+  useEffect(() => {
+    saveState({
+      selectedTiers: Array.from(selectedTiers.entries()),
+      targetBudget,
+      actualBill,
+      customTiers: customTiersState,
+    });
+  }, [selectedTiers, targetBudget, actualBill, customTiersState]);
 
   const allTiers = useMemo(() => {
     const map = new Map<number, PriceTier>();
