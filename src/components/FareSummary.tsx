@@ -68,11 +68,16 @@ export const FareSummary: React.FC<FareSummaryProps> = ({
   };
 
   const handleNativeChange = (field: 'target' | 'actual', value: string) => {
+    setEditingValue(value || '0');
     const parsed = parseInt(value, 10);
     if (!isNaN(parsed) && parsed > 0 && parsed <= 1000) {
       if (field === 'target') onTargetChange(parsed);
       else onActualChange(parsed);
     }
+  };
+
+  const handleBlur = () => {
+    if (activeField) commit();
   };
 
   const overBudget = remaining < 0;
@@ -116,11 +121,13 @@ export const FareSummary: React.FC<FareSummaryProps> = ({
                   ref={targetInputRef}
                   id="target-budget"
                   type="number"
-                  inputMode="numeric"
+                  inputMode={activeField ? 'none' : 'numeric'}
                   aria-label="目標價格"
                   value={activeField === 'target' ? editingValue : targetBudget}
                   onFocus={() => startEditing('target')}
                   onChange={(e) => handleNativeChange('target', e.target.value)}
+                  onBlur={handleBlur}
+                  readOnly={!!(isTouch.current && activeField === 'target')}
                   className="w-20 bg-transparent text-center text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white outline-none tabular-nums"
                   min={1}
                   max={1000}
@@ -148,11 +155,13 @@ export const FareSummary: React.FC<FareSummaryProps> = ({
                   ref={actualInputRef}
                   id="actual-bill"
                   type="number"
-                  inputMode="numeric"
+                  inputMode={activeField ? 'none' : 'numeric'}
                   aria-label="實際賬單"
                   value={activeField === 'actual' ? editingValue : actualBill}
                   onFocus={() => startEditing('actual')}
                   onChange={(e) => handleNativeChange('actual', e.target.value)}
+                  onBlur={handleBlur}
+                  readOnly={!!(isTouch.current && activeField === 'actual')}
                   className="w-20 bg-transparent text-center text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white outline-none tabular-nums"
                   min={1}
                   max={1100}
