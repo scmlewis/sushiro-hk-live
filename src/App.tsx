@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { Routes, Route } from 'react-router-dom';
 import { SushiroStore, StoreQueueMap, ToastMessage, TabId } from './types';
 import { FALLBACK_LOCATION, TEXT_SIZE_MAP, TOTAL_STORE_COUNT, MAX_COMPARE_STORES, POLL_INTERVAL_MS, BRAND_COLOR } from './config';
 import { calculateDistanceKm, getCurrentPosition } from './utils/geolocation';
@@ -19,7 +18,6 @@ import { FareCalculator } from './components/FareCalculator';
 import { Toast } from './components/Toast';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { AlertCircle } from 'lucide-react';
-import StorePage from './pages/StorePage';
 import noStoresFoundImg from './assets/images/no_stores_found_1785143279312.jpg';
 
 export default function App() {
@@ -311,10 +309,7 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <Routes>
-        <Route path="/store/:id" element={<StorePage />} />
-        <Route path="*" element={
-          <div className="min-h-screen flex flex-col bg-surface dark:bg-surface-dark text-neutral-900 dark:text-neutral-100 font-sans antialiased transition-colors" style={{ fontSize: TEXT_SIZE_MAP[textSize] }}>
+      <div className="min-h-screen flex flex-col bg-surface dark:bg-surface-dark text-neutral-900 dark:text-neutral-100 font-sans antialiased transition-colors" style={{ fontSize: TEXT_SIZE_MAP[textSize] }}>
         <Navbar
           lastUpdated={lastUpdated}
           loading={loadingStores}
@@ -507,8 +502,6 @@ export default function App() {
         <Toast toast={toast} onDismiss={() => setToast(null)} />
         <div id="fare-bottom-bar-root" />
       </div>
-        } />
-      </Routes>
     </ErrorBoundary>
   );
 }

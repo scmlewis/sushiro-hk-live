@@ -59,7 +59,18 @@ export function getTicketStatusInfo(
     };
   }
 
-  // 2. 停籌 (Walk-in stopped — store is open but not accepting walk-ins)
+  // 2. 非營業中 — no one waiting (defensive: stores with stale 0/0 data)
+  if (wait === 0 && waitingGroup === 0) {
+    return {
+      label: '非營業中',
+      bgColor: 'bg-slate-500/10',
+      textColor: 'text-slate-500',
+      borderColor: 'border-slate-500/20',
+      dotColor: 'bg-slate-400',
+    };
+  }
+
+  // 3. 停籌 (Walk-in stopped — store is open but not accepting walk-ins)
   if (isStopFly) {
     return {
       label: '停籌',
@@ -115,23 +126,23 @@ export function getStoreDisplayStatus(store: SushiroStore): StoreDisplayStatus {
     };
   }
 
-  // 2. 停籌 (Walk-in stopped — store is open but not accepting walk-ins)
-  if (isStopFly) {
-    return {
-      waitText: '停籌',
-      groupText: `${store.waitingGroup}組`,
-      isClosed: true,
-      accentColor: 'purple',
-    };
-  }
-
-  // 3. 非營業中 — no one waiting (defensive: stores with stale 0/0 data past hours)
+  // 2. 非營業中 — no one waiting (defensive: stores with stale 0/0 data past hours)
   if (store.wait === 0 && store.waitingGroup === 0) {
     return {
       waitText: '非營業中',
       groupText: '--',
       isClosed: true,
       accentColor: 'neutral',
+    };
+  }
+
+  // 3. 停籌 (Walk-in stopped — store is open but not accepting walk-ins)
+  if (isStopFly) {
+    return {
+      waitText: '停籌',
+      groupText: `${store.waitingGroup}組`,
+      isClosed: true,
+      accentColor: 'purple',
     };
   }
 
