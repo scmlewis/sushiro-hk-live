@@ -13,23 +13,30 @@ This is a client-side rendered React SPA (Vite + React 19) with no routing. Craw
 
 ## Scope (Quick Wins — 1-2 sessions)
 
-### 1. Add Client-Side Routing
+### 1. Add Client-Side Routing (Store Pages Only)
 
-**What:** Install `react-router-dom` and create URL routes for store pages.
+**What:** Install `react-router-dom` with a single route for store pages. Tabs remain state-based.
 
 **Routes:**
-- `/` — main app (store list, same as current)
-- `/store/:id` — individual store detail page (replaces modal)
-- All existing tabs (`/bookmarks`, `/compare`, `/fare`, `/about`) remain hash/state-based
+- `/` — main app (all tabs, identical to current behavior)
+- `/store/:id` — individual store detail page (new, for crawlers + direct URL access)
+
+**What stays the same:**
+- Tab navigation remains **state-based** — no URL change when clicking tabs
+- Store detail **modal** stays for in-app clicks — zero behavior change for existing users
+- Back/forward buttons continue to work as they do now (no change)
 
 **Why:** Crawlers need unique URLs to index each store. Currently store detail is a modal with no URL.
 
 **Implementation:**
 - Add `react-router-dom` dependency
 - Wrap app in `<BrowserRouter>` in `main.tsx`
-- Create `src/pages/StorePage.tsx` — dedicated store detail page (not modal)
-- Keep existing modal for in-app navigation, but also support direct URL access
-- `StorePage.tsx` renders the same content as `StoreDetailModal` but as a full page
+- Add a single `<Route path="/store/:id" element={<StorePage />} />` in `App.tsx`
+- Create `src/pages/StorePage.tsx` — full-page store detail (same content as modal, but as a standalone page)
+- Modal remains the primary way to view stores in-app; `StorePage` is for direct URL access and crawlers
+- `StorePage` reads `:id` from URL, fetches store data, renders detail + queue info
+
+**User impact:** None. Existing users click stores → modal opens (unchanged). New: users can also visit `/store/123` directly.
 
 ### 2. Pre-render Static HTML at Build Time
 
@@ -144,15 +151,18 @@ This is a client-side rendered React SPA (Vite + React 19) with no routing. Craw
 ```
 Build Time:
   1. Fetch store list from upstream API
-  2. For each store, prerender HTML with embedded data
-  3. Generate sitemap.xml
+  2. For each store, prerender /store/{id} HTML with embedded data
+  3. Generate sitemap.xml with all 44 store URLs
   4. Output to dist/
 
 Runtime:
-  / → prerendered SPA shell (React hydrates with live data)
-  /store/:id → prerendered store page (React hydrates with live data)
-  /api/* → serverless functions (unchanged)
+  / (SPA)         → prerendered shell, React hydrates, tabs work as before (state-based)
+  /store/:id      → prerendered store page, React hydrates with live queue data
+  Modal (in-app)  → unchanged, opens on store click within the SPA
+  /api/*          → serverless functions (unchanged)
 ```
+
+**Key principle:** The existing SPA is untouched. Routing adds one new entry point (`/store/:id`) for crawlers and direct access. The modal remains the primary in-app experience.
 
 ## Files to Create/Modify
 
@@ -160,10 +170,9 @@ Runtime:
 |------|--------|---------|
 | `package.json` | Modify | Add `react-router-dom`, `vite-plugin-prerender` |
 | `vite.config.ts` | Modify | Add prerender plugin config |
-| `src/main.tsx` | Modify | Add `BrowserRouter` |
-| `src/App.tsx` | Modify | Add routes, keep tab navigation |
-| `src/pages/StorePage.tsx` | **Create** | Individual store detail page |
-| `src/pages/HomePage.tsx` | **Create** | Main app page (extract from App.tsx) |
+| `src/main.tsx` | Modify | Wrap in `BrowserRouter` |
+| `src/App.tsx` | Modify | Add `<Route>` for `/store/:id` |
+| `src/pages/StorePage.tsx` | **Create** | Individual store detail page (same content as modal, standalone) |
 | `src/data/storeData.ts` | **Create** | Build-time store data provider |
 | `scripts/prerender.ts` | **Create** | Build script for prerendering + sitemap |
 | `public/sitemap.xml` | Modify | Expand with all store URLs |
