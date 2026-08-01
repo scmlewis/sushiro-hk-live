@@ -21,6 +21,7 @@ export const TierBadge: React.FC<TierBadgeProps> = ({ tier, size = 'md', showPri
         backgroundColor: tier.bgColor,
         color: tier.color,
         border: `2px solid ${tier.borderColor}`,
+        boxShadow: '0 0 0 3px rgba(255,255,255,0.85), 0 0 0 4px rgba(0,0,0,0.08)',
       }}
     >
       {showPrice ? `$${tier.price}` : ''}

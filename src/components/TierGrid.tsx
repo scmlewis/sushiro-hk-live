@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Minus, Plus } from 'lucide-react';
+import { Minus, Plus, Trash2 } from 'lucide-react';
 import { PriceTier } from '../data/menu';
 import { TierBadge } from './TierBadge';
 import { NumericKeypad } from './NumericKeypad';
@@ -14,6 +14,7 @@ interface TierGridProps {
   onIncrement: (price: number) => void;
   onDecrement: (price: number) => void;
   onAddCustom: (price: number) => void;
+  onRemoveCustom?: (price: number) => void;
   onToast?: (text: string, type: 'success' | 'warning' | 'error' | 'info') => void;
 }
 
@@ -22,7 +23,8 @@ const CounterCard: React.FC<{
   qty: number;
   onIncrement: () => void;
   onDecrement: () => void;
-}> = ({ tier, qty, onIncrement, onDecrement }) => {
+  onRemove?: () => void;
+}> = ({ tier, qty, onIncrement, onDecrement, onRemove }) => {
   return (
     <div className="flex items-center justify-between gap-3 bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-3 transition-all hover:border-neutral-300 dark:hover:border-neutral-700">
       <div className="flex items-center gap-3 min-w-0">
@@ -56,6 +58,15 @@ const CounterCard: React.FC<{
         >
           <Plus className="w-4 h-4" />
         </button>
+        {onRemove && (
+          <button
+            onClick={onRemove}
+            aria-label={`刪除 $${tier.price} 價格層級`}
+            className="w-8 h-8 ml-1 rounded-full flex items-center justify-center text-neutral-400 hover:text-[#aa151b] hover:bg-red-50 dark:hover:bg-red-950/20 transition-all"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        )}
       </div>
     </div>
   );
@@ -69,6 +80,7 @@ export const TierGrid: React.FC<TierGridProps> = ({
   onIncrement,
   onDecrement,
   onAddCustom,
+  onRemoveCustom,
   onToast,
 }) => {
   const [customPrice, setCustomPrice] = useState<string>('');
@@ -273,6 +285,7 @@ export const TierGrid: React.FC<TierGridProps> = ({
                 qty={quantities.get(tier.price) || 0}
                 onIncrement={() => onIncrement(tier.price)}
                 onDecrement={() => onDecrement(tier.price)}
+                onRemove={onRemoveCustom ? () => onRemoveCustom(tier.price) : undefined}
               />
             ))}
           </div>

@@ -77,18 +77,13 @@ export const FareSummary: React.FC<FareSummaryProps> = ({
   return (
     <div className="relative">
       <Card>
-        <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#aa151b]/10 flex items-center justify-center">
-              <Calculator className="w-4 h-4 text-[#aa151b]" />
-            </div>
-            <h3 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-wider">
-              價格計算器
-            </h3>
+        <div className="flex items-center gap-2 mb-5">
+          <div className="w-8 h-8 rounded-full bg-[#aa151b]/10 flex items-center justify-center">
+            <Calculator className="w-4 h-4 text-[#aa151b]" />
           </div>
-          <span className="px-2.5 py-1 rounded-full bg-neutral-200/60 dark:bg-white/10 text-[10px] font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">
-            加一服務費 10%
-          </span>
+          <h3 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-wider">
+            價格計算器
+          </h3>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -124,15 +119,11 @@ export const FareSummary: React.FC<FareSummaryProps> = ({
                 className="w-20 bg-transparent text-center text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white outline-none tabular-nums [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 min={1}
                 max={1000}
-              />
+                />
+              </div>
             </div>
-            <div className="mt-2 flex items-center justify-center gap-1 text-[9px] font-black text-[#aa151b] uppercase tracking-widest">
-              <Pencil className="w-2.5 h-2.5" />
-              <span>{isTouch.current ? '點擊輸入' : '點擊調整'}</span>
-            </div>
-          </div>
 
-          {/* Actual bill */}
+            {/* Actual bill */}
           <div
             onClick={() => actualInputRef.current?.focus()}
             className={`bg-white dark:bg-neutral-900 rounded-2xl border-2 p-4 text-center cursor-pointer transition-all ${
@@ -164,15 +155,11 @@ export const FareSummary: React.FC<FareSummaryProps> = ({
                 className="w-20 bg-transparent text-center text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white outline-none tabular-nums [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 min={1}
                 max={1100}
-              />
+                />
+              </div>
             </div>
-            <div className="mt-2 flex items-center justify-center gap-1 text-[9px] font-black text-[#aa151b] uppercase tracking-widest">
-              <Pencil className="w-2.5 h-2.5" />
-              <span>{isTouch.current ? '點擊輸入' : '點擊調整'}</span>
-            </div>
-          </div>
 
-          {/* Subtotal / service charge display */}
+            {/* Subtotal / service charge display */}
           <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-4 text-center">
             <div className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-2">
               目前金額

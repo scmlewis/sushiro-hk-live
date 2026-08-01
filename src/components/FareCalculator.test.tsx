@@ -89,14 +89,57 @@ describe('FareCalculator', () => {
     expect(screen.getByText('已超出（對比目標）')).toBeInTheDocument();
   });
 
-  it('clears all selections', () => {
+  it('clears all selections after confirmation', () => {
     render(<FareCalculator />);
     const buttons = screen.getAllByRole('button');
     const plusBtn = buttons.find((btn) => btn.querySelector('.lucide-plus'));
     fireEvent.click(plusBtn!);
     expect(screen.getAllByText(/1 項/).length).toBeGreaterThanOrEqual(1);
+
     fireEvent.click(screen.getByText('清空'));
+    expect(screen.getByText('確認清空?')).toBeInTheDocument();
+    expect(screen.getAllByText(/1 項/).length).toBeGreaterThanOrEqual(1);
+
+    fireEvent.click(screen.getByText('確認清空?'));
     expect(screen.queryByText('已選擇')).not.toBeInTheDocument();
+    expect(screen.queryByText('確認清空?')).not.toBeInTheDocument();
+  });
+
+  it('shows 總額 (含服務費) label in the total bar', () => {
+    render(<FareCalculator />);
+    const buttons = screen.getAllByRole('button');
+    const plusBtn = buttons.find((btn) => btn.querySelector('.lucide-plus'));
+    fireEvent.click(plusBtn!);
+    expect(screen.getByText('總額 (含服務費)')).toBeInTheDocument();
+  });
+
+  it('sorts the running list with main plates first then by price', () => {
+    render(<FareCalculator />);
+    fireEvent.click(screen.getAllByRole('button', { name: '增加 10 數量' })[0]);
+    fireEvent.click(screen.getAllByRole('button', { name: '增加 12 數量' })[0]);
+    fireEvent.click(screen.getAllByRole('button', { name: '增加 22 數量' })[0]);
+    fireEvent.click(screen.getAllByRole('button', { name: '增加 27 數量' })[0]);
+    fireEvent.click(screen.getByRole('button', { name: '展開項目清單' }));
+
+    const rows = screen.getAllByTestId('bar-list-row');
+    expect(rows).toHaveLength(4);
+    expect(rows[0].textContent).toContain('紅碟');
+    expect(rows[1].textContent).toContain('金碟');
+    expect(rows[2].textContent).toContain('黑碟');
+    expect(rows[3].textContent).toContain('$10');
+  });
+
+  it('deletes a custom price tier', () => {
+    const onToast = vi.fn();
+    render(<FareCalculator onToast={onToast} />);
+    const customInput = screen.getByPlaceholderText('自訂 $') as HTMLInputElement;
+    fireEvent.change(customInput, { target: { value: '99' } });
+    fireEvent.click(screen.getByRole('button', { name: /新增自訂價格/i }));
+    expect(screen.getAllByText('$99').length).toBeGreaterThanOrEqual(1);
+
+    fireEvent.click(screen.getByRole('button', { name: '刪除 $99 價格層級' }));
+    expect(screen.queryByText('$99')).not.toBeInTheDocument();
+    expect(onToast).toHaveBeenCalledWith('已刪除 $99 價格層級', 'info');
   });
 
   it('adds a custom price tier', () => {

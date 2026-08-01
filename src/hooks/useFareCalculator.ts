@@ -7,6 +7,9 @@ export const COMBO_TOLERANCE = 5;
 export const MAIN_PLATINUM_TIERS = [12, 17, 22, 27];
 export const OTHER_PLATINUM_TIERS = [10, 13, 18, 19, 22, 27, 28, 33, 38, 39];
 
+const MAIN_TIER_RANK: Record<number, number> = { 12: 0, 17: 1, 22: 2, 27: 3 };
+const tierRank = (price: number) => MAIN_TIER_RANK[price] ?? Number.MAX_SAFE_INTEGER;
+
 export interface SelectedEntry {
   tier: PriceTier;
   quantity: number;
@@ -185,7 +188,11 @@ export const useFareCalculator = (
         list.push({ tier, quantity: qty, subtotal: tier.price * qty });
       }
     });
-    return list.sort((a, b) => a.tier.price - b.tier.price);
+    return list.sort((a, b) => {
+      const rankDiff = tierRank(a.tier.price) - tierRank(b.tier.price);
+      if (rankDiff !== 0) return rankDiff;
+      return a.tier.price - b.tier.price;
+    });
   }, [selectedTiers, allTiersMap]);
 
   const subtotal = useMemo(() => selectedList.reduce((sum, entry) => sum + entry.subtotal, 0), [selectedList]);

@@ -99,6 +99,12 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
     }
   };
 
+  const handleRemoveCustom = (price: number) => {
+    setCustomTiersState((prev) => prev.filter((t) => t.price !== price));
+    removeTier(price);
+    onToast?.(`已刪除 $${price} 價格層級`, 'info');
+  };
+
   const handleClearAll = () => {
     clearAll();
     onToast?.('已清除所有選擇', 'info');
@@ -125,6 +131,7 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
         onIncrement={addTier}
         onDecrement={decrementTier}
         onAddCustom={handleAddCustom}
+        onRemoveCustom={handleRemoveCustom}
         onToast={onToast}
       />
 
