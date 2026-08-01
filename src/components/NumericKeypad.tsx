@@ -33,7 +33,7 @@ export const NumericKeypad: React.FC<NumericKeypadProps> = ({
           </span>
           <button
             onClick={onDone}
-            className="px-3 py-1 rounded-full bg-[#aa151b] text-white text-xs font-black"
+            className="px-5 py-2 rounded-xl bg-[#aa151b] text-white text-sm font-black active:scale-95 transition-transform"
           >
             完成
           </button>
