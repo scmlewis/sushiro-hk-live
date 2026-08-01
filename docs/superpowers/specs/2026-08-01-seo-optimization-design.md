@@ -9,7 +9,6 @@ This is a client-side rendered React SPA (Vite + React 19) with no routing. Craw
 1. Make all content indexable by search engines
 2. Create per-store pages with unique meta tags
 3. Expand sitemap and structured data
-4. Improve performance for Core Web Vitals
 
 ## Scope (Quick Wins — 1-2 sessions)
 
@@ -119,20 +118,7 @@ This is a client-side rendered React SPA (Vite + React 19) with no routing. Craw
 
 **Main page:** Keep existing `WebApplication` schema, add `WebSite` with `SearchAction` for sitelinks search box.
 
-### 5. Performance Optimizations
-
-**What:** Improve Core Web Vitals scores.
-
-- **Lazy load** `StoreMap` (Leaflet is heavy) — only load when map tab is active
-- **Lazy load** `FareCalculator` — only load when fare tab is active
-- **Preload** critical CSS (already using Tailwind, so mostly done)
-- **Add caching headers** in `vercel.json` for static assets:
-  ```json
-  { "source": "/assets/(.*)", "headers": [{"key": "Cache-Control", "value": "public, max-age=31536000, immutable"}] }
-  ```
-- **Image optimization:** Add `loading="lazy"` to images, use `decoding="async"`
-
-### 6. Meta Tag Improvements
+### 5. Meta Tag Improvements
 
 **What:** Per-store dynamic meta tags.
 
@@ -176,7 +162,6 @@ Runtime:
 | `src/data/storeData.ts` | **Create** | Build-time store data provider |
 | `scripts/prerender.ts` | **Create** | Build script for prerendering + sitemap |
 | `public/sitemap.xml` | Modify | Expand with all store URLs |
-| `vercel.json` | Modify | Add caching headers |
 | `index.html` | Modify | Minor meta tag additions |
 
 ## Risks & Mitigations
