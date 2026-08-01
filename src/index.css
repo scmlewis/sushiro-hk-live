@@ -50,6 +50,11 @@ html, body {
    50% { box-shadow: 0 0 0 6px rgba(255,255,255,0.4), 0 0 20px rgba(255,255,255,0.2), 0 2px 8px rgba(0,0,0,0.4); }
  }
  
+ @keyframes toast-countdown {
+   from { transform: scaleX(1); }
+   to { transform: scaleX(0); }
+ }
+ 
  .user-location-marker {
   background: transparent !important;
   border: none !important;

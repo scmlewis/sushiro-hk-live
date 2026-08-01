@@ -27,8 +27,8 @@ export const Toast: React.FC<ToastProps> = ({ toast, onDismiss }) => {
   };
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-sm z-50 animate-bounce-short">
-      <div className="bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-800 dark:border-slate-200">
+    <div className="fixed bottom-20 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 sm:max-w-sm z-50 animate-bounce-short">
+      <div className="relative bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-800 dark:border-slate-200 overflow-hidden">
         {iconMap[toast.type || 'info']}
         <span className="text-sm font-medium flex-1">{toast.text}</span>
         <button
@@ -38,6 +38,11 @@ export const Toast: React.FC<ToastProps> = ({ toast, onDismiss }) => {
         >
           <X className="w-4 h-4" />
         </button>
+        <div
+          key={toast.id}
+          className="absolute bottom-0 left-0 right-0 h-0.5 origin-left bg-current opacity-40"
+          style={{ animation: `toast-countdown ${TOAST_DURATION_MS}ms linear forwards` }}
+        />
       </div>
     </div>
   );
