@@ -90,6 +90,9 @@ export interface StoreDisplayStatus {
 export function isStoreServicing(store: SushiroStore): boolean {
   if (store.storeStatus !== 'OPEN') return false;
 
+  // No one waiting — nothing to service (defensive against stale upstream data)
+  if (store.wait === 0 && store.waitingGroup === 0) return false;
+
   // Walk-in stopped — only servicing if there's still a queue
   if (isLocalTicketingOff(store.localTicketingStatus)) {
     return store.waitingGroup > 0;

@@ -202,7 +202,7 @@ describe('isStoreServicing', () => {
     expect(isStoreServicing(store)).toBe(true);
   });
 
-  it('returns true for OPEN + ON + 0 wait + 0 group (empty but open for business)', () => {
+  it('returns false for OPEN + ON + 0 wait + 0 group (defensive against stale data)', () => {
     const store = {
       ...baseStore,
       storeStatus: 'OPEN' as const,
@@ -210,7 +210,7 @@ describe('isStoreServicing', () => {
       wait: 0,
       waitingGroup: 0,
     };
-    expect(isStoreServicing(store)).toBe(true);
+    expect(isStoreServicing(store)).toBe(false);
   });
 
   it('returns true for normal open store', () => {
