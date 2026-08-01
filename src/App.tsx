@@ -511,6 +511,7 @@ export default function App() {
         </AnimatePresence>
 
         <Toast toast={toast} onDismiss={() => setToast(null)} />
+        <div id="fare-bottom-bar-root" />
       </div>
     </ErrorBoundary>
   );

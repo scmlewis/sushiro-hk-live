@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { ChevronDown, Trash2 } from 'lucide-react';
 import { SelectedEntry } from '../hooks/useFareCalculator';
@@ -26,7 +27,7 @@ export const FareBottomBar: React.FC<FareBottomBarProps> = ({
 
   if (totalItems === 0) return null;
 
-  return (
+  const bar = (
     <div className="fixed bottom-0 left-0 right-0 z-40">
       <AnimatePresence>
         {expanded && (
@@ -98,4 +99,7 @@ export const FareBottomBar: React.FC<FareBottomBarProps> = ({
       </div>
     </div>
   );
+
+  const portalTarget = document.getElementById('fare-bottom-bar-root');
+  return portalTarget ? createPortal(bar, portalTarget) : bar;
 };
