@@ -97,21 +97,21 @@ export const TierGrid: React.FC<TierGridProps> = ({
 
   const startEditingCustom = () => {
     setCustomActive(true);
-    setEditingValue(customPrice || '0');
+    setEditingValue('');
   };
 
   const handleCustomKeyInput = (digit: string) => {
     setEditingValue((prev) => {
-      const next = prev === '0' ? digit : prev + digit;
+      const next = prev === '0' || prev === '' ? digit : prev + digit;
       return next.length > 4 ? prev : next;
     });
   };
 
   const handleCustomBackspace = () => {
-    setEditingValue((prev) => (prev.length <= 1 ? '0' : prev.slice(0, -1)));
+    setEditingValue((prev) => (prev.length <= 1 ? '' : prev.slice(0, -1)));
   };
 
-  const handleCustomClear = () => setEditingValue('0');
+  const handleCustomClear = () => setEditingValue('');
 
   const handleCustomNativeChange = (value: string) => {
     setCustomPrice(value);
