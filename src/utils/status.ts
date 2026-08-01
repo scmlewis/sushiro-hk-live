@@ -122,7 +122,17 @@ export function getStoreDisplayStatus(store: SushiroStore): StoreDisplayStatus {
     };
   }
 
-  // 3. Normal queue
+  // 3. 非營業中 — no one waiting (defensive: stores with stale 0/0 data past hours)
+  if (store.wait === 0 && store.waitingGroup === 0) {
+    return {
+      waitText: '非營業中',
+      groupText: '--',
+      isClosed: true,
+      accentColor: 'neutral',
+    };
+  }
+
+  // 4. Normal queue
   let accentColor = 'neutral';
   if (store.wait <= 0) {
     accentColor = 'blue';

@@ -269,7 +269,7 @@ it('returns 停籌 for OPEN + offline + local OFF + 0 wait + 0 group', () => {
       expect(res.accentColor).toBe('purple');
     });
 
-   it('returns 0分 0組 for OPEN + local ON + 0 wait + 0 group (empty but open)', () => {
+   it('returns 非營業中 for OPEN + local ON + 0 wait + 0 group (defensive against stale data)', () => {
     const res = getStoreDisplayStatus({
       ...baseStore,
       storeStatus: 'OPEN',
@@ -278,10 +278,10 @@ it('returns 停籌 for OPEN + offline + local OFF + 0 wait + 0 group', () => {
       wait: 0,
       waitingGroup: 0,
     });
-    expect(res.waitText).toBe('0分');
-    expect(res.groupText).toBe('0組');
-    expect(res.isClosed).toBe(false);
-    expect(res.accentColor).toBe('blue');
+    expect(res.waitText).toBe('非營業中');
+    expect(res.groupText).toBe('--');
+    expect(res.isClosed).toBe(true);
+    expect(res.accentColor).toBe('neutral');
   });
 
   it('returns 停籌 for local OFF when not done yet', () => {
@@ -324,7 +324,7 @@ it('returns 停籌 for OPEN + offline + local OFF + 0 wait + 0 group', () => {
         waitingGroup: wait > 0 ? 1 : 0,
       }).accentColor;
 
-    expect(getAccent(0)).toBe('blue');
+    expect(getAccent(0)).toBe('neutral');
     expect(getAccent(5)).toBe('emerald');
     expect(getAccent(20)).toBe('yellow');
     expect(getAccent(45)).toBe('orange');
