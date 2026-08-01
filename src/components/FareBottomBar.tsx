@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { ChevronDown, Trash2 } from 'lucide-react';
 import { SelectedEntry } from '../hooks/useFareCalculator';
 import { TierBadge } from './TierBadge';
+import { formatCurrency } from '../utils/formatCurrency';
 
 interface FareBottomBarProps {
   totalItems: number;
@@ -10,8 +11,6 @@ interface FareBottomBarProps {
   selectedList: SelectedEntry[];
   onClear: () => void;
 }
-
-const formatCurrency = (n: number) => `$${n.toLocaleString('zh-HK')}`;
 
 export const FareBottomBar: React.FC<FareBottomBarProps> = ({
   totalItems,
@@ -32,15 +31,15 @@ export const FareBottomBar: React.FC<FareBottomBarProps> = ({
       <AnimatePresence>
         {expanded && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
             transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
-            className="absolute bottom-full left-0 right-0 overflow-hidden"
+            className="absolute bottom-full left-0 right-0 z-10"
           >
-            <div className="bg-[#aa151b] shadow-[0_-4px_24px_rgba(170,21,27,0.35)]">
+            <div className="bg-[#aa151b] shadow-[0_-4px_24px_rgba(170,21,27,0.35)] rounded-t-2xl">
               <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-1 pt-3">
-                <div className="max-h-[45vh] overflow-y-auto space-y-1.5 pb-1">
+                <div className="max-h-[50vh] overflow-y-auto space-y-1.5 pb-1">
                   {selectedList.map((entry) => (
                     <div
                       key={entry.tier.price}
@@ -65,13 +64,17 @@ export const FareBottomBar: React.FC<FareBottomBarProps> = ({
         )}
       </AnimatePresence>
 
-      <div className="bg-[#aa151b] shadow-[0_-4px_24px_rgba(170,21,27,0.35)]">
+      <div
+        className={`bg-[#aa151b] transition-shadow duration-250 ${
+          expanded ? '' : 'shadow-[0_-4px_24px_rgba(170,21,27,0.35)]'
+        }`}
+      >
         <div className="max-w-5xl mx-auto flex items-center justify-between px-4 sm:px-6 py-3">
           <button
             onClick={() => setExpanded((v) => !v)}
             aria-expanded={expanded}
             aria-label={expanded ? '收起項目清單' : '展開項目清單'}
-            className="flex items-center gap-3 rounded-xl -ml-1 px-1 cursor-pointer"
+            className="flex items-center gap-3 rounded-xl px-1 cursor-pointer"
           >
             <span className="px-2.5 py-1 rounded-full bg-white/20 text-white text-xs font-black">
               {totalItems} 項
@@ -79,7 +82,7 @@ export const FareBottomBar: React.FC<FareBottomBarProps> = ({
             <span className="text-xl font-black text-white tabular-nums">{formatCurrency(total)}</span>
             <span className="text-[10px] font-bold text-white/70 hidden sm:inline">含服務費</span>
             <ChevronDown
-              className={`w-4 h-4 text-white/80 transition-transform duration-300 ${
+              className={`w-4 h-4 text-white/80 transition-transform duration-250 ${
                 expanded ? 'rotate-180' : ''
               }`}
             />

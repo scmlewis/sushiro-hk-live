@@ -1,8 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Minus, Plus } from 'lucide-react';
 import { PriceTier } from '../data/menu';
 import { TierBadge } from './TierBadge';
 import { NumericKeypad } from './NumericKeypad';
+import { useIsTouch } from '../hooks/useIsTouch';
+import { Card } from './Card';
 
 interface TierGridProps {
   allTiers: PriceTier[];
@@ -72,15 +74,7 @@ export const TierGrid: React.FC<TierGridProps> = ({
   const [customPrice, setCustomPrice] = useState<string>('');
   const [customActive, setCustomActive] = useState(false);
   const [editingValue, setEditingValue] = useState<string>('');
-  const isTouch = useRef(false);
-
-  useEffect(() => {
-    const handler = (e: TouchEvent) => {
-      isTouch.current = true;
-    };
-    window.addEventListener('touchstart', handler, { passive: true });
-    return () => window.removeEventListener('touchstart', handler);
-  }, []);
+  const isTouch = useIsTouch();
 
   const allKnownPrices = new Set([...mainTierPrices, ...otherTierPrices]);
   const getTier = (price: number) => allTiers.find((t) => t.price === price);
@@ -111,7 +105,6 @@ export const TierGrid: React.FC<TierGridProps> = ({
 
   const handleCustomBlur = () => {
     if (customActive && !isTouch.current) {
-      setCustomPrice(editingValue === '0' ? '' : editingValue);
       setCustomActive(false);
     }
   };
@@ -150,109 +143,100 @@ export const TierGrid: React.FC<TierGridProps> = ({
   return (
     <div className="space-y-6">
       {/* Main plates */}
-      <div className="bg-white dark:bg-neutral-900 border-2 border-neutral-200 dark:border-neutral-800 rounded-2xl sm:rounded-[1.75rem] p-1.5 shadow-sm">
-        <div className="bg-neutral-50/80 dark:bg-neutral-800/40 rounded-[1.35rem] border border-neutral-200/60 dark:border-white/5 p-4 sm:p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-wider">
-              主要碟子
-            </h3>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {mainTierPrices.map((price) => {
-              const tier = getTier(price);
-              if (!tier) return null;
-              return (
-                <CounterCard
-                  key={price}
-                  tier={tier}
-                  qty={quantities.get(price) || 0}
-                  onIncrement={() => onIncrement(price)}
-                  onDecrement={() => onDecrement(price)}
-                />
-              );
-            })}
-          </div>
+      <Card>
+        <h3 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-wider mb-4">
+          主要碟子
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {mainTierPrices.map((price) => {
+            const tier = getTier(price);
+            if (!tier) return null;
+            return (
+              <CounterCard
+                key={price}
+                tier={tier}
+                qty={quantities.get(price) || 0}
+                onIncrement={() => onIncrement(price)}
+                onDecrement={() => onDecrement(price)}
+              />
+            );
+          })}
         </div>
-      </div>
+      </Card>
 
       {/* Other tiers */}
-      <div className="bg-white dark:bg-neutral-900 border-2 border-neutral-200 dark:border-neutral-800 rounded-2xl sm:rounded-[1.75rem] p-1.5 shadow-sm">
-        <div className="bg-neutral-50/80 dark:bg-neutral-800/40 rounded-[1.35rem] border border-neutral-200/60 dark:border-white/5 p-4 sm:p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-wider">
-              熱食 / 甜品 / 其他
-            </h3>
-          </div>
+      <Card>
+        <h3 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-wider mb-4">
+          熱食 / 甜品 / 其他
+        </h3>
 
-          {/* Mobile horizontal scroll */}
-          <div className="sm:hidden flex gap-3 overflow-x-auto pb-3 -mx-4 px-4 snap-x">
-            {otherTierPrices.map((price) => {
-              const tier = getTier(price);
-              if (!tier) return null;
-              const qty = quantities.get(price) || 0;
-              return (
-                <div
-                  key={price}
-                  className="snap-start shrink-0 w-[140px] bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-3"
-                >
-                  <div className="flex items-center justify-center mb-3">
-                    <TierBadge tier={tier} size="sm" />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <button
-                      onClick={() => onDecrement(price)}
-                      disabled={qty === 0}
-                      className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                        qty === 0
-                          ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-300'
-                          : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300'
-                      }`}
-                    >
-                      <Minus className="w-3.5 h-3.5" />
-                    </button>
-                    <span className="text-base font-black text-neutral-900 dark:text-white tabular-nums">
-                      {qty}
-                    </span>
-                    <button
-                      onClick={() => onIncrement(price)}
-                      className="w-8 h-8 rounded-full bg-[#aa151b] text-white flex items-center justify-center"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
+        {/* Mobile horizontal scroll */}
+        <div className="sm:hidden flex gap-3 overflow-x-auto pb-3 -mx-4 px-4 snap-x">
+          {otherTierPrices.map((price) => {
+            const tier = getTier(price);
+            if (!tier) return null;
+            const qty = quantities.get(price) || 0;
+            return (
+              <div
+                key={price}
+                className="snap-start shrink-0 w-[140px] bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-3"
+              >
+                <div className="flex items-center justify-center mb-3">
+                  <TierBadge tier={tier} size="sm" />
                 </div>
-              );
-            })}
-          </div>
-
-          {/* Desktop wrapping grid */}
-          <div className="hidden sm:grid grid-cols-2 lg:grid-cols-5 gap-3">
-            {otherTierPrices.map((price) => {
-              const tier = getTier(price);
-              if (!tier) return null;
-              return (
-                <CounterCard
-                  key={price}
-                  tier={tier}
-                  qty={quantities.get(price) || 0}
-                  onIncrement={() => onIncrement(price)}
-                  onDecrement={() => onDecrement(price)}
-                />
-              );
-            })}
-          </div>
+                <div className="flex items-center justify-between">
+                  <button
+                    onClick={() => onDecrement(price)}
+                    disabled={qty === 0}
+                    className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      qty === 0
+                        ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-300'
+                        : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300'
+                    }`}
+                  >
+                    <Minus className="w-3.5 h-3.5" />
+                  </button>
+                  <span className="text-base font-black text-neutral-900 dark:text-white tabular-nums">
+                    {qty}
+                  </span>
+                  <button
+                    onClick={() => onIncrement(price)}
+                    className="w-8 h-8 rounded-full bg-[#aa151b] text-white flex items-center justify-center"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
-      </div>
+
+        {/* Desktop wrapping grid */}
+        <div className="hidden sm:grid grid-cols-2 lg:grid-cols-5 gap-3">
+          {otherTierPrices.map((price) => {
+            const tier = getTier(price);
+            if (!tier) return null;
+            return (
+              <CounterCard
+                key={price}
+                tier={tier}
+                qty={quantities.get(price) || 0}
+                onIncrement={() => onIncrement(price)}
+                onDecrement={() => onDecrement(price)}
+              />
+            );
+          })}
+        </div>
+      </Card>
 
       {/* Custom price */}
-      <div className="bg-white dark:bg-neutral-900 border-2 border-neutral-200 dark:border-neutral-800 rounded-2xl sm:rounded-[1.75rem] p-1.5 shadow-sm">
-        <div className="bg-neutral-50/80 dark:bg-neutral-800/40 rounded-[1.35rem] border border-neutral-200/60 dark:border-white/5 p-4 sm:p-6">
-          <h3 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-wider mb-4">
-            自訂價格
-          </h3>
-          <div className="flex items-center gap-3">
-            <div className="relative flex-1">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-black text-neutral-400">$</span>
+      <Card>
+        <h3 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-wider mb-4">
+          自訂價格
+        </h3>
+        <div className="flex items-center gap-3">
+          <div className="relative flex-1">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-black text-neutral-400">$</span>
             <input
               type="number"
               inputMode={isTouch.current ? 'none' : 'numeric'}
@@ -265,36 +249,35 @@ export const TierGrid: React.FC<TierGridProps> = ({
                 if (e.key === 'Enter') handleAddCustom();
               }}
               placeholder="自訂 $"
-              className="w-full pl-8 pr-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm font-black text-neutral-900 dark:text-white outline-none focus:border-[#aa151b]"
-                min={1}
-                max={1000}
-              />
-            </div>
-            <button
-              onClick={() => handleAddCustom()}
-              aria-label="新增自訂價格"
-              className="flex items-center gap-2 px-4 py-3 rounded-xl bg-[#aa151b] text-white text-sm font-black transition-all hover:bg-red-700 active:scale-95"
-            >
-              <Plus className="w-4 h-4" />
-              <span>新增</span>
-            </button>
+              className="w-full pl-8 pr-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm font-black text-neutral-900 dark:text-white outline-none focus:border-[#aa151b] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              min={1}
+              max={1000}
+            />
           </div>
-
-          {customRenderedTiers.length > 0 && (
-            <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
-              {customRenderedTiers.map((tier) => (
-                <CounterCard
-                  key={tier.price}
-                  tier={tier}
-                  qty={quantities.get(tier.price) || 0}
-                  onIncrement={() => onIncrement(tier.price)}
-                  onDecrement={() => onDecrement(tier.price)}
-                />
-              ))}
-            </div>
-          )}
+          <button
+            onClick={() => handleAddCustom()}
+            aria-label="新增自訂價格"
+            className="flex items-center gap-2 px-4 py-3 rounded-xl bg-[#aa151b] text-white text-sm font-black transition-all hover:bg-red-700 active:scale-95"
+          >
+            <Plus className="w-4 h-4" />
+            <span>新增</span>
+          </button>
         </div>
-      </div>
+
+        {customRenderedTiers.length > 0 && (
+          <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {customRenderedTiers.map((tier) => (
+              <CounterCard
+                key={tier.price}
+                tier={tier}
+                qty={quantities.get(tier.price) || 0}
+                onIncrement={() => onIncrement(tier.price)}
+                onDecrement={() => onDecrement(tier.price)}
+              />
+            ))}
+          </div>
+        )}
+      </Card>
 
       {customActive && isTouch.current && (
         <div className="sm:hidden">
