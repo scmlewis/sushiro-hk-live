@@ -70,18 +70,7 @@ export function getTicketStatusInfo(
     };
   }
 
-  // 3. 非營業中 — no one waiting (defensive: OPEN + ON + 0/0, likely stale upstream data)
-  if (wait === 0 && waitingGroup === 0) {
-    return {
-      label: '非營業中',
-      bgColor: 'bg-slate-500/10',
-      textColor: 'text-slate-500',
-      borderColor: 'border-slate-500/20',
-      dotColor: 'bg-slate-400',
-    };
-  }
-
-  // 4. 現場派籌中 (store is OPEN and walk-in ticketing is active)
+  // 3. 現場派籌中 (store is OPEN and walk-in ticketing is active)
   return {
     label: '現場派籌中',
     bgColor: 'bg-emerald-500/10',
@@ -101,10 +90,7 @@ export interface StoreDisplayStatus {
 export function isStoreServicing(store: SushiroStore): boolean {
   if (store.storeStatus !== 'OPEN') return false;
 
-  // No one waiting — nothing to service
-  if (store.wait === 0 && store.waitingGroup === 0) return false;
-
-  // Walk-in stopped but still has queue
+  // Walk-in stopped — only servicing if there's still a queue
   if (isLocalTicketingOff(store.localTicketingStatus)) {
     return store.waitingGroup > 0;
   }
@@ -136,17 +122,7 @@ export function getStoreDisplayStatus(store: SushiroStore): StoreDisplayStatus {
     };
   }
 
-  // 3. 非營業中 — no one waiting (defensive: OPEN + ON + 0/0, likely stale upstream data)
-  if (store.wait === 0 && store.waitingGroup === 0) {
-    return {
-      waitText: '非營業中',
-      groupText: '--',
-      isClosed: true,
-      accentColor: 'neutral',
-    };
-  }
-
-  // 4. Normal queue
+  // 3. Normal queue
   let accentColor = 'neutral';
   if (store.wait <= 0) {
     accentColor = 'blue';

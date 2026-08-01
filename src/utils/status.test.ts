@@ -87,33 +87,33 @@ describe('getTicketStatusInfo', () => {
   });
 
   it('returns 現場派籌中 for MANUAL status when store is OPEN', () => {
-    const result = getTicketStatusInfo('MANUAL', 'OPEN', undefined, 1, 1);
+    const result = getTicketStatusInfo('MANUAL', 'OPEN');
     expect(result.label).toBe('現場派籌中');
     expect(result.dotColor).toContain('emerald');
   });
 
   it('returns 現場派籌中 for ONLINE status when store is OPEN', () => {
-    const result = getTicketStatusInfo('ONLINE', 'OPEN', undefined, 1, 1);
+    const result = getTicketStatusInfo('ONLINE', 'OPEN');
     expect(result.label).toBe('現場派籌中');
   });
 
   it('returns 現場派籌中 for OPEN status when store is OPEN', () => {
-    const result = getTicketStatusInfo('OPEN', 'OPEN', undefined, 1, 1);
+    const result = getTicketStatusInfo('OPEN', 'OPEN');
     expect(result.label).toBe('現場派籌中');
   });
 
   it('returns 現場派籌中 for OFFLINE_MANUAL when store is OPEN (online status irrelevant for walk-in)', () => {
-    const result = getTicketStatusInfo('OFFLINE_MANUAL', 'OPEN', undefined, 1, 1);
+    const result = getTicketStatusInfo('OFFLINE_MANUAL', 'OPEN');
     expect(result.label).toBe('現場派籌中');
   });
 
   it('returns 現場派籌中 for empty ticket status when store is OPEN', () => {
-    const result = getTicketStatusInfo('', 'OPEN', undefined, 1, 1);
+    const result = getTicketStatusInfo('', 'OPEN');
     expect(result.label).toBe('現場派籌中');
   });
 
   it('returns 現場派籌中 for null-like ticket status when store is OPEN', () => {
-    const result = getTicketStatusInfo(null as unknown as string, 'OPEN', undefined, 1, 1);
+    const result = getTicketStatusInfo(null as unknown as string, 'OPEN');
     expect(result.label).toBe('現場派籌中');
   });
 
@@ -146,12 +146,12 @@ it('returns 停籌 when localTicketingStatus is OFF, store is offline/manual, an
   });
 
   it('returns 現場派籌中 when localTicketingStatus is ON', () => {
-    const result = getTicketStatusInfo('ONLINE', 'OPEN', 'ON', 1, 1);
+    const result = getTicketStatusInfo('ONLINE', 'OPEN', 'ON');
     expect(result.label).toBe('現場派籌中');
   });
 
   it('defaults localTicketingStatus to ON when not provided', () => {
-    const result = getTicketStatusInfo('ONLINE', 'OPEN', undefined, 1, 1);
+    const result = getTicketStatusInfo('ONLINE', 'OPEN');
     expect(result.label).toBe('現場派籌中');
   });
 });
@@ -202,7 +202,7 @@ describe('isStoreServicing', () => {
     expect(isStoreServicing(store)).toBe(true);
   });
 
-  it('returns false for OPEN + ON + 0 wait + 0 group (defensive)', () => {
+  it('returns true for OPEN + ON + 0 wait + 0 group (empty but open for business)', () => {
     const store = {
       ...baseStore,
       storeStatus: 'OPEN' as const,
@@ -210,7 +210,7 @@ describe('isStoreServicing', () => {
       wait: 0,
       waitingGroup: 0,
     };
-    expect(isStoreServicing(store)).toBe(false);
+    expect(isStoreServicing(store)).toBe(true);
   });
 
   it('returns true for normal open store', () => {
@@ -269,7 +269,7 @@ it('returns 停籌 for OPEN + offline + local OFF + 0 wait + 0 group', () => {
       expect(res.accentColor).toBe('purple');
     });
 
-   it('returns 非營業中 for OPEN + local ON + 0 wait + 0 group (defensive against stale upstream data)', () => {
+   it('returns 0分 0組 for OPEN + local ON + 0 wait + 0 group (empty but open)', () => {
     const res = getStoreDisplayStatus({
       ...baseStore,
       storeStatus: 'OPEN',
@@ -278,10 +278,10 @@ it('returns 停籌 for OPEN + offline + local OFF + 0 wait + 0 group', () => {
       wait: 0,
       waitingGroup: 0,
     });
-    expect(res.waitText).toBe('非營業中');
-    expect(res.groupText).toBe('--');
-    expect(res.isClosed).toBe(true);
-    expect(res.accentColor).toBe('neutral');
+    expect(res.waitText).toBe('0分');
+    expect(res.groupText).toBe('0組');
+    expect(res.isClosed).toBe(false);
+    expect(res.accentColor).toBe('blue');
   });
 
   it('returns 停籌 for local OFF when not done yet', () => {
@@ -324,7 +324,7 @@ it('returns 停籌 for OPEN + offline + local OFF + 0 wait + 0 group', () => {
         waitingGroup: wait > 0 ? 1 : 0,
       }).accentColor;
 
-    expect(getAccent(0)).toBe('neutral');
+    expect(getAccent(0)).toBe('blue');
     expect(getAccent(5)).toBe('emerald');
     expect(getAccent(20)).toBe('yellow');
     expect(getAccent(45)).toBe('orange');
