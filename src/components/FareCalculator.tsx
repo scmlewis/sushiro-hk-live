@@ -86,6 +86,7 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
       <FareBottomBar
         totalItems={totalItems}
         total={total}
+        selectedList={selectedList}
         onClear={handleClearAll}
       />
 

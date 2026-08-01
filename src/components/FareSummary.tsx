@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Calculator } from 'lucide-react';
+import { Calculator, Pencil } from 'lucide-react';
 import { NumericKeypad } from './NumericKeypad';
 
 interface FareSummaryProps {
@@ -102,17 +102,19 @@ export const FareSummary: React.FC<FareSummaryProps> = ({
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {/* Target budget */}
             <div
-              className={`bg-white dark:bg-neutral-900 rounded-2xl border-2 p-4 text-center transition-all ${
+              onClick={() => targetInputRef.current?.focus()}
+              className={`bg-white dark:bg-neutral-900 rounded-2xl border-2 p-4 text-center cursor-pointer transition-all ${
                 activeField === 'target'
                   ? 'border-[#aa151b] shadow-[0_0_0_3px_rgba(170,21,27,0.12)]'
-                  : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700'
+                  : 'border-neutral-200 dark:border-neutral-800 hover:border-[#aa151b]/50 hover:shadow-[0_0_0_3px_rgba(170,21,27,0.06)]'
               }`}
             >
               <label
                 htmlFor="target-budget"
-                className="block text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-2"
+                className="flex items-center justify-center gap-1 text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-2 cursor-pointer"
               >
                 目標價格
+                <Pencil className="w-3 h-3 text-neutral-400" />
               </label>
               <div className="flex items-center justify-center gap-0.5">
                 <span className="text-lg font-black text-neutral-500 dark:text-neutral-400">$</span>
@@ -132,21 +134,27 @@ export const FareSummary: React.FC<FareSummaryProps> = ({
                   max={1000}
                 />
               </div>
+              <div className="mt-2 flex items-center justify-center gap-1 text-[9px] font-black text-[#aa151b] uppercase tracking-widest">
+                <Pencil className="w-2.5 h-2.5" />
+                <span>{isTouch.current ? '點擊輸入' : '點擊調整'}</span>
+              </div>
             </div>
 
             {/* Actual bill */}
             <div
-              className={`bg-white dark:bg-neutral-900 rounded-2xl border-2 p-4 text-center transition-all ${
+              onClick={() => actualInputRef.current?.focus()}
+              className={`bg-white dark:bg-neutral-900 rounded-2xl border-2 p-4 text-center cursor-pointer transition-all ${
                 activeField === 'actual'
                   ? 'border-[#aa151b] shadow-[0_0_0_3px_rgba(170,21,27,0.12)]'
-                  : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700'
+                  : 'border-neutral-200 dark:border-neutral-800 hover:border-[#aa151b]/50 hover:shadow-[0_0_0_3px_rgba(170,21,27,0.06)]'
               }`}
             >
               <label
                 htmlFor="actual-bill"
-                className="block text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-2"
+                className="flex items-center justify-center gap-1 text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-2 cursor-pointer"
               >
                 實際賬單 (+10%)
+                <Pencil className="w-3 h-3 text-neutral-400" />
               </label>
               <div className="flex items-center justify-center gap-0.5">
                 <span className="text-lg font-black text-neutral-500 dark:text-neutral-400">$</span>
@@ -165,6 +173,10 @@ export const FareSummary: React.FC<FareSummaryProps> = ({
                   min={1}
                   max={1100}
                 />
+              </div>
+              <div className="mt-2 flex items-center justify-center gap-1 text-[9px] font-black text-[#aa151b] uppercase tracking-widest">
+                <Pencil className="w-2.5 h-2.5" />
+                <span>{isTouch.current ? '點擊輸入' : '點擊調整'}</span>
               </div>
             </div>
 

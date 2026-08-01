@@ -116,4 +116,47 @@ describe('FareCalculator', () => {
     fireEvent.click(screen.getByRole('button', { name: '完成' }));
     expect(screen.getByDisplayValue('801')).toBeInTheDocument();
   });
+
+  it('expands and collapses the running total list from the sticky bar', () => {
+    render(<FareCalculator />);
+    const buttons = screen.getAllByRole('button');
+    const plusBtn = buttons.find((btn) => btn.querySelector('.lucide-plus'));
+    fireEvent.click(plusBtn!);
+
+    fireEvent.click(screen.getByRole('button', { name: '展開項目清單' }));
+    expect(screen.getByRole('button', { name: '收起項目清單' })).toBeInTheDocument();
+    expect(screen.getByText('×1')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '收起項目清單' }));
+    expect(screen.getByRole('button', { name: '展開項目清單' })).toBeInTheDocument();
+  });
+
+  it('shows 追加建議 collapsed by default', () => {
+    render(<FareCalculator />);
+    const toggle = screen.getByRole('button', { name: /追加建議/ });
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByText(/^共 \$/)).not.toBeInTheDocument();
+  });
+
+  it('expands 追加建議 to reveal combination suggestions', () => {
+    render(<FareCalculator />);
+    const toggle = screen.getByRole('button', { name: /追加建議/ });
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getAllByText(/^共 \$/).length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('adds a custom price tier via the keypad on touch', () => {
+    const onToast = vi.fn();
+    render(<FareCalculator onToast={onToast} />);
+    window.dispatchEvent(new Event('touchstart'));
+    const customInput = screen.getByPlaceholderText('自訂 $') as HTMLInputElement;
+    fireEvent.focus(customInput);
+    fireEvent.click(screen.getByRole('button', { name: '9' }));
+    fireEvent.click(screen.getByRole('button', { name: '9' }));
+    expect(customInput).toHaveDisplayValue('99');
+    fireEvent.click(screen.getByRole('button', { name: '完成' }));
+    expect(onToast).toHaveBeenCalledWith('已新增 $99 價格層級', 'success');
+    expect(screen.getAllByText('$99').length).toBeGreaterThanOrEqual(1);
+  });
 });

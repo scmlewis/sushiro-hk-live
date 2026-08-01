@@ -5,6 +5,7 @@ interface NumericKeypadProps {
   onBackspace: () => void;
   onClear: () => void;
   onDone: () => void;
+  onCancel?: () => void;
   label?: string;
 }
 
@@ -15,13 +16,14 @@ export const NumericKeypad: React.FC<NumericKeypadProps> = ({
   onBackspace,
   onClear,
   onDone,
+  onCancel,
   label,
 }) => {
   return (
     <div className="fixed inset-0 z-50 sm:static sm:z-auto flex sm:block items-end justify-center">
       <button
         className="absolute inset-0 bg-black/40 sm:hidden"
-        onClick={onDone}
+        onClick={onCancel ?? onDone}
         aria-label="關閉鍵盤"
       />
       <div className="relative w-full sm:hidden bg-white dark:bg-neutral-900 rounded-t-3xl p-4 shadow-[0_-8px_40px_rgba(0,0,0,0.15)] border-t border-neutral-200 dark:border-neutral-800">

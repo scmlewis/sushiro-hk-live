@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Minus, Plus } from 'lucide-react';
 import { PriceTier } from '../data/menu';
 import { TierBadge } from './TierBadge';
+import { NumericKeypad } from './NumericKeypad';
 
 interface TierGridProps {
   allTiers: PriceTier[];
@@ -69,24 +70,81 @@ export const TierGrid: React.FC<TierGridProps> = ({
   onToast,
 }) => {
   const [customPrice, setCustomPrice] = useState<string>('');
+  const [customActive, setCustomActive] = useState(false);
+  const [editingValue, setEditingValue] = useState<string>('');
+  const isTouch = useRef(false);
+
+  useEffect(() => {
+    const handler = (e: TouchEvent) => {
+      isTouch.current = true;
+    };
+    window.addEventListener('touchstart', handler, { passive: true });
+    return () => window.removeEventListener('touchstart', handler);
+  }, []);
 
   const allKnownPrices = new Set([...mainTierPrices, ...otherTierPrices]);
   const getTier = (price: number) => allTiers.find((t) => t.price === price);
   const customRenderedTiers = allTiers.filter((t) => !allKnownPrices.has(t.price));
 
-  const handleAddCustom = () => {
-    const price = parseInt(customPrice, 10);
+  const startEditingCustom = () => {
+    setCustomActive(true);
+    setEditingValue(customPrice || '0');
+  };
+
+  const handleCustomKeyInput = (digit: string) => {
+    setEditingValue((prev) => {
+      const next = prev === '0' ? digit : prev + digit;
+      return next.length > 4 ? prev : next;
+    });
+  };
+
+  const handleCustomBackspace = () => {
+    setEditingValue((prev) => (prev.length <= 1 ? '0' : prev.slice(0, -1)));
+  };
+
+  const handleCustomClear = () => setEditingValue('0');
+
+  const handleCustomNativeChange = (value: string) => {
+    setCustomPrice(value);
+    setEditingValue(value || '0');
+  };
+
+  const handleCustomBlur = () => {
+    if (customActive && !isTouch.current) {
+      setCustomPrice(editingValue === '0' ? '' : editingValue);
+      setCustomActive(false);
+    }
+  };
+
+  const handleAddCustom = (priceArg?: number): boolean => {
+    const price = priceArg ?? parseInt(customPrice, 10);
     if (isNaN(price) || price <= 0 || price > 1000) {
       onToast?.('請輸入有效價格 (1-1000)', 'error');
-      return;
+      return false;
     }
     if (getTier(price)) {
       onToast?.('此價格層級已存在', 'warning');
-      return;
+      return false;
     }
     onAddCustom(price);
     setCustomPrice('');
     onToast?.(`已新增 $${price} 價格層級`, 'success');
+    return true;
+  };
+
+  const handleCustomDone = () => {
+    const ok = handleAddCustom(parseInt(editingValue, 10));
+    if (ok) {
+      setCustomActive(false);
+      setCustomPrice('');
+      setEditingValue('');
+    }
+  };
+
+  const cancelCustomEditing = () => {
+    setCustomActive(false);
+    setCustomPrice('');
+    setEditingValue('');
   };
 
   return (
@@ -197,9 +255,12 @@ export const TierGrid: React.FC<TierGridProps> = ({
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-black text-neutral-400">$</span>
             <input
               type="number"
-              inputMode="numeric"
-              value={customPrice}
-              onChange={(e) => setCustomPrice(e.target.value)}
+              inputMode={isTouch.current ? 'none' : 'numeric'}
+              value={customActive ? editingValue : customPrice}
+              onChange={(e) => handleCustomNativeChange(e.target.value)}
+              onFocus={startEditingCustom}
+              onBlur={handleCustomBlur}
+              readOnly={isTouch.current}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') handleAddCustom();
               }}
@@ -210,7 +271,7 @@ export const TierGrid: React.FC<TierGridProps> = ({
               />
             </div>
             <button
-              onClick={handleAddCustom}
+              onClick={() => handleAddCustom()}
               aria-label="新增自訂價格"
               className="flex items-center gap-2 px-4 py-3 rounded-xl bg-[#aa151b] text-white text-sm font-black transition-all hover:bg-red-700 active:scale-95"
             >
@@ -234,6 +295,19 @@ export const TierGrid: React.FC<TierGridProps> = ({
           )}
         </div>
       </div>
+
+      {customActive && isTouch.current && (
+        <div className="sm:hidden">
+          <NumericKeypad
+            label="輸入自訂價格"
+            onInput={handleCustomKeyInput}
+            onBackspace={handleCustomBackspace}
+            onClear={handleCustomClear}
+            onDone={handleCustomDone}
+            onCancel={cancelCustomEditing}
+          />
+        </div>
+      )}
     </div>
   );
 };
