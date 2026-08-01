@@ -1,5 +1,5 @@
 import React from 'react';
-import { Store, Heart, Layers, Calculator, WifiOff, Clock, Sparkles, CheckCircle2, ExternalLink, Github, Type, Facebook, Instagram, Map, Locate } from 'lucide-react';
+import { Store, Heart, Layers, Calculator, WifiOff, Clock, Sparkles, CheckCircle2, ExternalLink, Github, Type, Facebook, Instagram, Map, Locate, Info } from 'lucide-react';
 
 const SUSHIRO_HK_URL = 'https://sushirohk.com.hk/';
 
@@ -227,6 +227,19 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
             <Github className="w-3.5 h-3.5" />
             <span>GitHub Repo</span>
           </a>
+        </div>
+      </div>
+
+      {/* Data Source & Disclaimer */}
+      <div className="bg-neutral-100 dark:bg-neutral-800/80 p-5 rounded-2xl border border-neutral-200 dark:border-neutral-700 space-y-2">
+        <h3 className="text-sm font-black text-neutral-900 dark:text-white flex items-center gap-2">
+          <Info className="w-4 h-4 text-sky-500" />
+          <span>資料來源與免責聲明</span>
+        </h3>
+        <div className="text-xs text-neutral-600 dark:text-neutral-300 space-y-1.5 font-medium">
+          <p><strong className="text-neutral-900 dark:text-white">資料來源：</strong>SUSHI-PASS API (HK)</p>
+          <p><strong className="text-neutral-900 dark:text-white">更新頻率：</strong>每 10 秒自動刷新</p>
+          <p><strong className="text-neutral-900 dark:text-white">免責聲明：</strong>本網站與壽司郎官方無關，資料僅供參考。</p>
         </div>
       </div>
     </div>

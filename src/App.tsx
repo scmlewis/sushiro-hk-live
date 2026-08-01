@@ -484,17 +484,6 @@ export default function App() {
           </div>
         </main>
 
-        <footer className="bg-[#141414] text-white px-6 sm:px-8 py-6 border-t-4 border-[#aa151b]">
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-[11px] font-black tracking-[0.2em] uppercase gap-3 text-neutral-400">
-            <div><span>資料來源: </span><span className="text-white">SUSHI-PASS API (HK)</span></div>
-            <div><span>免責聲明: </span><span className="text-neutral-300">本網站與壽司郎官方無關</span></div>
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#aa151b] animate-ping" />
-              <span className="text-white">更新頻率: {POLL_INTERVAL_MS / 1000}秒</span>
-            </div>
-          </div>
-        </footer>
-
         <AnimatePresence>
           {selectedStoreModal && (
             <StoreDetailModal
