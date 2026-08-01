@@ -26,46 +26,49 @@ const CounterCard: React.FC<{
   onRemove?: () => void;
 }> = ({ tier, qty, onIncrement, onDecrement, onRemove }) => {
   return (
-    <div className="flex items-center justify-between gap-3 bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-3 transition-all hover:border-neutral-300 dark:hover:border-neutral-700">
-      <div className="flex items-center gap-3 min-w-0">
+    <div className="flex items-center justify-between gap-2 bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-3 transition-all hover:border-neutral-300 dark:hover:border-neutral-700">
+      <div className="flex items-center gap-2 min-w-0 shrink-0">
         <TierBadge tier={tier} />
         {tier.label && (
-          <div className="min-w-0">
-            <div className="text-sm font-black text-neutral-900 dark:text-white truncate">{tier.label}</div>
-          </div>
+          <span className="text-xs font-black text-neutral-900 dark:text-white truncate max-w-[60px]">
+            {tier.label}
+          </span>
         )}
       </div>
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 shrink-0">
         <button
           onClick={onDecrement}
           disabled={qty === 0}
           aria-label={`減少 ${tier.price} 數量`}
-          className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+          className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all ${
             qty === 0
               ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-300 dark:text-neutral-600 cursor-not-allowed'
               : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 active:scale-95'
           }`}
         >
-          <Minus className="w-4 h-4" />
+          <Minus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </button>
-        <span className="w-7 text-center text-base font-black text-neutral-900 dark:text-white tabular-nums">
+        <span className="w-6 sm:w-7 text-center text-sm sm:text-base font-black text-neutral-900 dark:text-white tabular-nums">
           {qty}
         </span>
         <button
           onClick={onIncrement}
           aria-label={`增加 ${tier.price} 數量`}
-          className="w-8 h-8 rounded-full bg-[#aa151b] text-white flex items-center justify-center transition-all hover:bg-red-700 active:scale-95"
+          className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#aa151b] text-white flex items-center justify-center transition-all hover:bg-red-700 active:scale-95"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </button>
         {onRemove && (
-          <button
-            onClick={onRemove}
-            aria-label={`刪除 $${tier.price} 價格層級`}
-            className="w-8 h-8 ml-1 rounded-full flex items-center justify-center text-neutral-400 hover:text-[#aa151b] hover:bg-red-50 dark:hover:bg-red-950/20 transition-all"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+          <>
+            <div className="w-px h-4 bg-neutral-200 dark:bg-neutral-700 mx-0.5" />
+            <button
+              onClick={onRemove}
+              aria-label={`刪除 $${tier.price} 價格層級`}
+              className="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-neutral-400 hover:text-[#aa151b] hover:bg-red-50 dark:hover:bg-red-950/20 transition-all"
+            >
+              <Trash2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+            </button>
+          </>
         )}
       </div>
     </div>
