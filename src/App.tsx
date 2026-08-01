@@ -19,6 +19,7 @@ import { FareCalculator } from './components/FareCalculator';
 import { Toast } from './components/Toast';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { AlertCircle } from 'lucide-react';
+import StorePage from './pages/StorePage';
 import noStoresFoundImg from './assets/images/no_stores_found_1785143279312.jpg';
 
 export default function App() {
@@ -311,7 +312,7 @@ export default function App() {
   return (
     <ErrorBoundary>
       <Routes>
-        <Route path="/store/:id" element={<StorePageWrapper />} />
+        <Route path="/store/:id" element={<StorePage />} />
         <Route path="*" element={
           <div className="min-h-screen flex flex-col bg-surface dark:bg-surface-dark text-neutral-900 dark:text-neutral-100 font-sans antialiased transition-colors" style={{ fontSize: TEXT_SIZE_MAP[textSize] }}>
         <Navbar
@@ -510,8 +511,4 @@ export default function App() {
       </Routes>
     </ErrorBoundary>
   );
-}
-
-function StorePageWrapper() {
-  return <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-950 text-neutral-900 dark:text-neutral-100"><p className="text-sm font-bold">StorePage — coming in Task 2</p></div>;
 }
