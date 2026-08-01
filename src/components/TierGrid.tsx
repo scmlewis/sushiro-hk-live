@@ -24,12 +24,11 @@ const CounterCard: React.FC<{
     <div className="flex items-center justify-between gap-3 bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-3 transition-all hover:border-neutral-300 dark:hover:border-neutral-700">
       <div className="flex items-center gap-3 min-w-0">
         <TierBadge tier={tier} />
-        <div className="min-w-0">
-          <div className="text-xs font-black text-neutral-900 dark:text-white truncate">
-            ${tier.price}
+        {tier.label && (
+          <div className="min-w-0">
+            <div className="text-sm font-black text-neutral-900 dark:text-white truncate">{tier.label}</div>
           </div>
-          <div className="text-[10px] font-bold text-neutral-400 truncate">{tier.label}</div>
-        </div>
+        )}
       </div>
       <div className="flex items-center gap-1">
         <button
@@ -90,8 +89,6 @@ export const TierGrid: React.FC<TierGridProps> = ({
     onToast?.(`已新增 $${price} 價格層級`, 'success');
   };
 
-  const totalItems = Array.from(quantities.values()).reduce((a, b) => a + b, 0);
-
   return (
     <div className="space-y-6">
       {/* Main plates */}
@@ -101,9 +98,6 @@ export const TierGrid: React.FC<TierGridProps> = ({
             <h3 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-wider">
               主要碟子
             </h3>
-            <span className="px-2 py-0.5 rounded-full bg-neutral-200 dark:bg-neutral-700 text-[10px] font-black text-neutral-600 dark:text-neutral-300">
-              已選 {totalItems} 項
-            </span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {mainTierPrices.map((price) => {
@@ -143,9 +137,8 @@ export const TierGrid: React.FC<TierGridProps> = ({
                   key={price}
                   className="snap-start shrink-0 w-[140px] bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-3"
                 >
-                  <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center justify-center mb-3">
                     <TierBadge tier={tier} size="sm" />
-                    <span className="text-xs font-black text-neutral-900 dark:text-white">${price}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <button

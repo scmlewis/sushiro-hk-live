@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'motion/react';
-import { Calculator, AlertCircle } from 'lucide-react';
+import { Calculator } from 'lucide-react';
 import { NumericKeypad } from './NumericKeypad';
 
 interface FareSummaryProps {
@@ -77,7 +76,7 @@ export const FareSummary: React.FC<FareSummaryProps> = ({
   };
 
   const handleBlur = () => {
-    if (activeField) commit();
+    if (activeField && !isTouch.current) commit();
   };
 
   const overBudget = remaining < 0;
@@ -121,13 +120,13 @@ export const FareSummary: React.FC<FareSummaryProps> = ({
                   ref={targetInputRef}
                   id="target-budget"
                   type="number"
-                  inputMode={activeField ? 'none' : 'numeric'}
+                  inputMode={isTouch.current ? 'none' : 'numeric'}
                   aria-label="目標價格"
                   value={activeField === 'target' ? editingValue : targetBudget}
                   onFocus={() => startEditing('target')}
                   onChange={(e) => handleNativeChange('target', e.target.value)}
                   onBlur={handleBlur}
-                  readOnly={!!(isTouch.current && activeField === 'target')}
+                  readOnly={isTouch.current}
                   className="w-20 bg-transparent text-center text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white outline-none tabular-nums"
                   min={1}
                   max={1000}
@@ -155,13 +154,13 @@ export const FareSummary: React.FC<FareSummaryProps> = ({
                   ref={actualInputRef}
                   id="actual-bill"
                   type="number"
-                  inputMode={activeField ? 'none' : 'numeric'}
+                  inputMode={isTouch.current ? 'none' : 'numeric'}
                   aria-label="實際賬單"
                   value={activeField === 'actual' ? editingValue : actualBill}
                   onFocus={() => startEditing('actual')}
                   onChange={(e) => handleNativeChange('actual', e.target.value)}
                   onBlur={handleBlur}
-                  readOnly={!!(isTouch.current && activeField === 'actual')}
+                  readOnly={isTouch.current}
                   className="w-20 bg-transparent text-center text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white outline-none tabular-nums"
                   min={1}
                   max={1100}
@@ -202,18 +201,6 @@ export const FareSummary: React.FC<FareSummaryProps> = ({
               </div>
             </div>
           </div>
-
-          {overBudget && (
-            <motion.div
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-2 mt-4 p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/40 rounded-xl text-xs font-bold text-red-700 dark:text-red-300"
-            >
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>已超出預算 {formatCurrency(Math.abs(remaining))}，請移除部分項目</span>
-            </motion.div>
-          )}
-
         </div>
       </div>
 

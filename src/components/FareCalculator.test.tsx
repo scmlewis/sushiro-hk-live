@@ -59,7 +59,7 @@ describe('FareCalculator', () => {
     const plusBtn = buttons.find((btn) => btn.querySelector('.lucide-plus'));
     expect(plusBtn).toBeDefined();
     fireEvent.click(plusBtn!);
-    expect(screen.getByText('已選 1 項')).toBeInTheDocument();
+    expect(screen.getAllByText(/1 項/).length).toBeGreaterThanOrEqual(1);
   });
 
   it('allows decrementing tier quantity to zero', () => {
@@ -83,7 +83,7 @@ describe('FareCalculator', () => {
     const buttons = screen.getAllByRole('button');
     const plusBtn = buttons.find((btn) => btn.querySelector('.lucide-plus'));
     fireEvent.click(plusBtn!);
-    expect(screen.getByText(/已超出預算/)).toBeInTheDocument();
+    expect(screen.getByText('已超出（對比目標）')).toBeInTheDocument();
   });
 
   it('clears all selections', () => {
@@ -105,5 +105,15 @@ describe('FareCalculator', () => {
     expect(customInput.value).toBe('');
     expect(onToast).toHaveBeenCalledWith('已新增 $99 價格層級', 'success');
     expect(screen.getAllByText('$99').length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('allows entering digits via the in-app keypad on touch', () => {
+    render(<FareCalculator />);
+    window.dispatchEvent(new Event('touchstart'));
+    fireEvent.focus(screen.getByLabelText('目標價格'));
+    fireEvent.click(screen.getByRole('button', { name: '1' }));
+    expect(screen.getByLabelText('目標價格')).toHaveDisplayValue('801');
+    fireEvent.click(screen.getByRole('button', { name: '完成' }));
+    expect(screen.getByDisplayValue('801')).toBeInTheDocument();
   });
 });
