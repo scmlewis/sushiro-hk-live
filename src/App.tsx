@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
+import { Routes, Route } from 'react-router-dom';
 import { SushiroStore, StoreQueueMap, ToastMessage, TabId } from './types';
 import { FALLBACK_LOCATION, TEXT_SIZE_MAP, TOTAL_STORE_COUNT, MAX_COMPARE_STORES, POLL_INTERVAL_MS, BRAND_COLOR } from './config';
 import { calculateDistanceKm, getCurrentPosition } from './utils/geolocation';
@@ -309,7 +310,10 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen flex flex-col bg-surface dark:bg-surface-dark text-neutral-900 dark:text-neutral-100 font-sans antialiased transition-colors" style={{ fontSize: TEXT_SIZE_MAP[textSize] }}>
+      <Routes>
+        <Route path="/store/:id" element={<StorePageWrapper />} />
+        <Route path="*" element={
+          <div className="min-h-screen flex flex-col bg-surface dark:bg-surface-dark text-neutral-900 dark:text-neutral-100 font-sans antialiased transition-colors" style={{ fontSize: TEXT_SIZE_MAP[textSize] }}>
         <Navbar
           lastUpdated={lastUpdated}
           loading={loadingStores}
@@ -502,6 +506,12 @@ export default function App() {
         <Toast toast={toast} onDismiss={() => setToast(null)} />
         <div id="fare-bottom-bar-root" />
       </div>
+        } />
+      </Routes>
     </ErrorBoundary>
   );
+}
+
+function StorePageWrapper() {
+  return <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-950 text-neutral-900 dark:text-neutral-100"><p className="text-sm font-bold">StorePage — coming in Task 2</p></div>;
 }
