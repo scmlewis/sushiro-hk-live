@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Calculator, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Calculator, AlertCircle } from 'lucide-react';
 import { NumericKeypad } from './NumericKeypad';
 
 interface FareSummaryProps {
@@ -191,7 +191,7 @@ export const FareSummary: React.FC<FareSummaryProps> = ({
               }`}
             >
               <div className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-2">
-                {overBudget ? '已超出' : '尚餘'}
+                {overBudget ? '已超出（對比目標）' : '尚餘（對比目標）'}
               </div>
               <div
                 className={`text-2xl sm:text-3xl font-black tabular-nums ${
@@ -214,16 +214,6 @@ export const FareSummary: React.FC<FareSummaryProps> = ({
             </motion.div>
           )}
 
-          {!overBudget && total > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-2 mt-4 p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/40 rounded-xl text-xs font-bold text-emerald-700 dark:text-emerald-300"
-            >
-              <CheckCircle2 className="w-4 h-4 shrink-0" />
-              <span>預算內，尚需 {formatCurrency(remaining)}</span>
-            </motion.div>
-          )}
         </div>
       </div>
 
