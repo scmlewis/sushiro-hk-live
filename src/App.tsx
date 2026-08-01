@@ -309,7 +309,7 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen flex flex-col bg-surface dark:bg-surface-dark text-neutral-900 dark:text-neutral-100 font-sans antialiased transition-colors grain-overlay" style={{ fontSize: TEXT_SIZE_MAP[textSize] }}>
+      <div className="min-h-screen flex flex-col bg-surface dark:bg-surface-dark text-neutral-900 dark:text-neutral-100 font-sans antialiased transition-colors" style={{ fontSize: TEXT_SIZE_MAP[textSize] }}>
         <Navbar
           lastUpdated={lastUpdated}
           loading={loadingStores}

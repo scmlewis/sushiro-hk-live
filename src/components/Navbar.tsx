@@ -29,7 +29,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     : '--:--:--';
 
   return (
-    <header className="sticky top-0 z-40 bg-[#aa151b] text-white shadow-lg shadow-[#aa151b]/20 backdrop-blur-md pt-[env(safe-area-inset-top)]">
+    <header className="sticky top-0 z-40 bg-[#aa151b] text-white shadow-lg backdrop-blur-md pt-[env(safe-area-inset-top)]">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2 flex flex-col sm:flex-row items-center justify-between gap-2">
         {/* Brand & Clock */}
         <div className="flex items-center justify-between w-full sm:w-auto gap-3">
