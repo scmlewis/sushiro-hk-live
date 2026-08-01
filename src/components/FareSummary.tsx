@@ -62,7 +62,7 @@ export const FareSummary: React.FC<FareSummaryProps> = ({
   const handleNativeChange = (field: 'target' | 'actual', value: string) => {
     setEditingValue(value || '0');
     const parsed = parseInt(value, 10);
-    if (!isNaN(parsed) && parsed > 0 && parsed <= 1000) {
+    if (!isNaN(parsed) && parsed > 0 && parsed <= 2500) {
       if (field === 'target') onTargetChange(parsed);
       else onActualChange(parsed);
     }
@@ -118,7 +118,7 @@ export const FareSummary: React.FC<FareSummaryProps> = ({
                 readOnly={isTouch.current}
                 className="w-20 bg-transparent text-center text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white outline-none tabular-nums [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 min={1}
-                max={1000}
+                max={2500}
                 />
               </div>
             </div>
@@ -154,7 +154,7 @@ export const FareSummary: React.FC<FareSummaryProps> = ({
                 readOnly={isTouch.current}
                 className="w-20 bg-transparent text-center text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white outline-none tabular-nums [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 min={1}
-                max={1100}
+                max={2750}
                 />
               </div>
             </div>

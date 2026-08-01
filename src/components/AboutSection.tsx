@@ -122,6 +122,21 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
         </div>
       </div>
 
+      {/* Feature 7: Fare Calculator */}
+      <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-5 rounded-2xl shadow-sm space-y-2.5">
+        <div className="flex items-center gap-2.5 text-[#aa151b]">
+          <div className="p-2 rounded-lg bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900/50">
+            <Calculator className="w-5 h-5" />
+          </div>
+          <h3 className="text-base font-black text-neutral-900 dark:text-white">
+            壽司郎餐費計算器
+          </h3>
+        </div>
+        <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-medium">
+          輸入預算金額或實際賬單金額，自動計算含服務費的總額。支援多種碟子價格（紅碟$12、銀碟$17、金碟$22、黑碟$27等），可自由新增自訂價格層級（$1–$2500）。逐項點選碟子數量，底部即時顯示項目清單與總額，一目了然。
+        </p>
+      </div>
+
       {/* Performance & Offline Guide */}
       <div className="bg-neutral-100 dark:bg-neutral-800/80 p-5 rounded-2xl border border-neutral-200 dark:border-neutral-700 space-y-3">
         <h3 className="text-sm font-black text-neutral-900 dark:text-white flex items-center gap-2">

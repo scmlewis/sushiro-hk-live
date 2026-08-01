@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Minus, Plus, Trash2 } from 'lucide-react';
 import { PriceTier } from '../data/menu';
 import { TierBadge } from './TierBadge';
@@ -90,6 +90,15 @@ export const TierGrid: React.FC<TierGridProps> = ({
   const [customActive, setCustomActive] = useState(false);
   const [editingValue, setEditingValue] = useState<string>('');
   const isTouch = useIsTouch();
+  const customInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (customActive) {
+      setTimeout(() => {
+        customInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    }
+  }, [customActive]);
 
   const allKnownPrices = new Set([...mainTierPrices, ...otherTierPrices]);
   const getTier = (price: number) => allTiers.find((t) => t.price === price);
@@ -114,8 +123,7 @@ export const TierGrid: React.FC<TierGridProps> = ({
   const handleCustomClear = () => setEditingValue('');
 
   const handleCustomNativeChange = (value: string) => {
-    setCustomPrice(value);
-    setEditingValue(value || '0');
+    setEditingValue(value || '');
   };
 
   const handleCustomBlur = () => {
@@ -125,9 +133,10 @@ export const TierGrid: React.FC<TierGridProps> = ({
   };
 
   const handleAddCustom = (priceArg?: number): boolean => {
-    const price = priceArg ?? parseInt(customPrice, 10);
-    if (isNaN(price) || price <= 0 || price > 1000) {
-      onToast?.('請輸入有效價格 (1-1000)', 'error');
+    const raw = priceArg ?? parseInt(editingValue || customPrice, 10);
+    const price = raw;
+    if (isNaN(price) || price <= 0 || price > 2500) {
+      onToast?.('請輸入有效價格 (1-2500)', 'error');
       return false;
     }
     if (getTier(price)) {
@@ -136,6 +145,7 @@ export const TierGrid: React.FC<TierGridProps> = ({
     }
     onAddCustom(price);
     setCustomPrice('');
+    setEditingValue('');
     onToast?.(`已新增 $${price} 價格層級`, 'success');
     return true;
   };
@@ -252,11 +262,13 @@ export const TierGrid: React.FC<TierGridProps> = ({
           <div className="relative flex-1">
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-black text-neutral-400">$</span>
             <input
+              ref={customInputRef}
               type="number"
               inputMode={isTouch.current ? 'none' : 'numeric'}
               value={customActive ? editingValue : customPrice}
               onChange={(e) => handleCustomNativeChange(e.target.value)}
               onFocus={startEditingCustom}
+              onClick={startEditingCustom}
               onBlur={handleCustomBlur}
               readOnly={isTouch.current}
               onKeyDown={(e) => {
@@ -265,7 +277,7 @@ export const TierGrid: React.FC<TierGridProps> = ({
               placeholder="自訂 $"
               className="w-full pl-8 pr-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm font-black text-neutral-900 dark:text-white outline-none focus:border-[#aa151b] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
               min={1}
-              max={1000}
+              max={2500}
             />
           </div>
           <button

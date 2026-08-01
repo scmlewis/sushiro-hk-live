@@ -120,13 +120,13 @@ export const useFareCalculator = (
   }, [customTiers]);
 
   const setTargetBudget = useCallback((value: number) => {
-    const clamped = clamp(value, 1, 1000);
+    const clamped = clamp(value, 1, 2500);
     setInternalTarget(clamped);
     setInternalActual(Math.round(clamped * (1 + SERVICE_CHARGE_RATE)));
   }, []);
 
   const setActualBill = useCallback((value: number) => {
-    const clamped = clamp(value, 1, 1100);
+    const clamped = clamp(value, 1, 2750);
     setInternalActual(clamped);
     setInternalTarget(Math.round(clamped / (1 + SERVICE_CHARGE_RATE)));
   }, []);
