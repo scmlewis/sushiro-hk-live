@@ -1,9 +1,10 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "npm run build:seo",
   "outputDirectory": "dist",
   "framework": "vite",
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" }
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/store/:id", "destination": "/store/:id.html" }
   ],
   "headers": [
     {
