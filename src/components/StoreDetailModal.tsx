@@ -157,8 +157,9 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
         className="relative w-full max-w-2xl max-h-[92vh] flex flex-col bg-white dark:bg-neutral-900 shadow-2xl overflow-hidden border border-neutral-200 dark:border-neutral-800/60 rounded-2xl my-auto"
       >
         {/* Fixed Header */}
-        <div className="shrink-0 p-4 sm:p-6 bg-[#141414] text-white relative border-b-4 border-[#aa151b] pattern-seigaiha-dark">
-          <div className="absolute top-4 right-4 flex items-center gap-2 z-10 pointer-events-auto">
+        <div className="shrink-0 p-4 sm:p-6 bg-[#1a1a1a] text-white relative border-b-4 border-[#aa151b] overflow-hidden">
+          <div className="seigaiha-bg" />
+          <div className="relative z-10 flex items-center gap-2 justify-end mb-3">
             <button
               onClick={() => onToggleBookmark(store)}
               className={`p-2 rounded-full transition-all duration-150 cursor-pointer active:scale-90 ${
