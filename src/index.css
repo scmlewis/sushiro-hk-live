@@ -79,7 +79,6 @@ html, body {
 }
 
 /* ── Seigaiha (青海波) Pattern ── */
-/* Two stacked rows of concentric semicircles, offset to create layered fans */
 
 .pattern-seigaiha {
   position: relative;
@@ -93,12 +92,24 @@ html, body {
   z-index: 0;
   pointer-events: none;
   opacity: 0.08;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20'%3E%3Cpath d='M0 10A10 10 0 0 1 20 10' fill='none' stroke='white' stroke-width='.4'/%3E%3Cpath d='M0 10A8 8 0 0 1 16 10' fill='none' stroke='white' stroke-width='.4'/%3E%3Cpath d='M4 10A6 6 0 0 1 16 10' fill='none' stroke='white' stroke-width='.4'/%3E%3Cpath d='M6 10A4 4 0 0 1 14 10' fill='none' stroke='white' stroke-width='.4'/%3E%3Cpath d='M8 10A2 2 0 0 1 12 10' fill='none' stroke='white' stroke-width='.4'/%3E%3Cpath d='M20 10A10 10 0 0 1 40 10' fill='none' stroke='white' stroke-width='.4'/%3E%3Cpath d='M24 10A8 8 0 0 1 36 10' fill='none' stroke='white' stroke-width='.4'/%3E%3Cpath d='M26 10A6 6 0 0 1 34 10' fill='none' stroke='white' stroke-width='.4'/%3E%3Cpath d='M28 10A4 4 0 0 1 32 10' fill='none' stroke='white' stroke-width='.4'/%3E%3Cpath d='M-10 20A10 10 0 0 1 10 20' fill='none' stroke='white' stroke-width='.4'/%3E%3Cpath d='M-6 20A8 8 0 0 1 10 20' fill='none' stroke='white' stroke-width='.4'/%3E%3Cpath d='M-4 20A6 6 0 0 1 8 20' fill='none' stroke='white' stroke-width='.4'/%3E%3Cpath d='M-2 20A4 4 0 0 1 6 20' fill='none' stroke='white' stroke-width='.4'/%3E%3Cpath d='M10 20A10 10 0 0 1 30 20' fill='none' stroke='white' stroke-width='.4'/%3E%3Cpath d='M14 20A8 8 0 0 1 26 20' fill='none' stroke='white' stroke-width='.4'/%3E%3Cpath d='M16 20A6 6 0 0 1 24 20' fill='none' stroke='white' stroke-width='.4'/%3E%3Cpath d='M18 20A4 4 0 0 1 22 20' fill='none' stroke='white' stroke-width='.4'/%3E%3Cpath d='M30 20A10 10 0 0 1 50 20' fill='none' stroke='white' stroke-width='.4'/%3E%3Cpath d='M34 20A8 8 0 0 1 46 20' fill='none' stroke='white' stroke-width='.4'/%3E%3Cpath d='M36 20A6 6 0 0 1 44 20' fill='none' stroke='white' stroke-width='.4'/%3E%3Cpath d='M38 20A4 4 0 0 1 42 20' fill='none' stroke='white' stroke-width='.4'/%3E%3C/svg%3E");
-  background-repeat: repeat;
-  background-size: 40px 20px;
+  background-color: #1a1a1a;
+  background-image:
+    radial-gradient(circle at 100% 150%, #1a1a1a 24%, #333 24%, #333 28%, #1a1a1a 28%, #1a1a1a 36%, #333 36%, #333 40%, transparent 40%, transparent),
+    radial-gradient(circle at 0    150%, #1a1a1a 24%, #333 24%, #333 28%, #1a1a1a 28%, #1a1a1a 36%, #333 36%, #333 40%, transparent 40%, transparent),
+    radial-gradient(circle at 50%  100%, #333 10%, #1a1a1a 10%, #1a1a1a 23%, #333 23%, #333 30%, #1a1a1a 30%, #1a1a1a 43%, #333 43%, #333 50%, #1a1a1a 50%, #1a1a1a 63%, #333 63%, #333 71%, transparent 71%, transparent),
+    radial-gradient(circle at 100% 50%, #333 5%, #1a1a1a 5%, #1a1a1a 15%, #333 15%, #333 20%, #1a1a1a 20%, #1a1a1a 29%, #333 29%, #333 34%, #1a1a1a 34%, #1a1a1a 44%, #333 44%, #333 49%, transparent 49%, transparent),
+    radial-gradient(circle at 0    50%, #333 5%, #1a1a1a 5%, #1a1a1a 15%, #333 15%, #333 20%, #1a1a1a 20%, #1a1a1a 29%, #333 29%, #333 34%, #1a1a1a 34%, #1a1a1a 44%, #333 44%, #333 49%, transparent 49%, transparent);
+  background-size: 100px 50px;
 }
 
 .pattern-seigaiha-dark::before {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20'%3E%3Cpath d='M0 10A10 10 0 0 1 20 10' fill='none' stroke='%23aa151b' stroke-width='.4'/%3E%3Cpath d='M0 10A8 8 0 0 1 16 10' fill='none' stroke='%23aa151b' stroke-width='.4'/%3E%3Cpath d='M4 10A6 6 0 0 1 16 10' fill='none' stroke='%23aa151b' stroke-width='.4'/%3E%3Cpath d='M6 10A4 4 0 0 1 14 10' fill='none' stroke='%23aa151b' stroke-width='.4'/%3E%3Cpath d='M8 10A2 2 0 0 1 12 10' fill='none' stroke='%23aa151b' stroke-width='.4'/%3E%3Cpath d='M20 10A10 10 0 0 1 40 10' fill='none' stroke='%23aa151b' stroke-width='.4'/%3E%3Cpath d='M24 10A8 8 0 0 1 36 10' fill='none' stroke='%23aa151b' stroke-width='.4'/%3E%3Cpath d='M26 10A6 6 0 0 1 34 10' fill='none' stroke='%23aa151b' stroke-width='.4'/%3E%3Cpath d='M28 10A4 4 0 0 1 32 10' fill='none' stroke='%23aa151b' stroke-width='.4'/%3E%3Cpath d='M-10 20A10 10 0 0 1 10 20' fill='none' stroke='%23aa151b' stroke-width='.4'/%3E%3Cpath d='M-6 20A8 8 0 0 1 10 20' fill='none' stroke='%23aa151b' stroke-width='.4'/%3E%3Cpath d='M-4 20A6 6 0 0 1 8 20' fill='none' stroke='%23aa151b' stroke-width='.4'/%3E%3Cpath d='M-2 20A4 4 0 0 1 6 20' fill='none' stroke='%23aa151b' stroke-width='.4'/%3E%3Cpath d='M10 20A10 10 0 0 1 30 20' fill='none' stroke='%23aa151b' stroke-width='.4'/%3E%3Cpath d='M14 20A8 8 0 0 1 26 20' fill='none' stroke='%23aa151b' stroke-width='.4'/%3E%3Cpath d='M16 20A6 6 0 0 1 24 20' fill='none' stroke='%23aa151b' stroke-width='.4'/%3E%3Cpath d='M18 20A4 4 0 0 1 22 20' fill='none' stroke='%23aa151b' stroke-width='.4'/%3E%3Cpath d='M30 20A10 10 0 0 1 50 20' fill='none' stroke='%23aa151b' stroke-width='.4'/%3E%3Cpath d='M34 20A8 8 0 0 1 46 20' fill='none' stroke='%23aa151b' stroke-width='.4'/%3E%3Cpath d='M36 20A6 6 0 0 1 44 20' fill='none' stroke='%23aa151b' stroke-width='.4'/%3E%3Cpath d='M38 20A4 4 0 0 1 42 20' fill='none' stroke='%23aa151b' stroke-width='.4'/%3E%3C/svg%3E");
+  background-color: #1a1a1a;
+  background-image:
+    radial-gradient(circle at 100% 150%, #1a1a1a 24%, #aa151b 24%, #aa151b 28%, #1a1a1a 28%, #1a1a1a 36%, #aa151b 36%, #aa151b 40%, transparent 40%, transparent),
+    radial-gradient(circle at 0    150%, #1a1a1a 24%, #aa151b 24%, #aa151b 28%, #1a1a1a 28%, #1a1a1a 36%, #aa151b 36%, #aa151b 40%, transparent 40%, transparent),
+    radial-gradient(circle at 50%  100%, #aa151b 10%, #1a1a1a 10%, #1a1a1a 23%, #aa151b 23%, #aa151b 30%, #1a1a1a 30%, #1a1a1a 43%, #aa151b 43%, #aa151b 50%, #1a1a1a 50%, #1a1a1a 63%, #aa151b 63%, #aa151b 71%, transparent 71%, transparent),
+    radial-gradient(circle at 100% 50%, #aa151b 5%, #1a1a1a 5%, #1a1a1a 15%, #aa151b 15%, #aa151b 20%, #1a1a1a 20%, #1a1a1a 29%, #aa151b 29%, #aa151b 34%, #1a1a1a 34%, #1a1a1a 44%, #aa151b 44%, #aa151b 49%, transparent 49%, transparent),
+    radial-gradient(circle at 0    50%, #aa151b 5%, #1a1a1a 5%, #1a1a1a 15%, #aa151b 15%, #aa151b 20%, #1a1a1a 20%, #1a1a1a 29%, #aa151b 29%, #aa151b 34%, #1a1a1a 34%, #1a1a1a 44%, #aa151b 44%, #aa151b 49%, transparent 49%, transparent);
+  background-size: 100px 50px;
   opacity: 0.1;
 }
