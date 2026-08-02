@@ -44,7 +44,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           <div className="flex sm:hidden items-center gap-2">
-            <div className="flex items-center gap-1 bg-black/20 px-2 py-1 rounded-full text-[11px] font-bold font-mono">
+            <div className="flex items-center gap-1 bg-black/80 px-2 py-1 rounded-full text-[11px] font-bold font-mono">
               <span className="text-red-200">最後更新</span>
               <Clock className="w-3 h-3 text-red-200" />
               <span>{formattedTime}</span>
@@ -61,7 +61,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Center Main Tab Navigation (Single Source of Truth) */}
-        <nav className="flex items-center gap-0.5 bg-black/20 p-1 rounded-full border border-white/10 w-full sm:w-auto overflow-x-auto no-scrollbar justify-between sm:justify-center">
+        <nav className="flex items-center gap-0.5 bg-black/80 p-1 rounded-full border border-white/10 w-full sm:w-auto overflow-x-auto no-scrollbar justify-between sm:justify-center">
           {([
             { id: 'all' as const, icon: Store, labelFull: '全港門市', labelShort: '門市' },
             { id: 'bookmarks' as const, icon: Heart, labelFull: '我的關注', labelShort: '關注', count: bookmarkCount, fill: activeMainTab === 'bookmarks' },
@@ -88,7 +88,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Right Status & Refresh Button */}
         <div className="hidden sm:flex items-center gap-3 shrink-0">
-          <div className="flex items-center gap-1.5 bg-black/20 px-2.5 py-1 rounded-full text-xs font-bold font-mono">
+          <div className="flex items-center gap-1.5 bg-black/80 px-2.5 py-1 rounded-full text-xs font-bold font-mono">
             <span className="text-red-200">最後更新</span>
             <Clock className="w-3.5 h-3.5 text-red-200" />
             <span>{formattedTime}</span>

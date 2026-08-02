@@ -13,7 +13,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
     <div className="max-w-4xl mx-auto space-y-6 mb-12 animate-fade-in">
       {/* Intro Banner */}
       <div className="bg-neutral-900 text-white p-6 sm:p-8 rounded-2xl border-l-4 border-[#aa151b] shadow-xl shadow-neutral-900/20 relative overflow-hidden pattern-seigaiha-dark">
-        <div className="flex items-center gap-3 mb-3">
+        <div className="relative z-10 flex items-center gap-3 mb-3">
           <span className="px-2.5 py-0.5 bg-[#aa151b] text-white text-[10px] font-black uppercase tracking-widest rounded">
             系統簡介
           </span>
@@ -21,10 +21,10 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
             香港壽司郎即時籌號追蹤看板
           </span>
         </div>
-        <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white mb-2">
+        <h2 className="relative z-10 text-2xl sm:text-3xl font-black tracking-tight text-white mb-2">
           系統簡介與使用說明
         </h2>
-        <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed font-medium">
+        <p className="relative z-10 text-xs sm:text-sm text-neutral-300 leading-relaxed font-medium">
           本系統連結全港壽司郎門市之籌號發放狀態、預估等候時間及現場叫號進度。透過智慧連線機制，助您迅速掌握現場人流，節省現場等候時間。
         </p>
       </div>

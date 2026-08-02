@@ -82,11 +82,11 @@ html, body {
 
 .pattern-seigaiha {
   background-image:
-    radial-gradient(circle at 100% 150%, #aa151b 24%, #cc3333 24%, #cc3333 28%, #aa151b 28%, #aa151b 36%, #cc3333 36%, #cc3333 40%, transparent 40%, transparent),
-    radial-gradient(circle at 0    150%, #aa151b 24%, #cc3333 24%, #cc3333 28%, #aa151b 28%, #aa151b 36%, #cc3333 36%, #cc3333 40%, transparent 40%, transparent),
-    radial-gradient(circle at 50%  100%, #cc3333 10%, #aa151b 10%, #aa151b 23%, #cc3333 23%, #cc3333 30%, #aa151b 30%, #aa151b 43%, #cc3333 43%, #cc3333 50%, #aa151b 50%, #aa151b 63%, #cc3333 63%, #cc3333 71%, transparent 71%, transparent),
-    radial-gradient(circle at 100% 50%, #cc3333 5%, #aa151b 5%, #aa151b 15%, #cc3333 15%, #cc3333 20%, #aa151b 20%, #aa151b 29%, #cc3333 29%, #cc3333 34%, #aa151b 34%, #aa151b 44%, #cc3333 44%, #cc3333 49%, transparent 49%, transparent),
-    radial-gradient(circle at 0    50%, #cc3333 5%, #aa151b 5%, #aa151b 15%, #cc3333 15%, #cc3333 20%, #aa151b 20%, #aa151b 29%, #cc3333 29%, #cc3333 34%, #aa151b 34%, #aa151b 44%, #cc3333 44%, #cc3333 49%, transparent 49%, transparent);
+    radial-gradient(circle at 100% 150%, #aa151b 24%, #bb2222 24%, #bb2222 28%, #aa151b 28%, #aa151b 36%, #bb2222 36%, #bb2222 40%, transparent 40%, transparent),
+    radial-gradient(circle at 0    150%, #aa151b 24%, #bb2222 24%, #bb2222 28%, #aa151b 28%, #aa151b 36%, #bb2222 36%, #bb2222 40%, transparent 40%, transparent),
+    radial-gradient(circle at 50%  100%, #bb2222 10%, #aa151b 10%, #aa151b 23%, #bb2222 23%, #bb2222 30%, #aa151b 30%, #aa151b 43%, #bb2222 43%, #bb2222 50%, #aa151b 50%, #aa151b 63%, #bb2222 63%, #bb2222 71%, transparent 71%, transparent),
+    radial-gradient(circle at 100% 50%, #bb2222 5%, #aa151b 5%, #aa151b 15%, #bb2222 15%, #bb2222 20%, #aa151b 20%, #aa151b 29%, #bb2222 29%, #bb2222 34%, #aa151b 34%, #aa151b 44%, #bb2222 44%, #bb2222 49%, transparent 49%, transparent),
+    radial-gradient(circle at 0    50%, #bb2222 5%, #aa151b 5%, #aa151b 15%, #bb2222 15%, #bb2222 20%, #aa151b 20%, #aa151b 29%, #bb2222 29%, #bb2222 34%, #aa151b 34%, #aa151b 44%, #bb2222 44%, #bb2222 49%, transparent 49%, transparent);
   background-size: 100px 50px;
 }
 
