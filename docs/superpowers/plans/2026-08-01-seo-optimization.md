@@ -23,30 +23,33 @@
 **Files:**
 - Modify: `package.json`
 - Modify: `src/main.tsx`
-- Modify: `src/App.tsx`
 
 **Interfaces:**
-- Produces: `<BrowserRouter>` wrapping the app, `<Route path="/store/:id">` in App.tsx
+- Produces: `<BrowserRouter>` wrapping the app, `<Route path="/store/:id">` and `<Route path="*" element={<App />}>` in main.tsx
 
 - [ ] **Step 1: Install react-router-dom**
 
 Run: `npm install react-router-dom`
 
-- [ ] **Step 2: Wrap app in BrowserRouter**
+- [ ] **Step 2: Add routing in main.tsx**
 
-Edit `src/main.tsx` — wrap `<App />` in `<BrowserRouter>`:
+Edit `src/main.tsx` — wrap in `<BrowserRouter>` and add routes. `App.tsx` is **not modified** — it renders unchanged at the catch-all route:
 
 ```tsx
 import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
-import {BrowserRouter} from 'react-router-dom';
+import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import App from './App.tsx';
+import StorePage from './pages/StorePage.tsx';
 import './index.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <Routes>
+        <Route path="/store/:id" element={<StorePage />} />
+        <Route path="*" element={<App />} />
+      </Routes>
     </BrowserRouter>
   </StrictMode>,
 );
@@ -71,50 +74,17 @@ if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
 }
 ```
 
-- [ ] **Step 3: Add route in App.tsx**
-
-Edit `src/App.tsx` — add `Routes`/`Route` import and a route for `/store/:id`. The route renders a placeholder `StorePage` (created in Task 2). Place the route BEFORE the existing SPA content so it takes priority for `/store/*` URLs.
-
-Add these imports at the top:
-
-```tsx
-import {Routes, Route} from 'react-router-dom';
-```
-
-Wrap the existing return content in a `<Routes>` block. The `/` route renders the existing SPA. The `/store/:id` route renders `StorePage`:
-
-```tsx
-return (
-  <ErrorBoundary>
-    <Routes>
-      <Route path="/store/:id" element={<StorePageWrapper />} />
-      <Route path="*" element={
-        <div className="min-h-screen flex flex-col bg-slate-100/70 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-red-500 selection:text-white transition-colors" style={{ fontSize: TEXT_SIZE_MAP[textSize] }}>
-          {/* ... existing SPA content unchanged ... */}
-        </div>
-      } />
-    </Routes>
-  </ErrorBoundary>
-);
-```
-
-Add a temporary wrapper component at the bottom of App.tsx (will be replaced in Task 2):
-
-```tsx
-function StorePageWrapper() {
-  return <div>StorePage — coming in Task 2</div>;
-}
-```
-
-- [ ] **Step 4: Verify build compiles**
+- [ ] **Step 3: Verify build compiles**
 
 Run: `npm run build`
-Expected: Build succeeds with no TypeScript errors.
+Expected: Build fails with "cannot find module ./pages/StorePage" — this is expected until Task 2. Run `npm run lint` — the import will error until Task 2 creates the file.
 
-- [ ] **Step 5: Commit**
+Note: This task's compile check is deferred to Task 2 (StorePage doesn't exist yet). Proceed to Task 2 to create it.
+
+- [ ] **Step 4: Commit**
 
 ```bash
-git add package.json package-lock.json src/main.tsx src/App.tsx
+git add package.json package-lock.json src/main.tsx
 git commit -m "feat: add react-router-dom with /store/:id route"
 ```
 
@@ -165,41 +135,33 @@ export default function StorePage() {
       setStore(prerendered.store);
       setLoading(false);
       // Still fetch queue data (not prerendered)
-      fetchQueue(storeId);
+      fetchStoreData(storeId);
       return;
     }
 
-    // Fetch from API
-    fetch(`/api/stores`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success && Array.isArray(data.stores)) {
-          const found = data.stores.find((s: SushiroStore) => s.id === storeId);
-          if (found) {
-            setStore(found);
-          }
-        }
-      })
-      .catch(console.warn)
-      .finally(() => setLoading(false));
-
-    fetchQueue(storeId);
+    fetchStoreData(storeId);
   }, [storeId]);
 
-  const fetchQueue = useCallback(async (sid: number) => {
+  // Fetch store + queue in one call using existing /api/store/:id endpoint
+  const fetchStoreData = useCallback(async (sid: number) => {
+    setLoading(true);
     setQueueLoading(true);
     try {
-      const res = await fetch(`/api/queue?storeid=${sid}`);
+      const res = await fetch(`/api/store/${sid}`);
       const data = await res.json();
-      if (data.success && data.queue) {
-        setQueue(data.queue);
+      if (data.success && data.store) {
+        setStore(data.store);
+        if (data.queue) setQueue(data.queue);
       }
     } catch (err) {
-      console.warn('Failed to load queue:', err);
+      console.warn('Failed to load store:', err);
     } finally {
+      setLoading(false);
       setQueueLoading(false);
     }
   }, []);
+
+  // Ticket calculator logic (same as StoreDetailModal)
 
   // Ticket calculator logic (same as StoreDetailModal)
   const handleNumpad = (key: string) => {
@@ -424,7 +386,7 @@ export default function StorePage() {
         <div className="p-5 border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50 rounded-t-xl">
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-black text-neutral-800 dark:text-neutral-200 uppercase tracking-tight">最新叫號</span>
-            <button onClick={() => fetchQueue(storeId)} disabled={queueLoading}
+            <button onClick={() => fetchStoreData(storeId)} disabled={queueLoading}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 text-[10px] font-black uppercase transition-colors cursor-pointer border border-neutral-200 dark:border-neutral-700">
               <RefreshCw className={`w-3 h-3 ${queueLoading ? 'animate-spin text-[#aa151b]' : ''}`} />
               <span>更新</span>
@@ -793,11 +755,18 @@ git commit -m "feat: add WebSite structured data with SearchAction"
 
 **Interfaces:**
 - Consumes: prerendered `/store/{id}.html` files in `dist/`
-- Produces: Vercel serves prerendered HTML for `/store/:id`, SPA fallback for everything else
+- Produces: Vercel serves prerendered HTML for `/store/:id`
 
-- [ ] **Step 1: Add SPA fallback rewrite**
+**Why this works:** Vercel serves static files (from `dist/`) **before** rewrites. So:
+- `/assets/*.js`, `/icon.svg`, `/manifest.json` → served directly (real files, never rewritten)
+- `/store/123` → no such file → rewrite matches → serves `/store/123.html`
+- `/` → serves `index.html` directly
+- `/api/*` → serverless functions (matched before rewrites)
+- The SPA lives entirely at `/` (state-based tabs), so **no catch-all rewrite is needed** — it can't break asset serving
 
-Edit `vercel.json` — add a rewrite so unmatched routes fall back to `index.html` (SPA behavior), while `/store/:id` serves the prerendered HTML files:
+- [ ] **Step 1: Add store page rewrite**
+
+Edit `vercel.json` — add a single rewrite so `/store/:id` serves the prerendered HTML. Add `build:seo` as the build command:
 
 ```json
 {
@@ -806,8 +775,7 @@ Edit `vercel.json` — add a rewrite so unmatched routes fall back to `index.htm
   "framework": "vite",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/store/:id", "destination": "/store/:id.html" },
-    { "source": "/((?!store/).*)", "destination": "/index.html" }
+    { "source": "/store/:id", "destination": "/store/:id.html" }
   ],
   "headers": [
     {
@@ -822,13 +790,20 @@ Edit `vercel.json` — add a rewrite so unmatched routes fall back to `index.htm
 }
 ```
 
-- [ ] **Step 2: Verify build and preview**
+- [ ] **Step 2: Verify build produces store pages**
 
-Run: `npm run build:seo && npx vite preview`
-Visit: `http://localhost:4173/store/1`
+Run: `npm run build:seo && ls dist/store/ | head -5`
+Expected: `dist/store/` contains `1.html`, `2.html`, etc.
+
+- [ ] **Step 3: Preview locally**
+
+Run: `npx vite preview`
+Visit: `http://localhost:4173/store/1.html`
 Expected: prerendered store page loads with correct title and meta tags.
 
-- [ ] **Step 3: Commit**
+Note: `vite preview` serves static files, so visit the `.html` path directly. Vercel's clean URL `/store/1` → `/store/1.html` is tested only after deploy. Deploy a preview with `npx vercel` to confirm.
+
+- [ ] **Step 4: Commit**
 
 ```bash
 git add vercel.json
