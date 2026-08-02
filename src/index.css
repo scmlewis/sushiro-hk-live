@@ -82,7 +82,6 @@ html, body {
 
 .pattern-seigaiha {
   position: relative;
-  overflow: hidden;
 }
 
 .pattern-seigaiha::before {
