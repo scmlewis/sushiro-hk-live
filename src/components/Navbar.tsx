@@ -34,7 +34,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Brand & Clock */}
         <div className="flex items-center justify-between w-full sm:w-auto gap-3">
           <div className="flex items-center gap-2.5">
-            <img src="/icon.svg" alt="壽司郎 HK Live" className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg" />
+            <img src="/icon.png" alt="壽司郎 HK Live" className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg" />
             <h1 className="text-xl sm:text-2xl font-black tracking-tighter text-white">
               壽司郎 HK
             </h1>
