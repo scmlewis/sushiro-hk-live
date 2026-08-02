@@ -179,15 +179,15 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
             </button>
           </div>
 
-          <h2 className="text-2xl sm:text-4xl font-black tracking-tighter text-white">{store.name}</h2>
-          {store.nameEn && <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-2">{store.nameEn}</p>}
+          <h2 className="relative z-10 text-2xl sm:text-4xl font-black tracking-tighter text-white">{store.name}</h2>
+          {store.nameEn && <p className="relative z-10 text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-2">{store.nameEn}</p>}
 
-          <p className="text-xs text-neutral-300 font-semibold flex items-center gap-1.5 mb-3">
+          <p className="relative z-10 text-xs text-neutral-300 font-semibold flex items-center gap-1.5 mb-3">
             <MapPin className="w-3.5 h-3.5 text-[#aa151b] shrink-0" />
             <span className="truncate">{store.address}</span>
           </p>
 
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="relative z-10 flex items-center gap-2 flex-wrap">
             <span className={`px-2.5 py-0.5 text-[11px] font-black uppercase tracking-wider border ${storeStatusInfo.bgColor} ${storeStatusInfo.textColor} ${storeStatusInfo.borderColor}`}>
               {storeStatusInfo.label}
             </span>
