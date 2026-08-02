@@ -41,11 +41,12 @@ export const STORAGE_KEYS = {
 
 // ── Text Size ──
 
-export type TextSize = 'S' | 'M' | 'L';
+export type TextSize = 'S' | 'M' | 'L' | 'XL';
 export const TEXT_SIZE_MAP: Record<TextSize, string> = {
   S: '12px',
   M: '15px',
   L: '19px',
+  XL: '22px',
 };
 
 // ── Brand Color ──
