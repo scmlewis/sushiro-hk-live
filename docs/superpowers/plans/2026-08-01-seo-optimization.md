@@ -33,21 +33,32 @@ Run: `npm install react-router-dom`
 
 - [ ] **Step 2: Add routing in main.tsx**
 
-Edit `src/main.tsx` — wrap in `<BrowserRouter>` and add routes. `App.tsx` is **not modified** — it renders unchanged at the catch-all route:
+Edit `src/main.tsx` — wrap in `<BrowserRouter>` and add routes. `App.tsx` is **not modified** — it renders unchanged at the catch-all route. `StorePage` is **lazy-loaded** so the main bundle stays the same size (the StorePage chunk only loads on `/store/:id` visits):
 
 ```tsx
-import {StrictMode} from 'react';
+import {StrictMode, lazy, Suspense} from 'react';
 import {createRoot} from 'react-dom/client';
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import App from './App.tsx';
-import StorePage from './pages/StorePage.tsx';
 import './index.css';
+
+const StorePage = lazy(() => import('./pages/StorePage.tsx'));
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/store/:id" element={<StorePage />} />
+        <Route path="/store/:id" element={
+          <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-slate-100/70 dark:bg-slate-950">
+              <div className="text-center">
+                <div className="w-8 h-8 border-4 border-[#aa151b] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+              </div>
+            </div>
+          }>
+            <StorePage />
+          </Suspense>
+        } />
         <Route path="*" element={<App />} />
       </Routes>
     </BrowserRouter>
@@ -125,26 +136,27 @@ export default function StorePage() {
 
   const storeId = parseInt(id || '0', 10);
 
+  // Initialize from prerendered data if present (no loading flash on direct visits)
+  const [store, setStore] = useState<SushiroStore | null>(() => {
+    const prerendered = (window as any).__STORE_DATA__;
+    return prerendered && prerendered.store && prerendered.store.id === storeId ? prerendered.store : null;
+  });
+  const [queue, setQueue] = useState<GroupQueue | null>(null);
+  const [loading, setLoading] = useState(() => !store);
+  const [queueLoading, setQueueLoading] = useState(true);
+  const [myTicket, setMyTicket] = useState('');
+  const [isBookmarked, setIsBookmarked] = useState(false);
+
   // Fetch store data
   useEffect(() => {
     if (!storeId) return;
-
-    // Check for prerendered data first
-    const prerendered = (window as any).__STORE_DATA__;
-    if (prerendered && prerendered.store && prerendered.store.id === storeId) {
-      setStore(prerendered.store);
-      setLoading(false);
-      // Still fetch queue data (not prerendered)
-      fetchStoreData(storeId);
-      return;
-    }
-
     fetchStoreData(storeId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storeId]);
 
   // Fetch store + queue in one call using existing /api/store/:id endpoint
   const fetchStoreData = useCallback(async (sid: number) => {
-    setLoading(true);
+    setLoading((prev) => prev && !(window as any).__STORE_DATA__);
     setQueueLoading(true);
     try {
       const res = await fetch(`/api/store/${sid}`);
