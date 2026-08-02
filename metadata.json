@@ -1,6 +1,0 @@
-{
-  "name": "壽司郎 Sushiro HK Live Queue",
-  "description": "香港壽司郎即時等候時間與籌號追蹤網絡應用程式",
-  "requestFramePermissions": ["geolocation"],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
