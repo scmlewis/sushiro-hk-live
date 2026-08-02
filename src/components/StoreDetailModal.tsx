@@ -158,7 +158,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
       >
         {/* Fixed Header */}
         <div className="shrink-0 p-4 sm:p-6 bg-[#141414] text-white relative border-b-4 border-[#aa151b] pattern-seigaiha-dark">
-          <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+          <div className="absolute top-4 right-4 flex items-center gap-2 z-10 pointer-events-auto">
             <button
               onClick={() => onToggleBookmark(store)}
               className={`p-2 rounded-full transition-all duration-150 cursor-pointer active:scale-90 ${

@@ -14,17 +14,17 @@ export function getStoreStatusInfo(status: string, isOpenNow = true): StatusBadg
   if (isUp) {
     return {
       label: '營業中',
-      bgColor: 'bg-emerald-500/10',
-      textColor: 'text-emerald-700 dark:text-emerald-400',
-      borderColor: 'border-emerald-500/20',
-      dotColor: 'bg-emerald-500',
+      bgColor: 'bg-emerald-700/80',
+      textColor: 'text-emerald-100',
+      borderColor: 'border-emerald-500/40',
+      dotColor: 'bg-emerald-400',
     };
   }
   return {
     label: '非營業中',
-    bgColor: 'bg-slate-500/10',
-    textColor: 'text-slate-600 dark:text-slate-400',
-    borderColor: 'border-slate-500/20',
+    bgColor: 'bg-slate-700/80',
+    textColor: 'text-slate-200',
+    borderColor: 'border-slate-500/40',
     dotColor: 'bg-slate-400',
   };
 }
@@ -54,9 +54,9 @@ export function getTicketStatusInfo(
   if (storeStatus !== 'OPEN' || !isOpenNow) {
     return {
       label: '非營業中',
-      bgColor: 'bg-slate-500/10',
-      textColor: 'text-slate-500',
-      borderColor: 'border-slate-500/20',
+      bgColor: 'bg-slate-700/80',
+      textColor: 'text-slate-200',
+      borderColor: 'border-slate-500/40',
       dotColor: 'bg-slate-400',
     };
   }
@@ -65,9 +65,9 @@ export function getTicketStatusInfo(
   if (isStopFly) {
     return {
       label: '停籌',
-      bgColor: 'bg-[#8b5cf6]/10',
-      textColor: 'text-[#8b5cf6] dark:text-violet-400',
-      borderColor: 'border-[#8b5cf6]/20',
+      bgColor: 'bg-[#8b5cf6]/80',
+      textColor: 'text-violet-100',
+      borderColor: 'border-[#8b5cf6]/40',
       dotColor: 'bg-[#8b5cf6]',
     };
   }
@@ -75,10 +75,10 @@ export function getTicketStatusInfo(
   // 3. 現場派籌中 (store is OPEN and walk-in ticketing is active)
   return {
     label: '現場派籌中',
-    bgColor: 'bg-emerald-500/10',
-    textColor: 'text-emerald-700 dark:text-emerald-400',
-    borderColor: 'border-emerald-500/20',
-    dotColor: 'bg-emerald-500 animate-pulse',
+    bgColor: 'bg-emerald-700/80',
+    textColor: 'text-emerald-100',
+    borderColor: 'border-emerald-500/40',
+    dotColor: 'bg-emerald-400 animate-pulse',
   };
 }
 
