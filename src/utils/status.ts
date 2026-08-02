@@ -1,4 +1,5 @@
 import { SushiroStore, GroupQueue } from '../types';
+import { isWithinBusinessHours } from './businessHours';
 
 export interface StatusBadge {
   label: string;
@@ -8,8 +9,8 @@ export interface StatusBadge {
   dotColor: string;
 }
 
-export function getStoreStatusInfo(status: string): StatusBadge {
-  const isUp = status === 'OPEN';
+export function getStoreStatusInfo(status: string, isOpenNow = true): StatusBadge {
+  const isUp = status === 'OPEN' && isOpenNow;
   if (isUp) {
     return {
       label: '營業中',
@@ -44,12 +45,13 @@ export function getTicketStatusInfo(
   storeStatus: string,
   localTicketingStatus = 'ON',
   wait = 0,
-  waitingGroup = 0
+  waitingGroup = 0,
+  isOpenNow = true
 ): StatusBadge {
   const isStopFly = isLocalTicketingOff(localTicketingStatus);
 
   // 1. 門市非營業中
-  if (storeStatus !== 'OPEN') {
+  if (storeStatus !== 'OPEN' || !isOpenNow) {
     return {
       label: '非營業中',
       bgColor: 'bg-slate-500/10',
@@ -59,18 +61,7 @@ export function getTicketStatusInfo(
     };
   }
 
-  // 2. 非營業中 — no one waiting (defensive: stores with stale 0/0 data)
-  if (wait === 0 && waitingGroup === 0) {
-    return {
-      label: '非營業中',
-      bgColor: 'bg-slate-500/10',
-      textColor: 'text-slate-500',
-      borderColor: 'border-slate-500/20',
-      dotColor: 'bg-slate-400',
-    };
-  }
-
-  // 3. 停籌 (Walk-in stopped — store is open but not accepting walk-ins)
+  // 2. 停籌 (Walk-in stopped — store is open but not accepting walk-ins)
   if (isStopFly) {
     return {
       label: '停籌',
@@ -98,11 +89,17 @@ export interface StoreDisplayStatus {
   accentColor: string;     // 'blue' | 'emerald' | 'yellow' | 'orange' | 'red' | 'neutral'
 }
 
-export function isStoreServicing(store: SushiroStore): boolean {
+export function isStoreEffectivelyOpen(store: SushiroStore, now: Date = new Date()): boolean {
   if (store.storeStatus !== 'OPEN') return false;
+  // An active queue means the store is genuinely open right now, regardless of
+  // the static hours table (which may drift for extended/early-closing days).
+  if (store.wait > 0 || store.waitingGroup > 0) return true;
+  // 0/0 is ambiguous: open-but-empty (during hours) vs stale past-hours data.
+  return isWithinBusinessHours(store.id, now);
+}
 
-  // No one waiting — nothing to service (defensive against stale upstream data)
-  if (store.wait === 0 && store.waitingGroup === 0) return false;
+export function isStoreServicing(store: SushiroStore, now: Date = new Date()): boolean {
+  if (!isStoreEffectivelyOpen(store, now)) return false;
 
   // Walk-in stopped — only servicing if there's still a queue
   if (isLocalTicketingOff(store.localTicketingStatus)) {
@@ -112,11 +109,11 @@ export function isStoreServicing(store: SushiroStore): boolean {
   return true;
 }
 
-export function getStoreDisplayStatus(store: SushiroStore): StoreDisplayStatus {
-  const isOpen = store.storeStatus === 'OPEN';
+export function getStoreDisplayStatus(store: SushiroStore, now: Date = new Date()): StoreDisplayStatus {
+  const isOpen = isStoreEffectivelyOpen(store, now);
   const isStopFly = isLocalTicketingOff(store.localTicketingStatus);
 
-  // 1. 非營業中 (Closed)
+  // 1. 非營業中 (Closed, or past business hours with no active queue)
   if (!isOpen) {
     return {
       waitText: '非營業中',
@@ -126,17 +123,7 @@ export function getStoreDisplayStatus(store: SushiroStore): StoreDisplayStatus {
     };
   }
 
-  // 2. 非營業中 — no one waiting (defensive: stores with stale 0/0 data past hours)
-  if (store.wait === 0 && store.waitingGroup === 0) {
-    return {
-      waitText: '非營業中',
-      groupText: '--',
-      isClosed: true,
-      accentColor: 'neutral',
-    };
-  }
-
-  // 3. 停籌 (Walk-in stopped — store is open but not accepting walk-ins)
+  // 2. 停籌 (Walk-in stopped — store is open but not accepting walk-ins)
   if (isStopFly) {
     return {
       waitText: '停籌',

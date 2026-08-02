@@ -104,11 +104,19 @@ describe('StoreDetailModal', () => {
       wait: 0,
       waitingGroup: 0,
     };
-    render(<StoreDetailModal {...defaultProps} store={finishedStore} />);
+    vi.useFakeTimers();
+    // HK 23:00 Monday — outside default business hours (10:30–22:00). businessHours
+    // reads (time + 8h) as UTC, so 15:00Z maps to HK 23:00.
+    vi.setSystemTime(new Date('2026-08-03T15:00:00Z'));
+    try {
+      render(<StoreDetailModal {...defaultProps} store={finishedStore} />);
 
-     expect(screen.getByText('門市非營業中，籌號計算器暫停使用')).toBeInTheDocument();
-     expect(screen.getAllByText('非營業中').length).toBeGreaterThan(0);
-     expect(screen.getByText('等待開門')).toBeInTheDocument();
+      expect(screen.getByText('門市非營業中，籌號計算器暫停使用')).toBeInTheDocument();
+      expect(screen.getAllByText('非營業中').length).toBeGreaterThan(0);
+      expect(screen.getByText('等待開門')).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
    it('renders calculator for walk-in stopped store (停籌) with waiting groups', () => {

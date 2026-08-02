@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { SushiroStore, GroupQueue } from '../types';
-import { getStoreStatusInfo, getTicketStatusInfo, formatGoogleMapsUrl, isStoreServicing, getStoreDisplayStatus, isLocalTicketingOff } from '../utils/status';
+import { getStoreStatusInfo, getTicketStatusInfo, formatGoogleMapsUrl, isStoreServicing, getStoreDisplayStatus, isLocalTicketingOff, isStoreEffectivelyOpen } from '../utils/status';
 import { X, RefreshCw, Heart, MapPin, ExternalLink, Info, Calculator } from 'lucide-react';
 import { NotificationBell } from './NotificationBell';
 
@@ -48,8 +48,8 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
 
   if (!store) return null;
 
-  const storeStatusInfo = getStoreStatusInfo(store.storeStatus);
-  const ticketStatusInfo = getTicketStatusInfo(store.netTicketStatus, store.storeStatus, store.localTicketingStatus, store.wait, store.waitingGroup);
+  const storeStatusInfo = getStoreStatusInfo(store.storeStatus, isStoreEffectivelyOpen(store));
+  const ticketStatusInfo = getTicketStatusInfo(store.netTicketStatus, store.storeStatus, store.localTicketingStatus, store.wait, store.waitingGroup, isStoreEffectivelyOpen(store));
   const mapsUrl = formatGoogleMapsUrl(store.latitude, store.longitude, store.address, store.name);
 
   // Parse queue number string like "74-1" or "73" into structured object

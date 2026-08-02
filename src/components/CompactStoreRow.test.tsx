@@ -53,22 +53,30 @@ describe('CompactStoreRow', () => {
      expect(screen.getByText('停籌')).toBeInTheDocument();
   });
 
-   it('renders 非營業中 when store has finished servicing', () => {
-    render(
-      <CompactStoreRow
-        {...defaultProps}
-        store={{
-          ...mockStore,
-          storeStatus: 'OPEN',
-          netTicketStatus: 'OFFLINE_MANUAL',
-          localTicketingStatus: 'OFF',
-          wait: 0,
-          waitingGroup: 0,
-        }}
-      />
-    );
+   it('renders 非營業中 when store has finished servicing outside hours', () => {
+    vi.useFakeTimers();
+    // HK 23:00 Monday — outside default business hours (10:30–22:00). businessHours
+    // reads (time + 8h) as UTC, so 15:00Z maps to HK 23:00.
+    vi.setSystemTime(new Date('2026-08-03T15:00:00Z'));
+    try {
+      render(
+        <CompactStoreRow
+          {...defaultProps}
+          store={{
+            ...mockStore,
+            storeStatus: 'OPEN',
+            netTicketStatus: 'OFFLINE_MANUAL',
+            localTicketingStatus: 'OFF',
+            wait: 0,
+            waitingGroup: 0,
+          }}
+        />
+      );
       expect(screen.getByText('非營業中')).toBeInTheDocument();
-    expect(screen.getByText('--')).toBeInTheDocument();
+      expect(screen.getByText('--')).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('renders group count for open store', () => {

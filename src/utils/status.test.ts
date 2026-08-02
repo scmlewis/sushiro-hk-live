@@ -4,6 +4,7 @@ import {
   getTicketStatusInfo,
   getStoreDisplayStatus,
   isStoreServicing,
+  isStoreEffectivelyOpen,
   getStoreRegion,
   formatGoogleMapsUrl,
   isStoreIssuing,
@@ -11,6 +12,12 @@ import {
   getQueueTicketCount,
 } from './status';
 import type { SushiroStore } from '../types';
+
+// A Date representing a time within default business hours (HK 11:00 on Monday).
+// businessHours reads (time + 8h) as UTC, so we pick a UTC instant that lands in hours.
+const WITHIN_HOURS = new Date(Date.UTC(2026, 7, 3, 3, 0, 0)); // +8h => 11:00 UTC
+// A Date representing a time outside default business hours (HK 23:00 on Monday).
+const OUTSIDE_HOURS = new Date(Date.UTC(2026, 7, 3, 15, 0, 0)); // +8h => 23:00 UTC
 
 describe('getStoreStatusInfo', () => {
   it('returns green badge for OPEN', () => {
@@ -123,14 +130,14 @@ it('returns 停籌 when localTicketingStatus is OFF and store has queues', () =>
   expect(result.dotColor).toContain('8b5cf6');
 });
 
-it('returns 非營業中 when localTicketingStatus is OFF, store is offline/manual, and no queues', () => {
+it('returns 停籌 when localTicketingStatus is OFF and store is open with no queues', () => {
     const result = getTicketStatusInfo('OFFLINE_MANUAL', 'OPEN', 'OFF', 0, 0);
-    expect(result.label).toBe('非營業中');
-    expect(result.dotColor).toContain('slate');
+    expect(result.label).toBe('停籌');
+    expect(result.dotColor).toContain('8b5cf6');
   });
 
-  it('returns 非營業中 when localTicketingStatus is OFF, net status is ONLINE, and no queues', () => {
-    const result = getTicketStatusInfo('ONLINE', 'OPEN', 'OFF', 0, 0);
+  it('returns 非營業中 when localTicketingStatus is OFF and store is not effectively open', () => {
+    const result = getTicketStatusInfo('ONLINE', 'OPEN', 'OFF', 0, 0, false);
     expect(result.label).toBe('非營業中');
     expect(result.dotColor).toContain('slate');
   });
@@ -178,7 +185,7 @@ describe('isStoreServicing', () => {
     expect(isStoreServicing(store)).toBe(false);
   });
 
-   it('returns false for finished store (非營業中)', () => {
+   it('returns false for finished store (非營業中) outside hours', () => {
     const store = {
       ...baseStore,
       storeStatus: 'OPEN' as const,
@@ -187,7 +194,7 @@ describe('isStoreServicing', () => {
       wait: 0,
       waitingGroup: 0,
     };
-    expect(isStoreServicing(store)).toBe(false);
+    expect(isStoreServicing(store, OUTSIDE_HOURS)).toBe(false);
   });
 
    it('returns true for walk-in stopped store (停籌) with waiting groups', () => {
@@ -202,7 +209,7 @@ describe('isStoreServicing', () => {
     expect(isStoreServicing(store)).toBe(true);
   });
 
-  it('returns false for OPEN + ON + 0 wait + 0 group (defensive against stale data)', () => {
+  it('returns true for OPEN + ON + 0/0 within business hours (open but empty)', () => {
     const store = {
       ...baseStore,
       storeStatus: 'OPEN' as const,
@@ -210,7 +217,18 @@ describe('isStoreServicing', () => {
       wait: 0,
       waitingGroup: 0,
     };
-    expect(isStoreServicing(store)).toBe(false);
+    expect(isStoreServicing(store, WITHIN_HOURS)).toBe(true);
+  });
+
+  it('returns false for OPEN + ON + 0/0 outside business hours (stale data)', () => {
+    const store = {
+      ...baseStore,
+      storeStatus: 'OPEN' as const,
+      localTicketingStatus: 'ON' as const,
+      wait: 0,
+      waitingGroup: 0,
+    };
+    expect(isStoreServicing(store, OUTSIDE_HOURS)).toBe(false);
   });
 
   it('returns true for normal open store', () => {
@@ -254,7 +272,7 @@ describe('getStoreDisplayStatus', () => {
     expect(res.accentColor).toBe('neutral');
   });
 
-it('returns 非營業中 for OPEN + local OFF + 0 wait + 0 group', () => {
+it('returns 停籌 for OPEN + local OFF + 0 wait + 0 group within hours', () => {
       const res = getStoreDisplayStatus({
         ...baseStore,
         storeStatus: 'OPEN',
@@ -262,14 +280,14 @@ it('returns 非營業中 for OPEN + local OFF + 0 wait + 0 group', () => {
         localTicketingStatus: 'OFF',
         wait: 0,
         waitingGroup: 0,
-      });
-      expect(res.waitText).toBe('非營業中');
-      expect(res.groupText).toBe('--');
+      }, WITHIN_HOURS);
+      expect(res.waitText).toBe('停籌');
+      expect(res.groupText).toBe('0組');
       expect(res.isClosed).toBe(true);
-      expect(res.accentColor).toBe('neutral');
+      expect(res.accentColor).toBe('purple');
     });
 
-   it('returns 非營業中 for OPEN + local ON + 0 wait + 0 group (defensive against stale data)', () => {
+   it('returns 非營業中 for OPEN + local ON + 0 wait + 0 group outside hours (stale data)', () => {
     const res = getStoreDisplayStatus({
       ...baseStore,
       storeStatus: 'OPEN',
@@ -277,11 +295,26 @@ it('returns 非營業中 for OPEN + local OFF + 0 wait + 0 group', () => {
       localTicketingStatus: 'ON',
       wait: 0,
       waitingGroup: 0,
-    });
+    }, OUTSIDE_HOURS);
     expect(res.waitText).toBe('非營業中');
     expect(res.groupText).toBe('--');
     expect(res.isClosed).toBe(true);
     expect(res.accentColor).toBe('neutral');
+  });
+
+  it('returns 0分/0組 for OPEN + local ON + 0 wait + 0 group within hours (open but empty)', () => {
+    const res = getStoreDisplayStatus({
+      ...baseStore,
+      storeStatus: 'OPEN',
+      netTicketStatus: 'ONLINE',
+      localTicketingStatus: 'ON',
+      wait: 0,
+      waitingGroup: 0,
+    }, WITHIN_HOURS);
+    expect(res.waitText).toBe('0分');
+    expect(res.groupText).toBe('0組');
+    expect(res.isClosed).toBe(false);
+    expect(res.accentColor).toBe('blue');
   });
 
   it('returns 停籌 for local OFF when not done yet', () => {
@@ -322,9 +355,9 @@ it('returns 非營業中 for OPEN + local OFF + 0 wait + 0 group', () => {
         localTicketingStatus: 'ON',
         wait,
         waitingGroup: wait > 0 ? 1 : 0,
-      }).accentColor;
+      }, WITHIN_HOURS).accentColor;
 
-    expect(getAccent(0)).toBe('neutral');
+    expect(getAccent(0)).toBe('blue');
     expect(getAccent(5)).toBe('emerald');
     expect(getAccent(20)).toBe('yellow');
     expect(getAccent(45)).toBe('orange');

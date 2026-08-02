@@ -1,7 +1,7 @@
 import React from 'react';
 import { SushiroStore, StoreQueueMap } from '../types';
 import { Layers, Clock, Users, Trash2, RefreshCw, Zap, ExternalLink, Sparkles } from 'lucide-react';
-import { getStoreStatusInfo, getTicketStatusInfo, getStoreDisplayStatus, getQueueTicketCount } from '../utils/status';
+import { getStoreStatusInfo, getTicketStatusInfo, getStoreDisplayStatus, getQueueTicketCount, isStoreEffectivelyOpen } from '../utils/status';
 
 interface CompareViewProps {
   stores: SushiroStore[];
@@ -86,8 +86,8 @@ export const CompareView: React.FC<CompareViewProps> = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {sortedStores.map((store) => {
           const displayStatus = getStoreDisplayStatus(store);
-          const storeStatusInfo = getStoreStatusInfo(store.storeStatus);
-          const ticketStatusInfo = getTicketStatusInfo(store.netTicketStatus, store.storeStatus, store.localTicketingStatus, store.wait, store.waitingGroup);
+          const storeStatusInfo = getStoreStatusInfo(store.storeStatus, isStoreEffectivelyOpen(store));
+          const ticketStatusInfo = getTicketStatusInfo(store.netTicketStatus, store.storeStatus, store.localTicketingStatus, store.wait, store.waitingGroup, isStoreEffectivelyOpen(store));
           const qData = queues[store.id];
           const q = qData?.queue;
           const boothQueue = q?.boothQueue || q?.storeBoothQueue || [];
