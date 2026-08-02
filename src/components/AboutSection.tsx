@@ -12,7 +12,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
   return (
     <div className="max-w-4xl mx-auto space-y-6 mb-12 animate-fade-in">
       {/* Intro Banner */}
-      <div className="bg-neutral-900 text-white p-6 sm:p-8 rounded-2xl border-l-4 border-[#aa151b] shadow-xl shadow-neutral-900/20 relative overflow-hidden pattern-seigaiha">
+      <div className="bg-neutral-900 text-white p-6 sm:p-8 rounded-2xl border-l-4 border-[#aa151b] shadow-xl shadow-neutral-900/20 relative overflow-hidden pattern-seigaiha-dark">
         <div className="flex items-center gap-3 mb-3">
           <span className="px-2.5 py-0.5 bg-[#aa151b] text-white text-[10px] font-black uppercase tracking-widest rounded">
             系統簡介

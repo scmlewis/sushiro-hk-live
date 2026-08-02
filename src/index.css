@@ -80,24 +80,23 @@ html, body {
 
 /* ── Seigaiha (青海波) Pattern ── */
 
-.pattern-seigaiha {
-  background-color: #aa151b;
-  background-image:
-    radial-gradient(circle at 100% 150%, transparent 24%, rgba(255,255,255,0.06) 24%, rgba(255,255,255,0.06) 28%, transparent 28%, transparent 36%, rgba(255,255,255,0.06) 36%, rgba(255,255,255,0.06) 40%, transparent 40%, transparent),
-    radial-gradient(circle at 0    150%, transparent 24%, rgba(255,255,255,0.06) 24%, rgba(255,255,255,0.06) 28%, transparent 28%, transparent 36%, rgba(255,255,255,0.06) 36%, rgba(255,255,255,0.06) 40%, transparent 40%, transparent),
-    radial-gradient(circle at 50%  100%, rgba(255,255,255,0.06) 10%, transparent 10%, transparent 23%, rgba(255,255,255,0.06) 23%, rgba(255,255,255,0.06) 30%, transparent 30%, transparent 43%, rgba(255,255,255,0.06) 43%, rgba(255,255,255,0.06) 50%, transparent 50%, transparent 63%, rgba(255,255,255,0.06) 63%, rgba(255,255,255,0.06) 71%, transparent 71%, transparent),
-    radial-gradient(circle at 100% 50%, rgba(255,255,255,0.06) 5%, transparent 5%, transparent 15%, rgba(255,255,255,0.06) 15%, rgba(255,255,255,0.06) 20%, transparent 20%, transparent 29%, rgba(255,255,255,0.06) 29%, rgba(255,255,255,0.06) 34%, transparent 34%, transparent 44%, rgba(255,255,255,0.06) 44%, rgba(255,255,255,0.06) 49%, transparent 49%, transparent),
-    radial-gradient(circle at 0    50%, rgba(255,255,255,0.06) 5%, transparent 5%, transparent 15%, rgba(255,255,255,0.06) 15%, rgba(255,255,255,0.06) 20%, transparent 20%, transparent 29%, rgba(255,255,255,0.06) 29%, rgba(255,255,255,0.06) 34%, transparent 34%, transparent 44%, rgba(255,255,255,0.06) 44%, rgba(255,255,255,0.06) 49%, transparent 49%, transparent);
-  background-size: 100px 50px;
+.pattern-seigaiha-dark {
+  position: relative;
 }
 
-.pattern-seigaiha-dark {
+.pattern-seigaiha-dark::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
   background-color: #1a1a1a;
   background-image:
-    radial-gradient(circle at 100% 150%, transparent 24%, rgba(170,21,27,0.12) 24%, rgba(170,21,27,0.12) 28%, transparent 28%, transparent 36%, rgba(170,21,27,0.12) 36%, rgba(170,21,27,0.12) 40%, transparent 40%, transparent),
-    radial-gradient(circle at 0    150%, transparent 24%, rgba(170,21,27,0.12) 24%, rgba(170,21,27,0.12) 28%, transparent 28%, transparent 36%, rgba(170,21,27,0.12) 36%, rgba(170,21,27,0.12) 40%, transparent 40%, transparent),
-    radial-gradient(circle at 50%  100%, rgba(170,21,27,0.12) 10%, transparent 10%, transparent 23%, rgba(170,21,27,0.12) 23%, rgba(170,21,27,0.12) 30%, transparent 30%, transparent 43%, rgba(170,21,27,0.12) 43%, rgba(170,21,27,0.12) 50%, transparent 50%, transparent 63%, rgba(170,21,27,0.12) 63%, rgba(170,21,27,0.12) 71%, transparent 71%, transparent),
-    radial-gradient(circle at 100% 50%, rgba(170,21,27,0.12) 5%, transparent 5%, transparent 15%, rgba(170,21,27,0.12) 15%, rgba(170,21,27,0.12) 20%, transparent 20%, transparent 29%, rgba(170,21,27,0.12) 29%, rgba(170,21,27,0.12) 34%, transparent 34%, transparent 44%, rgba(170,21,27,0.12) 44%, rgba(170,21,27,0.12) 49%, transparent 49%, transparent),
-    radial-gradient(circle at 0    50%, rgba(170,21,27,0.12) 5%, transparent 5%, transparent 15%, rgba(170,21,27,0.12) 15%, rgba(170,21,27,0.12) 20%, transparent 20%, transparent 29%, rgba(170,21,27,0.12) 29%, rgba(170,21,27,0.12) 34%, transparent 34%, transparent 44%, rgba(170,21,27,0.12) 44%, rgba(170,21,27,0.12) 49%, transparent 49%, transparent);
+    radial-gradient(circle at 100% 150%, #1a1a1a 24%, #aa151b 24%, #aa151b 28%, #1a1a1a 28%, #1a1a1a 36%, #aa151b 36%, #aa151b 40%, transparent 40%, transparent),
+    radial-gradient(circle at 0    150%, #1a1a1a 24%, #aa151b 24%, #aa151b 28%, #1a1a1a 28%, #1a1a1a 36%, #aa151b 36%, #aa151b 40%, transparent 40%, transparent),
+    radial-gradient(circle at 50%  100%, #aa151b 10%, #1a1a1a 10%, #1a1a1a 23%, #aa151b 23%, #aa151b 30%, #1a1a1a 30%, #1a1a1a 43%, #aa151b 43%, #aa151b 50%, #1a1a1a 50%, #1a1a1a 63%, #aa151b 63%, #aa151b 71%, transparent 71%, transparent),
+    radial-gradient(circle at 100% 50%, #aa151b 5%, #1a1a1a 5%, #1a1a1a 15%, #aa151b 15%, #aa151b 20%, #1a1a1a 20%, #1a1a1a 29%, #aa151b 29%, #aa151b 34%, #1a1a1a 34%, #1a1a1a 44%, #aa151b 44%, #aa151b 49%, transparent 49%, transparent),
+    radial-gradient(circle at 0    50%, #aa151b 5%, #1a1a1a 5%, #1a1a1a 15%, #aa151b 15%, #aa151b 20%, #1a1a1a 20%, #1a1a1a 29%, #aa151b 29%, #aa151b 34%, #1a1a1a 34%, #1a1a1a 44%, #aa151b 44%, #aa151b 49%, transparent 49%, transparent);
   background-size: 100px 50px;
+  opacity: 0.2;
 }
