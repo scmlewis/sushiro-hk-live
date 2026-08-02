@@ -24,12 +24,13 @@ const CounterCard: React.FC<{
   onIncrement: () => void;
   onDecrement: () => void;
   onRemove?: () => void;
-}> = ({ tier, qty, onIncrement, onDecrement, onRemove }) => {
+  hideLabel?: boolean;
+}> = ({ tier, qty, onIncrement, onDecrement, onRemove, hideLabel }) => {
   return (
     <div className="flex items-center justify-between gap-2 bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-3 transition-all hover:border-neutral-300 dark:hover:border-neutral-700">
       <div className="flex items-center gap-2 min-w-0 shrink-0">
         <TierBadge tier={tier} />
-        {tier.label && (
+        {!hideLabel && tier.label && (
           <span className="text-xs font-black text-neutral-900 dark:text-white truncate max-w-[60px]">
             {tier.label}
           </span>
@@ -247,6 +248,7 @@ export const TierGrid: React.FC<TierGridProps> = ({
                 qty={quantities.get(price) || 0}
                 onIncrement={() => onIncrement(price)}
                 onDecrement={() => onDecrement(price)}
+                hideLabel
               />
             );
           })}
