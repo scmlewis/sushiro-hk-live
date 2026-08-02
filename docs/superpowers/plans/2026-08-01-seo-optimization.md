@@ -119,7 +119,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { SushiroStore, GroupQueue } from '../types';
 import { getStoreStatusInfo, getTicketStatusInfo, formatGoogleMapsUrl, isStoreServicing } from '../utils/status';
-import { RefreshCw, Heart, MapPin, ExternalLink, Info, Calculator, ArrowLeft } from 'lucide-react';
+import { RefreshCw, MapPin, ExternalLink, Info, Calculator, ArrowLeft } from 'lucide-react';
 import { NotificationBell } from '../components/NotificationBell';
 
 const SITE_URL = 'https://sushiro-hk-live.vercel.app';
@@ -127,13 +127,6 @@ const SITE_URL = 'https://sushiro-hk-live.vercel.app';
 export default function StorePage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [store, setStore] = useState<SushiroStore | null>(null);
-  const [queue, setQueue] = useState<GroupQueue | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [queueLoading, setQueueLoading] = useState(true);
-  const [myTicket, setMyTicket] = useState('');
-  const [isBookmarked, setIsBookmarked] = useState(false);
-
   const storeId = parseInt(id || '0', 10);
 
   // Initialize from prerendered data if present (no loading flash on direct visits)
@@ -145,18 +138,9 @@ export default function StorePage() {
   const [loading, setLoading] = useState(() => !store);
   const [queueLoading, setQueueLoading] = useState(true);
   const [myTicket, setMyTicket] = useState('');
-  const [isBookmarked, setIsBookmarked] = useState(false);
-
-  // Fetch store data
-  useEffect(() => {
-    if (!storeId) return;
-    fetchStoreData(storeId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [storeId]);
 
   // Fetch store + queue in one call using existing /api/store/:id endpoint
   const fetchStoreData = useCallback(async (sid: number) => {
-    setLoading((prev) => prev && !(window as any).__STORE_DATA__);
     setQueueLoading(true);
     try {
       const res = await fetch(`/api/store/${sid}`);
@@ -173,7 +157,11 @@ export default function StorePage() {
     }
   }, []);
 
-  // Ticket calculator logic (same as StoreDetailModal)
+  useEffect(() => {
+    if (!storeId) return;
+    fetchStoreData(storeId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storeId]);
 
   // Ticket calculator logic (same as StoreDetailModal)
   const handleNumpad = (key: string) => {
@@ -491,29 +479,15 @@ export default function StorePage() {
 }
 ```
 
-- [ ] **Step 2: Update App.tsx to use real StorePage**
-
-Replace the `StorePageWrapper` placeholder in `src/App.tsx` with:
-
-```tsx
-import StorePage from './pages/StorePage';
-```
-
-And update the route:
-
-```tsx
-<Route path="/store/:id" element={<StorePage />} />
-```
-
-- [ ] **Step 3: Verify build compiles**
+- [ ] **Step 2: Verify build compiles**
 
 Run: `npm run build`
-Expected: Build succeeds.
+Expected: Build succeeds. StorePage is lazy-loaded and only referenced from main.tsx (no App.tsx changes needed).
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 3: Commit**
 
 ```bash
-git add src/pages/StorePage.tsx src/App.tsx
+git add src/pages/StorePage.tsx
 git commit -m "feat: add StorePage component with meta tags and structured data"
 ```
 
