@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:seo": "npm run build && node --experimental-strip-types scripts/build-seo.ts",
     "preview": "vite preview",
     "lint": "tsc --noEmit",
     "test": "vitest run",
