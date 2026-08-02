@@ -45,8 +45,8 @@ export type TextSize = 'S' | 'M' | 'L' | 'XL';
 export const TEXT_SIZE_MAP: Record<TextSize, string> = {
   S: '12px',
   M: '15px',
-  L: '19px',
-  XL: '22px',
+  L: '17px',
+  XL: '20px',
 };
 
 // ── Brand Color ──
