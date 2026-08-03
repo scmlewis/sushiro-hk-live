@@ -309,7 +309,7 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen flex flex-col bg-surface dark:bg-surface-dark text-neutral-900 dark:text-neutral-100 font-sans antialiased transition-colors" style={{ fontSize: TEXT_SIZE_MAP[textSize] }}>
+      <div className="min-h-screen flex flex-col pattern-kikkou text-neutral-100 font-sans antialiased transition-colors" style={{ fontSize: TEXT_SIZE_MAP[textSize] }}>
         <Navbar
           lastUpdated={lastUpdated}
           loading={loadingStores}
@@ -320,7 +320,7 @@ export default function App() {
           onGlobalRefresh={() => fetchStores(true)}
         />
 
-        <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-8 w-full pattern-kikkou">
+        <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-8 w-full">
           {isOffline && (
             <div className="mb-6 p-4 bg-[#aa151b] text-white font-black text-xs uppercase tracking-wider flex items-center justify-between shadow-xl border-2 border-white/20 animate-pulse rounded-xl">
               <div className="flex items-center gap-2.5">

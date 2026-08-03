@@ -12,7 +12,7 @@ createRoot(document.getElementById('root')!).render(
       <Routes>
         <Route path="/store/:id" element={
           <Suspense fallback={
-            <div className="min-h-screen flex items-center justify-center bg-slate-100/70 dark:bg-slate-950">
+            <div className="min-h-screen flex items-center justify-center pattern-kikkou">
               <div className="text-center">
                 <div className="w-8 h-8 border-4 border-[#aa151b] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
               </div>
