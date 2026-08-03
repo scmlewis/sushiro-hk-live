@@ -71,7 +71,7 @@ export default function StorePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-100/70 dark:bg-slate-950">
+      <div className="min-h-screen flex items-center justify-center pattern-kikkou">
         <div className="text-center">
           <RefreshCw className="w-8 h-8 animate-spin text-[#aa151b] mx-auto mb-4" />
           <p className="text-sm font-bold text-neutral-400">載入中...</p>
@@ -82,7 +82,7 @@ export default function StorePage() {
 
   if (!store) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-100/70 dark:bg-slate-950">
+      <div className="min-h-screen flex items-center justify-center pattern-kikkou">
         <div className="text-center">
           <h1 className="text-2xl font-black text-neutral-900 dark:text-white mb-4">門市未找到</h1>
           <p className="text-sm text-neutral-400 mb-6">找不到 ID 為 {storeId} 的門市</p>
