@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from './App';
 import type { SushiroStore } from './types';
@@ -51,6 +51,104 @@ const mockStores: SushiroStore[] = [
     waitTimeCap: 60,
   },
 ];
+
+function setupRecordingFetch() {
+  const queueCalls: string[] = [];
+  global.fetch = vi.fn().mockImplementation((url: string) => {
+    if (url.includes('/api/queue')) queueCalls.push(url as string);
+    if (url.includes('/api/stores')) {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ success: true, stores: mockStores, timestamp: Date.now() }),
+      });
+    }
+    if (url.includes('/api/queue')) {
+      return Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            success: true,
+            queue: {
+              storeQueue: [],
+              boothQueue: ['#105', '#106'],
+              counterQueue: ['#88'],
+              mixedQueue: [],
+              reservationQueue: [],
+            },
+            timestamp: Date.now(),
+          }),
+      });
+    }
+    return Promise.resolve({ ok: false, json: () => Promise.resolve({}) });
+  });
+  return queueCalls;
+}
+
+describe('auto-refresh polling', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    Object.defineProperty(navigator, 'geolocation', {
+      value: { getCurrentPosition: vi.fn() },
+      writable: true,
+      configurable: true,
+    });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  async function loadStoresAndPolling() {
+    const queueCalls = setupRecordingFetch();
+    render(<App />);
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(screen.getByText('旺角店')).toBeInTheDocument();
+
+    return queueCalls;
+  }
+
+  it('auto-refreshes compare store queues every 10 seconds', async () => {
+    vi.useFakeTimers();
+    const queueCalls = await loadStoresAndPolling();
+
+    await act(async () => {
+      fireEvent.click(screen.getAllByTitle('加入比較')[0]);
+    });
+
+    expect(queueCalls).toHaveLength(1);
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(12_000);
+    });
+
+    expect(queueCalls.length).toBeGreaterThanOrEqual(2);
+    expect(queueCalls[1]).toContain('force=true');
+  });
+
+  it('auto-refreshes bookmarked store queues every 10 seconds (regression)', async () => {
+    vi.useFakeTimers();
+    const queueCalls = await loadStoresAndPolling();
+
+    await act(async () => {
+      fireEvent.click(screen.getAllByTitle('加入關注')[0]);
+    });
+
+    expect(queueCalls).toHaveLength(1);
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(12_000);
+    });
+
+    expect(queueCalls.length).toBeGreaterThanOrEqual(2);
+    expect(queueCalls[1]).toContain('force=true');
+  });
+});
 
 describe('App integration flow', () => {
   beforeEach(() => {

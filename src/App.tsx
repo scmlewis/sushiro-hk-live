@@ -131,14 +131,16 @@ export default function App() {
 
   useEffect(() => { fetchStores(false); }, [fetchStores]);
 
-  const refreshBookmarkedQueues = useCallback(() => {
-    if (bookmarkedIds.length === 0) return;
-    bookmarkedIds.forEach((id) => fetchSingleQueue(id, true));
-  }, [bookmarkedIds, fetchSingleQueue]);
+  const refreshPolledQueues = useCallback(() => {
+    const ids = Array.from(new Set([...bookmarkedIds, ...compareIds]));
+    if (ids.length === 0) return;
+    ids.forEach((id) => fetchSingleQueue(id, true));
+  }, [bookmarkedIds, compareIds, fetchSingleQueue]);
 
   useEffect(() => {
-    if (bookmarkedIds.length === 0) return;
-    bookmarkedIds.forEach((id) => {
+    const ids = Array.from(new Set([...bookmarkedIds, ...compareIds]));
+    if (ids.length === 0) return;
+    ids.forEach((id) => {
       setQueues((prev) => {
         if (!prev[id]) fetchSingleQueue(id, false);
         return prev;
@@ -146,12 +148,12 @@ export default function App() {
     });
     const interval = setInterval(() => {
       setAutoRefreshTimer((prev) => {
-        if (prev <= 1) { refreshBookmarkedQueues(); return POLL_INTERVAL_MS / 1000; }
+        if (prev <= 1) { refreshPolledQueues(); return POLL_INTERVAL_MS / 1000; }
         return prev - 1;
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, [bookmarkedIds, fetchSingleQueue, refreshBookmarkedQueues]);
+  }, [bookmarkedIds, compareIds, fetchSingleQueue, refreshPolledQueues]);
 
   const handleToggleBookmark = useCallback((store: SushiroStore) => {
     toggleBookmark(store.id);
