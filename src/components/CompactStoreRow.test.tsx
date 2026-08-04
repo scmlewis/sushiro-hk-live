@@ -136,6 +136,16 @@ describe('CompactStoreRow', () => {
     expect(refreshBtn).toBeDisabled();
   });
 
+  it('renders distance chip when distanceKm is provided', () => {
+    render(<CompactStoreRow {...defaultProps} store={{ ...mockStore, distanceKm: 1.2 }} />);
+    expect(screen.getByText('1.2km')).toBeInTheDocument();
+  });
+
+  it('does not render distance chip when distanceKm is missing', () => {
+    render(<CompactStoreRow {...defaultProps} />);
+    expect(screen.queryByText(/km$/)).not.toBeInTheDocument();
+  });
+
   it('renders maps link', () => {
     render(<CompactStoreRow {...defaultProps} />);
     const mapsLink = screen.getByTitle('Google 地圖');

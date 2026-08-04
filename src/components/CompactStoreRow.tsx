@@ -2,7 +2,7 @@ import React from 'react';
 import { SushiroStore, GroupQueue } from '../types';
 import { formatGoogleMapsUrl, getStoreDisplayStatus } from '../utils/status';
 import { getAccentBgClass, getWaitTextColor } from '../utils/colors';
-import { Heart, MapPin, RefreshCw, ChevronRight, Plus, Check, Clock, Users } from 'lucide-react';
+import { Heart, MapPin, RefreshCw, ChevronRight, Plus, Check, Clock, Users, Navigation } from 'lucide-react';
 
 interface CompactStoreRowProps {
   store: SushiroStore;
@@ -49,6 +49,12 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
         </h4>
 
         <div className="flex items-center gap-3 shrink-0">
+          {store.distanceKm != null && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-[10px] font-black text-neutral-500 dark:text-neutral-400 tabular-nums">
+              <Navigation className="w-3 h-3 text-[#aa151b]" />
+              {store.distanceKm}km
+            </span>
+          )}
           <div className="flex items-center gap-1">
             <Clock className="w-3 h-3 text-[#aa151b]" />
             <span className={`text-sm font-black tabular-nums whitespace-nowrap ${waitColorClass}`}>

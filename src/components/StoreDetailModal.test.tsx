@@ -168,4 +168,47 @@ describe('StoreDetailModal', () => {
     expect(screen.getByText('約0分鐘')).toBeInTheDocument();
     expect(screen.getByText('目前無輪候，可即時入座')).toBeInTheDocument();
   });
+
+  it('marks a sub-number ticket as called when it matches the latest called sub-number', async () => {
+    const user = (await import('@testing-library/user-event')).default.setup();
+    const subQueue: GroupQueue = {
+      storeQueue: [],
+      boothQueue: [],
+      counterQueue: [],
+      mixedQueue: ['74-1', '74-2'],
+      reservationQueue: [],
+    };
+    render(<StoreDetailModal {...defaultProps} queue={subQueue} />);
+
+    // Enter "74-1"
+    await user.click(screen.getByText('7'));
+    await user.click(screen.getByText('4'));
+    await user.click(screen.getAllByText('-')[0]);
+    await user.click(screen.getByText('1'));
+
+    expect(screen.getByText(/籌號 #74-1 已於較早前叫號完畢/)).toBeInTheDocument();
+  });
+
+  it('counts groups ahead for a ticket after the latest sub-number call', async () => {
+    const user = (await import('@testing-library/user-event')).default.setup();
+    const subQueue: GroupQueue = {
+      storeQueue: [],
+      boothQueue: [],
+      counterQueue: [],
+      mixedQueue: ['74-1', '74-2'],
+      reservationQueue: [],
+    };
+    render(<StoreDetailModal {...defaultProps} queue={subQueue} />);
+
+    // Enter "75"
+    await user.click(screen.getByText('7'));
+    await user.click(screen.getByText('5'));
+
+    expect(screen.getByText(/正常輪候中：前面尚有 1 組/)).toBeInTheDocument();
+  });
+
+  it('shows an estimate disclaimer in the ticket calculator', () => {
+    render(<StoreDetailModal {...defaultProps} />);
+    expect(screen.getByText(/僅供參考/)).toBeInTheDocument();
+  });
 });

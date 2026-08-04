@@ -37,12 +37,17 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
       setMyTicket((prev) => prev.slice(0, -1));
     } else if (key === 'clear') {
       setMyTicket('');
+    } else if (key === '-') {
+      setMyTicket((prev) => {
+        if (!prev || prev.includes('-') || prev.length >= 5) return prev;
+        return prev + '-';
+      });
     } else {
-      if (myTicket === '0') {
-        setMyTicket(key);
-      } else if (myTicket.length < 4) {
-        setMyTicket((prev) => prev + key);
-      }
+      setMyTicket((prev) => {
+        if (prev === '0') return key;
+        if (prev.length >= 5) return prev;
+        return prev + key;
+      });
     }
   };
 
@@ -93,6 +98,10 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   // Walk-in only for calculator comparison
   const walkInNums = parsedNums.filter((n) => !n.isReservation);
   const maxCalledNum = walkInNums.length > 0 ? Math.max(...walkInNums.map((n) => n.base)) : 0;
+  const latestCalledNum = walkInNums.reduce<{ base: number; sub: number }>(
+    (max, n) => (n.base > max.base || (n.base === max.base && n.sub > max.sub) ? { base: n.base, sub: n.sub } : max),
+    { base: 0, sub: 0 },
+  );
   const hasNoQueue = walkInNums.length === 0 && parsedNums.length === 0;
 
   const isServicing = isStoreServicing(store);
@@ -100,7 +109,8 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   // 3 most recent called numbers — walk-in smallest first, then reservations
   const recentNumbers = parsedNums.slice(0, 3);
 
-  const myTicketNum = parseInt(myTicket, 10);
+  const myTicketParsed = myTicket ? parseQueueNum(myTicket) : { base: 0, sub: 0, isReservation: false };
+  const myTicketNum = myTicketParsed.base;
   let groupsAhead = 0;
   let estimatedMins = 0;
   let ticketValidationState: 'empty' | 'called' | 'valid' | 'far_future' = 'empty';
@@ -121,22 +131,25 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
     groupsAhead = 0;
     estimatedMins = 0;
     validationMessage = '目前無輪候，可即時入座';
-  } else if (!myTicket || isNaN(myTicketNum) || myTicketNum <= 0) {
+  } else if (!myTicket || myTicketNum <= 0) {
     ticketValidationState = 'empty';
     validationMessage = '請使用下方數字鍵盤輸入您手中的籌號';
-  } else if (myTicketNum <= maxCalledNum) {
+  } else if (myTicketParsed.base < latestCalledNum.base || (myTicketParsed.base === latestCalledNum.base && myTicketParsed.sub <= latestCalledNum.sub)) {
     ticketValidationState = 'called';
     groupsAhead = 0;
     estimatedMins = 0;
-    validationMessage = `籌號 #${myTicketNum} 已於較早前叫號完畢，如錯過叫號請至門市櫃檯登記過期補號。`;
+    validationMessage = `籌號 #${myTicket} 已於較早前叫號完畢，如錯過叫號請至門市櫃檯登記過期補號。`;
   } else if (myTicketNum - maxCalledNum > 350) {
     ticketValidationState = 'far_future';
     groupsAhead = myTicketNum - maxCalledNum;
     estimatedMins = Math.max(2, Math.round(groupsAhead * 1.3));
-    validationMessage = `籌號 #${myTicketNum} 距離目前最新叫號 (#${maxCalledNum}) 相差較遠 (${groupsAhead} 組)，請核對籌號是否正確。`;
+    validationMessage = `籌號 #${myTicket} 距離目前最新叫號 (#${maxCalledNum}) 相差較遠 (${groupsAhead} 組)，請核對籌號是否正確。`;
   } else {
     ticketValidationState = 'valid';
     groupsAhead = myTicketNum - maxCalledNum;
+    if (myTicketParsed.base === latestCalledNum.base && myTicketParsed.sub > latestCalledNum.sub) {
+      groupsAhead = 1;
+    }
     estimatedMins = Math.max(2, Math.round(groupsAhead * 1.35));
     validationMessage = `正常輪候中：前面尚有 ${groupsAhead} 組，預估等待約 ${estimatedMins} 分鐘。`;
   }
@@ -299,7 +312,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                   </div>
 
                   <div className="grid grid-cols-3 gap-1.5 text-lg font-bold">
-                    {['7', '8', '9', '4', '5', '6', '1', '2', '3', 'clear', '0', 'del'].map((k) => (
+                    {['7', '8', '9', '4', '5', '6', '1', '2', '3', '-', '0', 'del'].map((k) => (
                       <button
                         key={k}
                         disabled={!isServicing}
@@ -307,14 +320,27 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                         className={`py-2 sm:py-2 rounded-md border text-center transition-all font-black text-sm sm:text-base ${
                           !isServicing
                             ? 'bg-neutral-50 dark:bg-neutral-800/40 border-neutral-200 dark:border-neutral-700 text-neutral-450 cursor-not-allowed opacity-50'
-                            : k === 'del' || k === 'clear'
+                            : k === 'del'
                             ? 'bg-neutral-100 dark:bg-neutral-800 border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 active:scale-95'
+                            : k === '-'
+                            ? 'bg-neutral-50 dark:bg-neutral-800/80 border-neutral-200 dark:border-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-500 dark:text-neutral-400 active:scale-95'
                             : 'bg-neutral-50 dark:bg-neutral-800/80 border-neutral-200 dark:border-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-800 dark:text-white active:scale-95'
                         }`}
                       >
-                        {k === 'del' ? '⌫ 刪除' : k === 'clear' ? 'C 清除' : k}
+                        {k === 'del' ? '⌫ 刪除' : k}
                       </button>
                     ))}
+                    <button
+                      disabled={!isServicing}
+                      onClick={() => handleNumpad('clear')}
+                      className={`mt-1.5 py-1.5 rounded-md border text-center transition-all font-black text-xs sm:text-sm ${
+                        !isServicing
+                          ? 'bg-neutral-50 dark:bg-neutral-800/40 border-neutral-200 dark:border-neutral-700 text-neutral-450 cursor-not-allowed opacity-50'
+                          : 'bg-neutral-100 dark:bg-neutral-800 border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 active:scale-95'
+                      }`}
+                    >
+                      C 清除
+                    </button>
                   </div>
                 </div>
 
@@ -380,6 +406,11 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                     </div>
                   </div>
                 )}
+
+                <p className="mt-3 text-[11px] text-neutral-400 dark:text-neutral-500 flex items-center gap-1.5">
+                  <Info className="w-3 h-3 shrink-0" />
+                  <span>籌號計算結果為估算，實際輪候以現場叫號為準，僅供參考。</span>
+                </p>
             </div>
           </div>
 
