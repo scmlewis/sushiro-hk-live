@@ -58,7 +58,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
             </h3>
           </div>
 <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-medium">
-  點 ♥ 加入「我的關注」。關注店鋪每 10 秒自動更新叫號，外出途中即時掌握號碼變化。
+  點 ♥ 加入「我的關注」。關注店鋪每 30 秒自動更新叫號，外出途中即時掌握號碼變化。
 </p>
         </div>
 
@@ -254,7 +254,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
         </h3>
         <div className="text-xs text-neutral-600 dark:text-neutral-300 space-y-1.5 font-medium">
           <p><strong className="text-neutral-900 dark:text-white">資料來源：</strong>SUSHI-PASS API (HK)</p>
-          <p><strong className="text-neutral-900 dark:text-white">更新頻率：</strong>每 10 秒自動刷新</p>
+          <p><strong className="text-neutral-900 dark:text-white">更新頻率：</strong>每 30 秒自動刷新</p>
           <p><strong className="text-neutral-900 dark:text-white">免責聲明：</strong>本網站與壽司郎官方無關，資料僅供參考。</p>
         </div>
       </div>

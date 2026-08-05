@@ -43,7 +43,6 @@ export default function App() {
   const [toast, setToast] = useState<ToastMessage | null>(null);
   const [isOffline, setIsOffline] = useState(typeof navigator !== 'undefined' ? !navigator.onLine : false);
   const [isStaleData, setIsStaleData] = useState(false);
-  const [autoRefreshTimer, setAutoRefreshTimer] = useState(POLL_INTERVAL_MS / 1000);
 
   const tabVariants = {
     initial: { opacity: 0, y: 8 },
@@ -134,7 +133,7 @@ export default function App() {
   const refreshPolledQueues = useCallback(() => {
     const ids = Array.from(new Set([...bookmarkedIds, ...compareIds]));
     if (ids.length === 0) return;
-    ids.forEach((id) => fetchSingleQueue(id, true));
+    ids.forEach((id) => fetchSingleQueue(id, false));
   }, [bookmarkedIds, compareIds, fetchSingleQueue]);
 
   useEffect(() => {
@@ -146,13 +145,38 @@ export default function App() {
         return prev;
       });
     });
-    const interval = setInterval(() => {
-      setAutoRefreshTimer((prev) => {
-        if (prev <= 1) { refreshPolledQueues(); return POLL_INTERVAL_MS / 1000; }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(interval);
+
+    let interval: ReturnType<typeof setInterval> | null = null;
+
+    const startPolling = () => {
+      if (interval !== null) return;
+      interval = setInterval(refreshPolledQueues, POLL_INTERVAL_MS);
+    };
+    const stopPolling = () => {
+      if (interval !== null) {
+        clearInterval(interval);
+        interval = null;
+      }
+    };
+
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        refreshPolledQueues();
+        startPolling();
+      } else {
+        stopPolling();
+      }
+    };
+
+    if (document.visibilityState === 'visible') {
+      startPolling();
+    }
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      stopPolling();
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
   }, [bookmarkedIds, compareIds, fetchSingleQueue, refreshPolledQueues]);
 
   const handleToggleBookmark = useCallback((store: SushiroStore) => {
@@ -387,7 +411,7 @@ export default function App() {
                 >
                   <BookmarksSection
                     bookmarkedStores={bookmarkedStores} queues={queues} compareList={compareIds}
-                    autoRefreshTimer={autoRefreshTimer} onToggleBookmark={handleToggleBookmark}
+                    pollIntervalMs={POLL_INTERVAL_MS} onToggleBookmark={handleToggleBookmark}
                     onToggleCompare={handleToggleCompare} onRefreshQueue={handleManualStoreRefresh}
                     onSelectStore={handleSelectStoreModal} onGoToAllStores={() => setActiveMainTab('all')}
                     onCompareAllBookmarks={handleCompareAllBookmarks} onClearAllBookmarks={handleClearAllBookmarks}

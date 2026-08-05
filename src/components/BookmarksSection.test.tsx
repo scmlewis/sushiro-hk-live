@@ -24,7 +24,7 @@ const defaultProps = {
   bookmarkedStores: [] as SushiroStore[],
   queues: {} as StoreQueueMap,
   compareList: [] as number[],
-  autoRefreshTimer: 5,
+  pollIntervalMs: 5000,
   onToggleBookmark: vi.fn(),
   onToggleCompare: vi.fn(),
   onRefreshQueue: vi.fn(),
@@ -60,7 +60,7 @@ describe('BookmarksSection', () => {
   });
 
   it('shows auto-refresh timer', () => {
-    render(<BookmarksSection {...defaultProps} bookmarkedStores={[mockStore]} autoRefreshTimer={7} />);
+    render(<BookmarksSection {...defaultProps} bookmarkedStores={[mockStore]} pollIntervalMs={7000} />);
     expect(screen.getByText('7S')).toBeInTheDocument();
   });
 

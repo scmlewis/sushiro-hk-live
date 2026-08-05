@@ -8,7 +8,7 @@ export const FALLBACK_LOCATION = { latitude: 22.3193, longitude: 114.1694 };
 export const MAP_CENTER: [number, number] = [22.32, 114.17];
 
 /** Auto-refresh interval for bookmarked stores (ms) */
-export const POLL_INTERVAL_MS = 10_000;
+export const POLL_INTERVAL_MS = 30_000;
 
 /** Toast auto-dismiss duration (ms) */
 export const TOAST_DURATION_MS = 3200;

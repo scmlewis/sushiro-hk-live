@@ -1,13 +1,14 @@
 import React, { useMemo } from 'react';
 import { SushiroStore, StoreQueueMap } from '../types';
 import { CompactStoreRow } from './CompactStoreRow';
+import { AutoRefreshCountdown } from './AutoRefreshCountdown';
 import { Heart, Sparkles, Layers, Trash2 } from 'lucide-react';
 
 interface BookmarksSectionProps {
   bookmarkedStores: SushiroStore[];
   queues: StoreQueueMap;
   compareList: number[];
-  autoRefreshTimer: number; // seconds remaining until next 10s auto-refresh
+  pollIntervalMs: number; // auto-refresh interval of the queue poller
   onToggleBookmark: (store: SushiroStore) => void;
   onToggleCompare: (store: SushiroStore) => void;
   onRefreshQueue: (storeId: number, storeName: string) => void;
@@ -21,7 +22,7 @@ export const BookmarksSection: React.FC<BookmarksSectionProps> = ({
   bookmarkedStores,
   queues,
   compareList,
-  autoRefreshTimer,
+  pollIntervalMs,
   onToggleBookmark,
   onToggleCompare,
   onRefreshQueue,
@@ -31,6 +32,7 @@ export const BookmarksSection: React.FC<BookmarksSectionProps> = ({
   onClearAllBookmarks,
 }) => {
   const compareListSet = useMemo(() => new Set(compareList), [compareList]);
+  const pollSeconds = Math.round(pollIntervalMs / 1000);
 
   if (bookmarkedStores.length === 0) {
     return (
@@ -42,7 +44,7 @@ export const BookmarksSection: React.FC<BookmarksSectionProps> = ({
           尚未加入關注門市
         </h3>
         <p className="text-xs sm:text-sm font-bold text-neutral-500 dark:text-neutral-400 mt-2 max-w-md mx-auto leading-relaxed">
-          在全港門市列表中，點擊門市卡片上的 ♥ 即可加入「我的關注」，每 10 秒自動更新排隊與組數。
+          在全港門市列表中，點擊門市卡片上的 ♥ 即可加入「我的關注」，每 {pollSeconds} 秒自動更新排隊與組數。
         </p>
         {onGoToAllStores && (
           <button
@@ -73,7 +75,7 @@ export const BookmarksSection: React.FC<BookmarksSectionProps> = ({
               </span>
             </div>
             <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 mt-0.5">
-              每 10 秒自動更新排隊與組數
+              每 {pollSeconds} 秒自動更新排隊與組數
             </p>
           </div>
         </div>
@@ -81,18 +83,7 @@ export const BookmarksSection: React.FC<BookmarksSectionProps> = ({
         {/* Controls & Live Status */}
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           {/* Auto Refresh Live Status Pill */}
-          <div className="flex items-center gap-2.5 bg-neutral-100 dark:bg-neutral-800 px-3.5 py-1.5 rounded-xl border border-neutral-200 dark:border-neutral-700 shrink-0">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
-            <span className="text-[11px] font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-              自動更新: <span className="text-[#aa151b] font-mono font-black">{autoRefreshTimer}S</span>
-            </span>
-            <div className="w-10 bg-neutral-200 dark:bg-neutral-700 h-1.5 rounded-full overflow-hidden">
-              <div
-                className="bg-[#aa151b] h-full transition-all duration-1000 ease-linear"
-                style={{ width: `${(autoRefreshTimer / 10) * 100}%` }}
-              />
-            </div>
-          </div>
+          <AutoRefreshCountdown pollIntervalMs={pollIntervalMs} />
 
           {/* Batch Actions */}
           {onCompareAllBookmarks && bookmarkedStores.length > 1 && (

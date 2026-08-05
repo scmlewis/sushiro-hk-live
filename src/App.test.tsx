@@ -113,7 +113,7 @@ describe('auto-refresh polling', () => {
     return queueCalls;
   }
 
-  it('auto-refreshes compare store queues every 10 seconds', async () => {
+  it('auto-refreshes compare store queues every 30 seconds', async () => {
     vi.useFakeTimers();
     const queueCalls = await loadStoresAndPolling();
 
@@ -124,14 +124,14 @@ describe('auto-refresh polling', () => {
     expect(queueCalls).toHaveLength(1);
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(12_000);
+      await vi.advanceTimersByTimeAsync(32_000);
     });
 
     expect(queueCalls.length).toBeGreaterThanOrEqual(2);
-    expect(queueCalls[1]).toContain('force=true');
+    expect(queueCalls[1]).not.toContain('force=true');
   });
 
-  it('auto-refreshes bookmarked store queues every 10 seconds (regression)', async () => {
+  it('auto-refreshes bookmarked store queues every 30 seconds (regression)', async () => {
     vi.useFakeTimers();
     const queueCalls = await loadStoresAndPolling();
 
@@ -142,11 +142,11 @@ describe('auto-refresh polling', () => {
     expect(queueCalls).toHaveLength(1);
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(12_000);
+      await vi.advanceTimersByTimeAsync(32_000);
     });
 
     expect(queueCalls.length).toBeGreaterThanOrEqual(2);
-    expect(queueCalls[1]).toContain('force=true');
+    expect(queueCalls[1]).not.toContain('force=true');
   });
 });
 
