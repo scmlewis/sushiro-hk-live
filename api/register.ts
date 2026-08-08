@@ -11,6 +11,20 @@ interface RegistrationRequest {
   ticketNumber: number;
 }
 
+const rateLimitMap = new Map<string, number[]>();
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX = 5;
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const timestamps = rateLimitMap.get(ip) || [];
+  const recent = timestamps.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+  if (recent.length >= RATE_LIMIT_MAX) return true;
+  recent.push(now);
+  rateLimitMap.set(ip, recent);
+  return false;
+}
+
 function generateSubscriptionId(endpoint: string): string {
   return createHash('sha256').update(endpoint).digest('hex').slice(0, 16);
 }
@@ -26,6 +40,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (req.method !== 'POST') {
     return res.status(405).json({ success: false, error: 'Method not allowed' });
+  }
+
+  const clientIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || 'unknown';
+  if (isRateLimited(clientIp)) {
+    return res.status(429).json({ success: false, error: '請求過多，請稍後再試' });
   }
 
   const body = req.body as RegistrationRequest;

@@ -10,8 +10,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const storeId = req.query.storeid as string;
-  if (!storeId) {
-    return res.status(400).json({ success: false, error: '缺少 storeid 參數' });
+  if (!storeId || !/^\d+$/.test(storeId) || Number(storeId) < 1) {
+    return res.status(400).json({ success: false, error: '缺少或無效的 storeid 參數' });
   }
 
   try {
