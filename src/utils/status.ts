@@ -109,6 +109,13 @@ export function isStoreServicing(store: SushiroStore, now: Date = new Date()): b
   return true;
 }
 
+export function isStoreIssuingTickets(store: SushiroStore, now: Date = new Date()): boolean {
+  if (!isStoreEffectivelyOpen(store, now)) return false;
+  // Walk-in stopped means the store is not accepting any new tickets
+  if (isLocalTicketingOff(store.localTicketingStatus)) return false;
+  return true;
+}
+
 export function getStoreDisplayStatus(store: SushiroStore, now: Date = new Date()): StoreDisplayStatus {
   const isOpen = isStoreEffectivelyOpen(store, now);
   const isStopFly = isLocalTicketingOff(store.localTicketingStatus);

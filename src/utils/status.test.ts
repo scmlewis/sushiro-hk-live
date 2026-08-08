@@ -4,6 +4,7 @@ import {
   getTicketStatusInfo,
   getStoreDisplayStatus,
   isStoreServicing,
+  isStoreIssuingTickets,
   isStoreEffectivelyOpen,
   getStoreRegion,
   formatGoogleMapsUrl,
@@ -244,6 +245,61 @@ describe('isStoreServicing', () => {
       waitingGroup: 2,
     };
     expect(isStoreServicing(store)).toBe(true);
+  });
+});
+
+describe('isStoreIssuingTickets', () => {
+  const baseStore: SushiroStore = {
+    id: 1,
+    name: 'Test',
+    nameEn: 'Test',
+    area: 'Kowloon',
+    address: 'Addr',
+    latitude: 0,
+    longitude: 0,
+    wait: 10,
+    waitingGroup: 2,
+    storeStatus: 'OPEN',
+    netTicketStatus: 'ONLINE',
+    localTicketingStatus: 'ON',
+    waitTimeCap: 120,
+  };
+
+  it('returns false for closed store', () => {
+    const store = { ...baseStore, storeStatus: 'CLOSED' as const };
+    expect(isStoreIssuingTickets(store)).toBe(false);
+  });
+
+  it('returns false for walk-in stopped store (停籌) even with waiting groups', () => {
+    const store = {
+      ...baseStore,
+      localTicketingStatus: 'OFF' as const,
+      wait: 15,
+      waitingGroup: 3,
+    };
+    expect(isStoreIssuingTickets(store)).toBe(false);
+  });
+
+  it('returns true for normal open store issuing tickets', () => {
+    expect(isStoreIssuingTickets(baseStore)).toBe(true);
+  });
+
+  it('returns true for OPEN + ON + 0/0 within business hours (open but empty)', () => {
+    const store = {
+      ...baseStore,
+      wait: 0,
+      waitingGroup: 0,
+    };
+    expect(isStoreIssuingTickets(store, WITHIN_HOURS)).toBe(true);
+  });
+
+  it('returns false for OPEN + ON + 0/0 outside business hours (stale data)', () => {
+    const store = {
+      ...baseStore,
+      wait: 0,
+      waitingGroup: 0,
+    };
+    expect(isStoreIssuingTickets(store, OUTSIDE_HOURS)).toBe(false);
   });
 });
 

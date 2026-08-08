@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { SushiroStore, StoreQueueMap, ToastMessage, TabId } from './types';
 import { FALLBACK_LOCATION, TEXT_SIZE_MAP, TOTAL_STORE_COUNT, MAX_COMPARE_STORES, POLL_INTERVAL_MS, BRAND_COLOR } from './config';
 import { calculateDistanceKm, getCurrentPosition } from './utils/geolocation';
-import { getStoreRegion, isStoreServicing } from './utils/status';
+import { getStoreRegion, isStoreIssuingTickets } from './utils/status';
 import { useBookmarks } from './hooks/useBookmarks';
 import { useTextSize, useViewMode, useFilters } from './hooks/useFilters';
 import { Navbar } from './components/Navbar';
@@ -300,22 +300,22 @@ export default function App() {
     }
 
     if (filters.onlyIssuingTickets) {
-      list = list.filter((s) => isStoreServicing(s));
+      list = list.filter((s) => isStoreIssuingTickets(s));
     }
 
     list.sort((a, b) => {
       if (filters.sortBy === 'wait-asc') {
-        const servA = isStoreServicing(a), servB = isStoreServicing(b);
+        const servA = isStoreIssuingTickets(a), servB = isStoreIssuingTickets(b);
         if (servA && !servB) return -1; if (!servA && servB) return 1;
         return a.wait - b.wait;
       }
       if (filters.sortBy === 'wait-desc') {
-        const servA = isStoreServicing(a), servB = isStoreServicing(b);
+        const servA = isStoreIssuingTickets(a), servB = isStoreIssuingTickets(b);
         if (servA && !servB) return -1; if (!servA && servB) return 1;
         return b.wait - a.wait;
       }
       if (filters.sortBy === 'groups-desc') {
-        const servA = isStoreServicing(a), servB = isStoreServicing(b);
+        const servA = isStoreIssuingTickets(a), servB = isStoreIssuingTickets(b);
         if (servA && !servB) return -1; if (!servA && servB) return 1;
         return b.waitingGroup - a.waitingGroup;
       }
