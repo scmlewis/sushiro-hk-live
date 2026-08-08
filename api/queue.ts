@@ -2,7 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getQueueData } from './_lib/cache.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Origin', 'https://sushiro-hk-live.vercel.app');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
 
   if (req.method === 'OPTIONS') {
@@ -29,7 +29,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(502).json({
       success: false,
       error: '無法取得該門市籌號資訊',
-      details: err.message,
     });
   }
 }
