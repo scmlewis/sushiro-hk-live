@@ -8,6 +8,7 @@ import {
   OTHER_PLATINUM_TIERS,
 } from '../hooks/useFareCalculator';
 import { FareSummary } from './FareSummary';
+import { PersonTabs } from './PersonTabs';
 import { TierGrid } from './TierGrid';
 import { FareBottomBar } from './FareBottomBar';
 import { CombinationSuggestions } from './CombinationSuggestions';
@@ -156,6 +157,16 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
         remaining={remaining}
         onTargetChange={setTargetBudget}
         onActualChange={setActualBill}
+      />
+
+      <PersonTabs
+        people={people}
+        activePersonId={activePersonId}
+        personTotals={personTotals}
+        onSelect={setActivePerson}
+        onAdd={addPerson}
+        onRemove={removePerson}
+        onRename={renamePerson}
       />
 
       <TierGrid
