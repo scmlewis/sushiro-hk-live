@@ -10,6 +10,16 @@ export const OTHER_PLATINUM_TIERS = [10, 13, 18, 19, 22, 27, 28, 33, 38, 39];
 const MAIN_TIER_RANK: Record<number, number> = { 12: 0, 17: 1, 22: 2, 27: 3 };
 const tierRank = (price: number) => MAIN_TIER_RANK[price] ?? Number.MAX_SAFE_INTEGER;
 
+export const createPersonId = (): string =>
+  typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+    ? crypto.randomUUID()
+    : `person-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+
+export interface Person {
+  name: string;
+  selectedTiers: Map<number, number>;
+}
+
 export interface SelectedEntry {
   tier: PriceTier;
   quantity: number;
@@ -21,7 +31,19 @@ export interface Combo {
   total: number;
 }
 
+interface FareState {
+  people: Map<string, Person>;
+  activePersonId: string;
+}
+
 export interface UseFareCalculator {
+  people: Map<string, Person>;
+  activePersonId: string;
+  setActivePerson: (id: string) => void;
+  addPerson: (name: string) => string;
+  removePerson: (id: string) => void;
+  renamePerson: (id: string, name: string) => void;
+  personTotals: Map<string, number>;
   selectedTiers: Map<number, number>;
   addTier: (price: number) => void;
   removeTier: (price: number) => void;
@@ -99,12 +121,24 @@ const findCombinations = (
 export const useFareCalculator = (
   customTiers: PriceTier[] = [],
   initialBudget = 80,
-  initialSelectedTiers?: Map<number, number>,
+  initialPeople?: Map<string, Person>,
+  initialActivePersonId?: string,
   initialActualBill?: number,
 ): UseFareCalculator => {
-  const [selectedTiers, setSelectedTiers] = useState<Map<number, number>>(
-    () => initialSelectedTiers ? new Map(initialSelectedTiers) : new Map(),
-  );
+  const [state, setState] = useState<FareState>(() => {
+    if (initialPeople && initialPeople.size > 0) {
+      const people = new Map(initialPeople);
+      const activePersonId =
+        initialActivePersonId && people.has(initialActivePersonId)
+          ? initialActivePersonId
+          : people.keys().next().value!;
+      return { people, activePersonId };
+    }
+    const people = new Map<string, Person>();
+    people.set(createPersonId(), { name: '你', selectedTiers: new Map() });
+    return { people, activePersonId: people.keys().next().value! };
+  });
+  const { people, activePersonId } = state;
   const [targetBudget, setInternalTarget] = useState<number>(initialBudget);
   const [actualBill, setInternalActual] = useState<number>(
     initialActualBill ?? Math.round(initialBudget * (1 + SERVICE_CHARGE_RATE)),
@@ -131,41 +165,91 @@ export const useFareCalculator = (
     setInternalTarget(Math.round(clamped / (1 + SERVICE_CHARGE_RATE)));
   }, []);
 
+  const updateActiveTiers = useCallback(
+    (updater: (tiers: Map<number, number>) => Map<number, number>) => {
+      setState((prev) => {
+        const person = prev.people.get(prev.activePersonId);
+        if (!person) return prev;
+        const people = new Map(prev.people);
+        people.set(prev.activePersonId, {
+          ...person,
+          selectedTiers: updater(new Map(person.selectedTiers)),
+        });
+        return { ...prev, people };
+      });
+    },
+    [],
+  );
+
   const addTier = useCallback((price: number) => {
-    setSelectedTiers((prev) => {
-      const next = new Map(prev);
-      next.set(price, (next.get(price) || 0) + 1);
-      return next;
+    updateActiveTiers((tiers) => {
+      tiers.set(price, (tiers.get(price) || 0) + 1);
+      return tiers;
     });
-  }, []);
+  }, [updateActiveTiers]);
 
   const removeTier = useCallback((price: number) => {
-    setSelectedTiers((prev) => {
-      const next = new Map(prev);
-      next.delete(price);
-      return next;
+    updateActiveTiers((tiers) => {
+      tiers.delete(price);
+      return tiers;
     });
-  }, []);
+  }, [updateActiveTiers]);
 
   const incrementTier = useCallback((price: number) => {
     addTier(price);
   }, [addTier]);
 
   const decrementTier = useCallback((price: number) => {
-    setSelectedTiers((prev) => {
-      const next = new Map(prev);
-      const current = next.get(price) || 0;
+    updateActiveTiers((tiers) => {
+      const current = tiers.get(price) || 0;
       if (current <= 1) {
-        next.delete(price);
+        tiers.delete(price);
       } else {
-        next.set(price, current - 1);
+        tiers.set(price, current - 1);
       }
-      return next;
+      return tiers;
+    });
+  }, [updateActiveTiers]);
+
+  const clearAll = useCallback(() => {
+    updateActiveTiers(() => new Map());
+  }, [updateActiveTiers]);
+
+  const addPerson = useCallback((name: string): string => {
+    const id = createPersonId();
+    setState((prev) => {
+      const people = new Map(prev.people);
+      people.set(id, { name, selectedTiers: new Map() });
+      return { people, activePersonId: id };
+    });
+    return id;
+  }, []);
+
+  const removePerson = useCallback((id: string) => {
+    setState((prev) => {
+      if (prev.people.size <= 1) return prev;
+      const people = new Map(prev.people);
+      people.delete(id);
+      const activePersonId =
+        prev.activePersonId === id ? people.keys().next().value! : prev.activePersonId;
+      return { people, activePersonId };
     });
   }, []);
 
-  const clearAll = useCallback(() => {
-    setSelectedTiers(new Map());
+  const renamePerson = useCallback((id: string, name: string) => {
+    const trimmed = name.trim();
+    if (trimmed === '') return;
+    setState((prev) => {
+      const person = prev.people.get(id);
+      if (!person) return prev;
+      const people = new Map(prev.people);
+      people.set(id, { ...person, name: trimmed });
+      return { ...prev, people };
+    });
+  }, []);
+
+  const setActivePerson = useCallback((id: string) => {
+    setState((prev) => (prev.people.has(id) ? { ...prev, activePersonId: id } : prev));
   }, []);
 
   const addCustomTier = useCallback((price: number): PriceTier | null => {
@@ -180,33 +264,98 @@ export const useFareCalculator = (
     return newTier;
   }, [customTiers]);
 
+  const personBreakdowns = useMemo(() => {
+    const map = new Map<
+      string,
+      { subtotal: number; serviceCharge: number; total: number; totalItems: number }
+    >();
+    people.forEach((person, id) => {
+      let subtotal = 0;
+      let totalItems = 0;
+      person.selectedTiers.forEach((qty, price) => {
+        subtotal += price * qty;
+        totalItems += qty;
+      });
+      const serviceCharge = Math.round(subtotal * SERVICE_CHARGE_RATE);
+      map.set(id, { subtotal, serviceCharge, total: subtotal + serviceCharge, totalItems });
+    });
+    return map;
+  }, [people]);
+
+  const personTotals = useMemo(() => {
+    const map = new Map<string, number>();
+    personBreakdowns.forEach((b, id) => map.set(id, b.total));
+    return map;
+  }, [personBreakdowns]);
+
+  const subtotal = useMemo(() => {
+    let sum = 0;
+    personBreakdowns.forEach((b) => { sum += b.subtotal; });
+    return sum;
+  }, [personBreakdowns]);
+
+  const serviceCharge = useMemo(() => {
+    let sum = 0;
+    personBreakdowns.forEach((b) => { sum += b.serviceCharge; });
+    return sum;
+  }, [personBreakdowns]);
+
+  const total = useMemo(() => {
+    let sum = 0;
+    personBreakdowns.forEach((b) => { sum += b.total; });
+    return sum;
+  }, [personBreakdowns]);
+
+  const totalItems = useMemo(() => {
+    let sum = 0;
+    personBreakdowns.forEach((b) => { sum += b.totalItems; });
+    return sum;
+  }, [personBreakdowns]);
+
+  const selectedTiers = useMemo(
+    () => people.get(activePersonId)?.selectedTiers ?? new Map<number, number>(),
+    [people, activePersonId],
+  );
+
   const selectedList = useMemo<SelectedEntry[]>(() => {
+    const combined = new Map<number, number>();
+    people.forEach((person) => {
+      person.selectedTiers.forEach((qty, price) => {
+        combined.set(price, (combined.get(price) || 0) + qty);
+      });
+    });
     const list: SelectedEntry[] = [];
-    selectedTiers.forEach((qty, price) => {
+    combined.forEach((qty, price) => {
       const tier = allTiersMap.get(price);
-      if (tier) {
-        list.push({ tier, quantity: qty, subtotal: tier.price * qty });
-      }
+      if (tier) list.push({ tier, quantity: qty, subtotal: tier.price * qty });
     });
     return list.sort((a, b) => {
       const rankDiff = tierRank(a.tier.price) - tierRank(b.tier.price);
       if (rankDiff !== 0) return rankDiff;
       return a.tier.price - b.tier.price;
     });
-  }, [selectedTiers, allTiersMap]);
+  }, [people, allTiersMap]);
 
-  const subtotal = useMemo(() => selectedList.reduce((sum, entry) => sum + entry.subtotal, 0), [selectedList]);
-  const serviceCharge = useMemo(() => Math.round(subtotal * SERVICE_CHARGE_RATE), [subtotal]);
-  const total = useMemo(() => subtotal + serviceCharge, [subtotal, serviceCharge]);
   const remaining = useMemo(() => targetBudget - total, [targetBudget, total]);
-  const totalItems = useMemo(() => selectedList.reduce((sum, e) => sum + e.quantity, 0), [selectedList]);
 
   const combinations = useMemo<Combo[]>(() => {
     if (remaining <= 0 || allTiersMap.size === 0) return [];
-    return findCombinations(Array.from(allTiersMap.values()), remaining, MAX_COMBO_LENGTH, COMBO_TOLERANCE);
+    return findCombinations(
+      Array.from(allTiersMap.values()),
+      remaining,
+      MAX_COMBO_LENGTH,
+      COMBO_TOLERANCE,
+    );
   }, [remaining, allTiersMap]);
 
   return {
+    people,
+    activePersonId,
+    setActivePerson,
+    addPerson,
+    removePerson,
+    renamePerson,
+    personTotals,
     selectedTiers,
     addTier,
     removeTier,

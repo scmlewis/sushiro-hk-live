@@ -2,6 +2,8 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { PriceTier, PRICE_TIERS } from '../data/menu';
 import {
   useFareCalculator,
+  createPersonId,
+  Person,
   MAIN_PLATINUM_TIERS,
   OTHER_PLATINUM_TIERS,
 } from '../hooks/useFareCalculator';
@@ -13,7 +15,8 @@ import { CombinationSuggestions } from './CombinationSuggestions';
 const STORAGE_KEY = 'sushiro-fare-calc';
 
 interface PersistedState {
-  selectedTiers: [number, number][];
+  people: [string, { name: string; selectedTiers: [number, number][] }][];
+  activePersonId: string;
   targetBudget: number;
   actualBill: number;
   customTiers: PriceTier[];
@@ -24,7 +27,18 @@ function loadState(): PersistedState | null {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
-    if (parsed && Array.isArray(parsed.selectedTiers)) return parsed;
+    if (parsed && Array.isArray(parsed.people)) return parsed as PersistedState;
+    if (parsed && Array.isArray(parsed.selectedTiers)) {
+      const id = createPersonId();
+      const budget = parsed.targetBudget ?? 80;
+      return {
+        people: [[id, { name: '你', selectedTiers: parsed.selectedTiers }]],
+        activePersonId: id,
+        targetBudget: budget,
+        actualBill: parsed.actualBill ?? Math.round(budget * 1.1),
+        customTiers: parsed.customTiers ?? [],
+      };
+    }
   } catch { /* corrupted data — ignore */ }
   return null;
 }
@@ -48,7 +62,23 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
     () => saved?.customTiers ?? [],
   );
 
+  const initialPeople = useMemo(() => {
+    if (!saved) return undefined;
+    const map = new Map<string, Person>();
+    saved.people.forEach(([id, p]) =>
+      map.set(id, { name: p.name, selectedTiers: new Map(p.selectedTiers) }),
+    );
+    return map;
+  }, [saved]);
+
   const {
+    people,
+    activePersonId,
+    setActivePerson,
+    addPerson,
+    removePerson,
+    renamePerson,
+    personTotals,
     selectedTiers,
     addTier,
     removeTier,
@@ -70,18 +100,23 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
   } = useFareCalculator(
     customTiersState,
     saved?.targetBudget ?? DEFAULT_BUDGET,
-    saved ? new Map(saved.selectedTiers) : undefined,
+    initialPeople,
+    saved?.activePersonId,
     saved?.actualBill,
   );
 
   useEffect(() => {
     saveState({
-      selectedTiers: Array.from(selectedTiers.entries()),
+      people: Array.from(people.entries()).map(([id, p]) => [
+        id,
+        { name: p.name, selectedTiers: Array.from(p.selectedTiers.entries()) },
+      ]),
+      activePersonId,
       targetBudget,
       actualBill,
       customTiers: customTiersState,
     });
-  }, [selectedTiers, targetBudget, actualBill, customTiersState]);
+  }, [people, activePersonId, targetBudget, actualBill, customTiersState]);
 
   const allTiers = useMemo(() => {
     const map = new Map<number, PriceTier>();
