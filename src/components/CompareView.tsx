@@ -123,7 +123,13 @@ export const CompareView: React.FC<CompareViewProps> = ({
                   </button>
                 </div>
 
-                <h3 className="font-black text-base text-neutral-900 dark:text-white truncate mb-3">{store.name}</h3>
+                <h3 className="font-black text-base text-neutral-900 dark:text-white truncate mb-3">
+                  {onSelectStore ? (
+                    <a href={`/store/${store.id}`} onClick={(e) => { e.preventDefault(); onSelectStore(store); }} className="hover:text-[#aa151b] transition-colors">
+                      {store.name}
+                    </a>
+                  ) : store.name}
+                </h3>
 
                 <div className="flex items-center justify-between text-xs bg-neutral-50 dark:bg-neutral-900/80 p-2.5 rounded-lg border border-neutral-200/80 dark:border-neutral-700/60 mb-3">
                   <div className="flex items-center gap-1.5">
@@ -171,9 +177,9 @@ export const CompareView: React.FC<CompareViewProps> = ({
                   <span className={`px-1.5 py-0.5 text-[9px] font-black uppercase rounded ${ticketStatusInfo.bgColor} ${ticketStatusInfo.textColor}`}>{ticketStatusInfo.label}</span>
                 </div>
                 {onSelectStore && (
-                  <button onClick={() => onSelectStore(store)} className="px-2 py-0.5 bg-[#141414] hover:bg-[#aa151b] text-white text-[10px] font-black rounded transition-colors cursor-pointer flex items-center gap-0.5 shrink-0">
+                  <a href={`/store/${store.id}`} onClick={(e) => { e.preventDefault(); onSelectStore(store); }} className="px-2 py-0.5 bg-[#141414] hover:bg-[#aa151b] text-white text-[10px] font-black rounded transition-colors cursor-pointer flex items-center gap-0.5 shrink-0">
                     <span>詳情</span><ExternalLink className="w-3 h-3" />
-                  </button>
+                  </a>
                 )}
               </div>
             </div>

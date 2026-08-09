@@ -4,6 +4,8 @@ import { formatGoogleMapsUrl, getStoreDisplayStatus } from '../utils/status';
 import { getAccentBgClass, getWaitTextColor } from '../utils/colors';
 import { Heart, MapPin, RefreshCw, ChevronRight, Plus, Check, Clock, Users, Navigation } from 'lucide-react';
 
+const SITE_URL = 'https://sushiro-hk-live.vercel.app';
+
 interface CompactStoreRowProps {
   store: SushiroStore;
   queue?: GroupQueue;
@@ -41,12 +43,13 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
 
       {/* Row 1: Status — name, wait time, group count */}
       <div className="flex items-center gap-2 px-3 py-2.5 ml-1">
-        <h4
-          onClick={() => onSelectStore(store)}
+        <a
+          href={`/store/${store.id}`}
+          onClick={(e) => { e.preventDefault(); onSelectStore(store); }}
           className="text-sm font-black text-neutral-900 dark:text-white truncate cursor-pointer hover:text-[#aa151b] transition-colors duration-150 min-w-0 flex-1"
         >
           {store.name}
-        </h4>
+        </a>
 
         <div className="flex items-center gap-3 shrink-0">
           {store.distanceKm != null && (
@@ -119,13 +122,14 @@ export const CompactStoreRow: React.FC<CompactStoreRowProps> = ({
 
         <div className="flex-1" />
 
-        <button
-          onClick={() => onSelectStore(store, 'live')}
+        <a
+          href={`/store/${store.id}`}
+          onClick={(e) => { e.preventDefault(); onSelectStore(store, 'live'); }}
           className="flex items-center gap-0.5 px-2.5 py-1 bg-[#aa151b] hover:bg-[#8e171d] active:scale-[0.97] text-white text-[10px] font-black uppercase transition-all duration-150 cursor-pointer rounded"
         >
           <span>詳情</span>
           <ChevronRight className="w-3 h-3" />
-        </button>
+        </a>
       </div>
     </div>
   );

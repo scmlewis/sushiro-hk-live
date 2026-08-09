@@ -150,7 +150,7 @@ export default function StorePage() {
 
   // Update document meta tags for SEO
   useEffect(() => {
-    document.title = `壽司郎 ${store.name} - 即時等候時間 | 壽司郎 HK Live`;
+    document.title = `${store.name}｜壽司郎即時等候時間｜籌號 | 壽司郎 HK Live`;
 
     const setMeta = (name: string, content: string) => {
       let el = document.querySelector(`meta[name="${name}"], meta[property="${name}"]`) as HTMLMetaElement;
@@ -166,9 +166,9 @@ export default function StorePage() {
       el.setAttribute('content', content);
     };
 
-    const desc = `壽司郎 ${store.name} (${store.nameEn}) 即時等候時間：${store.wait} 分鐘，${store.waitingGroup} 組輪候中。地址：${store.address}`;
+    const desc = `查看${store.name}壽司郎目前等候時間、即時籌號及排隊情況。${store.wait} 分鐘等候，${store.waitingGroup} 組輪候中。地址：${store.address}`;
     setMeta('description', desc);
-    setMeta('og:title', `壽司郎 ${store.name} - 即時等候時間 | 壽司郎 HK Live`);
+    setMeta('og:title', `${store.name}｜壽司郎即時等候時間｜籌號 | 壽司郎 HK Live`);
     setMeta('og:description', desc);
     setMeta('og:url', `${SITE_URL}/store/${store.id}`);
 
