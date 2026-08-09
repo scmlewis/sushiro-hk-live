@@ -20,17 +20,20 @@ interface Person {
   selectedTiers: Map<number, number>;  // price → qty
 }
 
-// New state shape
-people: Map<string, Person>;           // key = personId (nanoid or timestamp)
-activePersonId: string | null;         // null = "All" view (combined)
+people: Map<string, Person>;   // key = personId (e.g. crypto.randomUUID())
+activePersonId: string;        // ALWAYS points to a real person. No "All" tab.
 ```
+
+There is no "All" / combined view tab. `activePersonId` always selects a real person. Combined totals are derived and shown in FareSummary, FareBottomBar, and the copy message.
 
 ### Migration
 
-On mount, if the existing `selectedTiers` format is detected (array of `[price, qty]` tuples without `people`), migrate to:
+On mount, the persisted state has two possible shapes:
+
+- **New shape:** has `people` (array of `[id, { name, selectedTiers }]` tuples) → use directly.
+- **Old shape:** has `selectedTiers` as flat `[price, qty][]` tuples → migrate to:
 ```ts
-people = new Map([["1", { name: "你", selectedTiers: new Map(saved.selectedTiers) }]]);
-activePersonId = null;  // "All" view
+people = new Map([[crypto.randomUUID(), { name: "你", selectedTiers: new Map(saved.selectedTiers) }]]);
 ```
 
 ### Derived Values
@@ -41,21 +44,21 @@ activePersonId = null;  // "All" view
 - `personTotal` = subtotal + serviceCharge
 - `totalItems` = Σ(qty)
 
-**Combined** (for "All" view and bottom bar):
-- `totalSubtotal` = Σ(person.subtotal)
-- `totalServiceCharge` = round(totalSubtotal × 0.1)
-- `total` = totalSubtotal + totalServiceCharge
+**Combined** — derived by summing per-person values so amounts always stay consistent:
+- `subtotal` = Σ(person.subtotal)
+- `serviceCharge` = Σ(person.serviceCharge)
+- `total` = Σ(person.personTotal)   ← NOT round(totalSubtotal × 0.1); this is what keeps the copy message arithmetic correct
 - `totalItems` = Σ(person.totalItems)
 
 ### Operations
 
-All tier operations (`addTier`, `incrementTier`, `decrementTier`, `removeTier`) target the **active person**. When `activePersonId` is null ("All" view), tier operations are disabled (read-only combined view).
+All tier operations (`addTier`, `incrementTier`, `decrementTier`, `removeTier`) target `activePersonId`. Since there is no "All" view, tier ops never need a disabled/read-only mode.
 
 New operations:
 - `addPerson(name: string): string` — creates a new person, returns their ID
-- `removePerson(id: string): void` — removes person and their plates
-- `renamePerson(id: string, name: string): void`
-- `setActivePerson(id: string | null): void` — null = "All"
+- `removePerson(id: string): void` — removes person and their plates; **if `id === activePersonId`, switch `activePersonId` to the first remaining person**
+- `renamePerson(id: string, name: string): void` — empty names revert to previous name
+- `setActivePerson(id: string): void`
 
 ## Components
 
@@ -64,45 +67,45 @@ New operations:
 Horizontal tab bar rendered above the TierGrid.
 
 ```
-[ All ] [ Alice ] [ Bob ] [ + 新增 ]
+[ 你 ] [ Alice ] [ Bob ] [ + 新增 ]  [ 編輯 ]
 ```
 
-- "All" tab is always first. Shows combined total as a subtitle.
-- Each person tab shows their name and per-person total as subtitle.
+- First person defaults to "你". Added people default to "成員 N" (N increments).
+- Each person tab shows their name and per-person total as a subtitle.
 - Tap to switch active person.
-- Long-press or double-tap to open rename/remove menu.
-- "+ 新增" tab at the end creates a new person ("Person N") and switches to them.
-- Hidden when there's only 1 person (no tabs visible).
+- "+ 新增" creates a new person and switches to them.
+- "編輯" toggles edit mode. In edit mode, each person tab shows a ✎ (rename → inline input) and 🗑 (remove, with a confirm step) control.
+- Hidden entirely when there's only 1 person (no tabs, no 編輯).
 - Scrolls horizontally on mobile if many people.
 
 ### `TierGrid` (modified)
 
-No structural changes. It receives `quantities` (a `Map<number, number>`) which is now the active person's slice. When "All" is selected, the combined map is passed but increment/decrement buttons are disabled (read-only).
+No structural changes. It receives `quantities` (the active person's `Map<number, number>`). No disabled state needed — tier ops always apply to the active person.
 
-### `FareSummary` (minor tweak)
+### `FareSummary` (no change to props interface)
 
-When "All" is selected, optionally show a per-person breakdown below the 4-cell grid:
-```
-Alice: $132 | Bob: $94
-```
+Shows **combined** totals (the whole table's bill):
+- 目標價格 / 實際賬單 — the table's target budget (global, unchanged semantics)
+- 目前金額 — combined subtotal
+- 尚餘 — combined total vs table budget
 
-When a specific person is selected, show only their values.
+Per-person totals are shown in the PersonTabs subtitles, not here.
 
 ### `FareBottomBar` (modified)
 
-Shows the combined total. When 2+ people exist, add a CTA button:
+Shows the combined total and the combined expandable list (all people's entries). When 2+ people exist, add a CTA button:
 ```
 [ 📋 複製分帳 ]
 ```
 
 ### Copy Message
 
-Format:
+Format (per-person totals, summing exactly to the combined total):
 ```
 🍣 壽司郎分帳
-Alice: $132
-Bob: $94
-總額 (含服務費): $226
+你: $132
+Alice: $85
+總額 (含服務費): $217
 ```
 
 On tap:
@@ -119,36 +122,36 @@ Extend `PersistedState`:
 ```ts
 interface PersistedState {
   people: [string, { name: string; selectedTiers: [number, number][] }][];
-  activePersonId: string | null;
+  activePersonId: string;
   targetBudget: number;
   actualBill: number;
   customTiers: PriceTier[];
 }
 ```
 
-Migration: detect old format (has `selectedTiers` as flat tuple array) → convert to `people` format with one person named "你".
+Migration: detect old format (`selectedTiers` as flat tuple array, no `people`) → convert to single-person format named "你".
 
 ## Edge Cases
 
-- **Remove last person:** Not allowed. Must always have at least 1 person.
-- **Rename to empty:** Disallowed. Revert to previous name.
-- **All view + tier ops:** Disabled. Show a toast "請選擇一位成員再調整數量" if user taps +/- in All view.
-- **Person with 0 plates:** Their subtotal is $0. They still appear in the copy message as "$0".
-- **Single person:** Tabs are hidden. Works exactly like the current calculator.
+- **Remove last person:** Not allowed. Must always have at least 1 person. The 🗑 control is hidden when only 1 person exists.
+- **Remove active person:** Switch `activePersonId` to the first remaining person.
+- **Rename to empty:** Revert to previous name.
+- **Person with 0 plates:** Subtotal $0. Still appears in the copy message as "$0".
+- **Single person:** Tabs hidden. Works exactly like the current calculator.
+- **Round-trip persistence:** Per-person totals sum to combined total by construction (combined = Σ per-person), so the copy message is always arithmetically correct.
 
 ## UI Layout
 
 ```
 ┌─────────────────────────────────────┐
-│  [ All ]  [ Alice ]  [ Bob ]  [ + ] │  ← PersonTabs (hidden if 1 person)
+│  [ 你 ]  [ Alice ]  [ + ]  [ 編輯 ] │  ← PersonTabs (hidden if 1 person)
 ├─────────────────────────────────────┤
-│  FareSummary (4-cell grid)          │
-│  + per-person breakdown (in All)    │
+│  FareSummary (combined, 4-cell)     │
 ├─────────────────────────────────────┤
 │  TierGrid                           │
 │  (active person's counters)         │
 ├─────────────────────────────────────┤
-│  FareBottomBar                      │
+│  FareBottomBar (combined total)     │
 │  [ 📋 複製分帳 ]  ← CTA (2+ ppl)   │
 └─────────────────────────────────────┘
 ```
@@ -158,17 +161,17 @@ Migration: detect old format (has `selectedTiers` as flat tuple array) → conve
 | Area | Files | Est. Lines |
 |------|-------|-----------|
 | Hook refactor | `useFareCalculator.ts` | ~150 |
-| Person tabs | `PersonTabs.tsx` (new) | ~80 |
+| Person tabs | `PersonTabs.tsx` (new) | ~90 |
 | FareBottomBar update | `FareBottomBar.tsx` | ~40 |
 | Copy message util | `splitMessage.ts` (new) | ~30 |
-| FareSummary tweak | `FareSummary.tsx` | ~20 |
 | localStorage migration | `FareCalculator.tsx` | ~40 |
 | Tests | 3 test files | ~150 |
-| **Total** | | **~510** |
+| **Total** | | **~500** |
 
 ## Out of Scope
 
 - Drag-and-drop plate assignment (approach C from brainstorming)
+- Per-person target budgets (budget stays global = table budget)
 - Custom split amounts (e.g., Alice pays $50, Bob pays $70 regardless of plates)
 - Currency selection (stays HKD)
 - Export to CSV/PDF
