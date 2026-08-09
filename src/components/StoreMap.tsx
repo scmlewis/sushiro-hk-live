@@ -203,7 +203,8 @@ export const StoreMap: React.FC<StoreMapProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-20 bg-neutral-950" style={{ minHeight: '100dvh', minWidth: '100vw' }}>
+<div className="fixed inset-0 z-20"
+       style={{ minHeight: '100dvh', minWidth: '100vw', backgroundColor: '#0e1117' }}>
       <ScrollLock />
       <MapContainer
         center={center}
