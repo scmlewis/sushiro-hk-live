@@ -1,5 +1,5 @@
-const CACHE_NAME = 'sushiro-hk-static-v1';
-const API_CACHE_NAME = 'sushiro-hk-api-v1';
+const CACHE_NAME = 'sushiro-hk-static-v2';
+const API_CACHE_NAME = 'sushiro-hk-api-v2';
 
 const STATIC_ASSETS = [
   '/',
