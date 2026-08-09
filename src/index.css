@@ -35,6 +35,10 @@ html, body {
   color: white;
 }
 
+.leaflet-container {
+  background: #0e1117 !important;
+}
+
 .sushiro-tooltip {
   background: #1a1a1a !important;
   border: 1px solid #404040 !important;
