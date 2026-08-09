@@ -1,5 +1,5 @@
-const CACHE_NAME = 'sushiro-hk-static-v2';
-const API_CACHE_NAME = 'sushiro-hk-api-v2';
+const CACHE_NAME = 'sushiro-hk-static-v3';
+const API_CACHE_NAME = 'sushiro-hk-api-v3';
 
 const STATIC_ASSETS = [
   '/',
@@ -33,6 +33,9 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
+
+  // Skip non-same-origin requests (tiles, fonts, etc.) — CSP connect-src blocks SW fetch() to external domains
+  if (url.origin !== self.location.origin) return;
 
   // Handle API Requests (Network First, with Cache Fallback for poor connection / offline)
   if (url.pathname.startsWith('/api/')) {
