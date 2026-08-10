@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'motion/react';
-import { ChevronDown, Trash2, X } from 'lucide-react';
+import { ChevronDown, Trash2, X, ClipboardCopy } from 'lucide-react';
 import { SelectedEntry } from '../hooks/useFareCalculator';
 import { TierBadge } from './TierBadge';
 import { formatCurrency } from '../utils/formatCurrency';
@@ -11,6 +11,8 @@ interface FareBottomBarProps {
   total: number;
   selectedList: SelectedEntry[];
   onClear: () => void;
+  peopleCount: number;
+  onCopySplit?: () => void;
 }
 
 const CONFIRM_TIMEOUT_MS = 3000;
@@ -20,6 +22,8 @@ export const FareBottomBar: React.FC<FareBottomBarProps> = ({
   total,
   selectedList,
   onClear,
+  peopleCount,
+  onCopySplit,
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [confirming, setConfirming] = useState(false);
@@ -51,7 +55,7 @@ export const FareBottomBar: React.FC<FareBottomBarProps> = ({
     };
   }, []);
 
-  if (totalItems === 0) return null;
+  if (totalItems === 0 && !(peopleCount >= 2 && onCopySplit)) return null;
 
   const requestClear = () => {
     if (confirming) {
@@ -135,32 +139,44 @@ export const FareBottomBar: React.FC<FareBottomBarProps> = ({
                 }`}
               />
             </button>
-            {confirming ? (
-              <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5">
+              {peopleCount >= 2 && onCopySplit && (
                 <button
-                  onClick={cancelConfirm}
-                  aria-label="取消清空"
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 transition-all"
+                  onClick={onCopySplit}
+                  aria-label="複製分帳"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/20 text-white text-xs font-black transition-all hover:bg-white/30 active:scale-95"
                 >
-                  <X className="w-4 h-4" />
+                  <ClipboardCopy className="w-3.5 h-3.5" />
+                  <span>複製分帳</span>
                 </button>
+              )}
+              {confirming ? (
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={cancelConfirm}
+                    aria-label="取消清空"
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 transition-all"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={requestClear}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white text-[#aa151b] text-xs font-black transition-all hover:bg-red-50 active:scale-95"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>確認清空?</span>
+                  </button>
+                </div>
+              ) : (
                 <button
                   onClick={requestClear}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white text-[#aa151b] text-xs font-black transition-all hover:bg-red-50 active:scale-95"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-white/80 hover:text-white hover:bg-white/10 transition-all"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
-                  <span>確認清空?</span>
+                  <span>清空</span>
                 </button>
-              </div>
-            ) : (
-              <button
-                onClick={requestClear}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-white/80 hover:text-white hover:bg-white/10 transition-all"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-                <span>清空</span>
-              </button>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>

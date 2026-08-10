@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { FareCalculator } from './FareCalculator';
 
 describe('FareCalculator', () => {
@@ -204,5 +204,43 @@ describe('FareCalculator', () => {
     fireEvent.click(screen.getByRole('button', { name: '完成' }));
     expect(onToast).toHaveBeenCalledWith('已新增 $99 價格層級', 'success');
     expect(screen.getAllByText('$99').length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('does not show the split CTA with a single person', () => {
+    render(<FareCalculator />);
+    expect(screen.queryByRole('button', { name: '複製分帳' })).not.toBeInTheDocument();
+  });
+
+  it('copies a split message after adding a second person', async () => {
+    const onToast = vi.fn();
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText },
+      configurable: true,
+    });
+    render(<FareCalculator onToast={onToast} />);
+
+    fireEvent.click(screen.getByRole('button', { name: '新增成員' }));
+    expect(screen.getByRole('button', { name: '複製分帳' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getAllByRole('button', { name: '增加 10 數量' })[0]);
+    fireEvent.click(screen.getByRole('button', { name: '複製分帳' }));
+
+    await waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
+    const message = writeText.mock.calls[0][0] as string;
+    expect(message).toContain('🍣 壽司郎分帳');
+    expect(message).toContain('成員 2: $11');
+    expect(message).toContain('總額 (含服務費): $11');
+    expect(onToast).toHaveBeenCalledWith('已複製到剪貼簿', 'success');
+  });
+
+  it('removes a person via edit mode and hides the split CTA', () => {
+    render(<FareCalculator />);
+    fireEvent.click(screen.getByRole('button', { name: '新增成員' }));
+    fireEvent.click(screen.getByRole('button', { name: '編輯' }));
+    fireEvent.click(screen.getByRole('button', { name: '刪除 成員 2' }));
+    fireEvent.click(screen.getByRole('button', { name: '確認刪除 成員 2' }));
+    expect(screen.queryByText('成員 2')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '複製分帳' })).not.toBeInTheDocument();
   });
 });

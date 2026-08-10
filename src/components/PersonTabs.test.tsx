@@ -39,7 +39,7 @@ const renderTabs = (overrides: Overrides = {}) =>
   );
 
 describe('PersonTabs', () => {
-  it('renders nothing with a single person', () => {
+  it('renders only the add-member button with a single person', () => {
     const { container } = render(
       <PersonTabs
         people={new Map<string, Person>([['a', person('你')]])}
@@ -51,7 +51,9 @@ describe('PersonTabs', () => {
         onRename={vi.fn()}
       />,
     );
-    expect(container.firstChild).toBeNull();
+    expect(container.firstChild).not.toBeNull();
+    expect(screen.getByRole('button', { name: '新增成員' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '編輯' })).not.toBeInTheDocument();
   });
 
   it('shows each person name and their total', () => {

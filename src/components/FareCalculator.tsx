@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { PriceTier, PRICE_TIERS } from '../data/menu';
 import {
   useFareCalculator,
@@ -12,6 +12,7 @@ import { PersonTabs } from './PersonTabs';
 import { TierGrid } from './TierGrid';
 import { FareBottomBar } from './FareBottomBar';
 import { CombinationSuggestions } from './CombinationSuggestions';
+import { buildSplitMessage } from '../utils/splitMessage';
 
 const STORAGE_KEY = 'sushiro-fare-calc';
 
@@ -146,6 +147,27 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
     onToast?.('已清除所有選擇', 'info');
   };
 
+  const handleCopySplit = useCallback(async () => {
+    const lines = Array.from(people.entries()).map(([id, p]) => ({
+      name: p.name,
+      total: personTotals.get(id) ?? 0,
+    }));
+    const message = buildSplitMessage(lines);
+    try {
+      await navigator.clipboard.writeText(message);
+    } catch {
+      const textarea = document.createElement('textarea');
+      textarea.value = message;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+    }
+    onToast?.('已複製到剪貼簿', 'success');
+  }, [people, personTotals, onToast]);
+
   return (
     <div className="space-y-6 animate-fade-in max-w-5xl mx-auto pb-20">
       <FareSummary
@@ -186,6 +208,8 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
         total={total}
         selectedList={selectedList}
         onClear={handleClearAll}
+        peopleCount={people.size}
+        onCopySplit={handleCopySplit}
       />
 
       <CombinationSuggestions combinations={combinations} />

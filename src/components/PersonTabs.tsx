@@ -28,7 +28,7 @@ export const PersonTabs: React.FC<PersonTabsProps> = ({
   const [confirmingRemoveId, setConfirmingRemoveId] = useState<string | null>(null);
   const memberCounter = useRef(people.size + 1);
 
-  if (people.size <= 1) return null;
+  if (people.size <= 0) return null;
 
   const handleAdd = () => {
     onAdd(`成員 ${memberCounter.current}`);
@@ -53,6 +53,21 @@ export const PersonTabs: React.FC<PersonTabsProps> = ({
       setConfirmingRemoveId(id);
     }
   };
+
+  if (people.size === 1) {
+    return (
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+        <button
+          onClick={handleAdd}
+          aria-label="新增成員"
+          className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-neutral-900 border-2 border-dashed border-neutral-300 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 text-sm font-black transition-all hover:border-[#aa151b] hover:text-[#aa151b] active:scale-95"
+        >
+          <UserPlus className="w-4 h-4" />
+          <span>新增</span>
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center gap-2 overflow-x-auto pb-1 -mx-1 px-1">
