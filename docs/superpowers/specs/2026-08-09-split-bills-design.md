@@ -8,7 +8,7 @@ Add multi-person split bill support to the fare calculator. Each person has inde
 
 1. As a user dining with friends, I want to count plates per person so I know who owes what.
 2. As a user, I want to tap a button to copy a formatted split bill message to send in a group chat.
-3. As a single user, the calculator works exactly as before — no visible change until a 2nd person is added.
+3. As a single user, the calculator works exactly as before, with one deliberate exception: a minimal "+ 新增" affordance is shown so a 2nd person can be added (otherwise split bills are unreachable). Everything else stays unchanged until a 2nd person is added.
 
 ## Data Model
 
@@ -75,7 +75,7 @@ Horizontal tab bar rendered above the TierGrid.
 - Tap to switch active person.
 - "+ 新增" creates a new person and switches to them.
 - "編輯" toggles edit mode. In edit mode, each person tab shows a ✎ (rename → inline input) and 🗑 (remove, with a confirm step) control.
-- Hidden entirely when there's only 1 person (no tabs, no 編輯).
+- At exactly 1 person, PersonTabs renders only the dashed "+ 新增" button — no person tabs, no 編輯 — so a 2nd person can be added while preserving the single-person experience. Hidden entirely only when there are no people.
 - Scrolls horizontally on mobile if many people.
 
 ### `TierGrid` (modified)
@@ -93,7 +93,7 @@ Per-person totals are shown in the PersonTabs subtitles, not here.
 
 ### `FareBottomBar` (modified)
 
-Shows the combined total and the combined expandable list (all people's entries). When 2+ people exist, add a CTA button:
+Shows the combined total and the combined expandable list (all people's entries). When 2+ people exist, add a CTA button (rendered even before any plates are counted, so it's available right after adding the 2nd person):
 ```
 [ 📋 複製分帳 ]
 ```
@@ -137,14 +137,14 @@ Migration: detect old format (`selectedTiers` as flat tuple array, no `people`) 
 - **Remove active person:** Switch `activePersonId` to the first remaining person.
 - **Rename to empty:** Revert to previous name.
 - **Person with 0 plates:** Subtotal $0. Still appears in the copy message as "$0".
-- **Single person:** Tabs hidden. Works exactly like the current calculator.
+- **Single person:** Tabs hidden; only the dashed "+ 新增" affordance shows. Works like the current calculator otherwise.
 - **Round-trip persistence:** Per-person totals sum to combined total by construction (combined = Σ per-person), so the copy message is always arithmetically correct.
 
 ## UI Layout
 
 ```
 ┌─────────────────────────────────────┐
-│  [ 你 ]  [ Alice ]  [ + ]  [ 編輯 ] │  ← PersonTabs (hidden if 1 person)
+│  [ 你 ]  [ Alice ]  [ + ]  [ 編輯 ] │  ← PersonTabs (minimal "+ 新增" if 1 person)
 ├─────────────────────────────────────┤
 │  FareSummary (combined, 4-cell)     │
 ├─────────────────────────────────────┤
