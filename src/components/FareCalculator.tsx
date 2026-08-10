@@ -144,7 +144,7 @@ export const FareCalculator: React.FC<FareCalculatorProps> = ({ onToast }) => {
 
   const handleClearAll = () => {
     clearAll();
-    onToast?.('已清除所有選擇', 'info');
+    onToast?.('已清除當前成員的選擇', 'info');
   };
 
   const handleCopySplit = useCallback(async () => {
