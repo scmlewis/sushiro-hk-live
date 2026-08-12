@@ -243,6 +243,15 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ textSize, onTextSize
             <Github className="w-3.5 h-3.5" />
             <span>GitHub Repo</span>
           </a>
+          <a
+            href="https://github.com/angus6b23/sushiro-vue"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 active:scale-95 text-xs font-bold text-neutral-700 dark:text-neutral-300 rounded-xl transition-all duration-150"
+          >
+            <Github className="w-3.5 h-3.5" />
+            <span>架構啟發：sushiro-vue</span>
+          </a>
         </div>
       </div>
 
