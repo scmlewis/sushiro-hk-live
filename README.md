@@ -38,7 +38,7 @@ Full-screen Leaflet map with color-coded markers by wait time. Supports marker c
 Subscribe to a store and ticket number. The system checks queue progress every 5 minutes and sends browser push notifications when your ticket is near or called.
 
 ### 我的關注門市 / Bookmarked Stores
-點擊 ♥ 加入關注後，系統每 10 秒自動刷新該門市之即時叫號進度。
+點擊  加入關注後，系統每 10 秒自動刷新該門市之即時叫號進度。
 
 Bookmark stores for automatic 10-second polling of live queue data.
 
@@ -92,6 +92,66 @@ Install as a PWA for offline caching via Service Worker.
 | 測試 / Testing | Vitest + Testing Library |
 | 部署 / Deploy | Vercel |
 | 資料來源 / Data Source | Sushiro SUSHI-PASS API (HK) |
+
+---
+
+## 專案結構 / Project Structure
+
+```
+sushiro-hk-live/
+├── api/                            # Vercel Serverless Functions
+│   ├── _lib/
+│   │   ├── cache.ts                # 共用快取邏輯 / Shared caching
+│   │   ├── kv.ts                   # Upstash Redis client
+│   │   ├── push.ts                 # Web Push sender (VAPID)
+│   │   ├── notify-logic.ts         # Ticket position + notification tiers
+│   │   └── notify-logic.test.ts    # Notification logic tests
+│   ├── stores.ts                   # GET /api/stores
+│   ├── queue.ts                    # GET /api/queue?storeid=<id>
+│   ├── store/[id].ts               # GET /api/store/<id>
+│   ├── register.ts                 # POST /api/register
+│   ├── notify.ts                   # GET /api/notify (cron-triggered)
+│   ├── vapid-public-key.ts         # GET /api/vapid-public-key
+│   └── health.ts                   # GET /api/health
+├── src/
+│   ├── components/                 # 31 React components
+│   │   ├── Navbar.tsx              # Tab navigation
+│   │   ├── BookmarksSection.tsx    # Bookmark management
+│   │   ├── CompactStoreRow.tsx     # Store list row
+│   │   ├── CompareView.tsx         # Side-by-side comparison
+│   │   ├── StoreDetailModal.tsx    # Store detail + ticket calculator
+│   │   ├── StoreMap.tsx            # Leaflet interactive map
+│   │   ├── FareCalculator.tsx      # Price calculator
+│   │   ├── NotificationBell.tsx    # Push notification subscribe
+│   │   └── ...                     # 23 more components
+│   ├── hooks/                      # Custom React hooks
+│   │   ├── useBookmarks.ts
+│   │   ├── useFareCalculator.ts
+│   │   ├── useFilters.ts
+│   │   └── useIsTouch.ts
+│   ├── utils/                      # Utility functions
+│   │   ├── geolocation.ts          # GPS + Haversine distance
+│   │   ├── push.ts                 # Client-side push logic
+│   │   └── status.ts               # Store/ticket status helpers
+│   ├── data/
+│   │   └── menu.ts                 # Sushiro price tier definitions
+│   ├── App.tsx                     # Root component
+│   ├── main.tsx                    # Entry point
+│   ├── config.ts                   # Centralized config constants
+│   └── types.ts                    # TypeScript interfaces
+├── public/
+│   ├── manifest.json               # PWA Web App Manifest
+│   ├── sw.js                       # Service Worker
+│   ├── robots.txt
+│   ├── sitemap.xml
+│   └── icon.svg
+├── index.html                      # HTML entry (SEO, PWA, structured data)
+├── vercel.json                     # Vercel deployment config
+├── vite.config.ts
+├── vitest.config.ts
+├── SETUP.md                        # Notification system setup guide
+└── package.json
+```
 
 ---
 
@@ -177,66 +237,6 @@ Vercel's free plan doesn't support frequent cron jobs. Set up an external cron s
 2. URL 設為：`https://<your-domain>/api/notify`
 3. 排程設定：`*/5 * * * *`（每 5 分鐘）
 4. 可選：加入 `Authorization` header：`Bearer <CRON_SECRET>`
-
----
-
-## 專案結構 / Project Structure
-
-```
-sushiro-hk-live/
-├── api/                            # Vercel Serverless Functions
-│   ├── _lib/
-│   │   ├── cache.ts                # 共用快取邏輯 / Shared caching
-│   │   ├── kv.ts                   # Upstash Redis client
-│   │   ├── push.ts                 # Web Push sender (VAPID)
-│   │   ├── notify-logic.ts         # Ticket position + notification tiers
-│   │   └── notify-logic.test.ts    # Notification logic tests
-│   ├── stores.ts                   # GET /api/stores
-│   ├── queue.ts                    # GET /api/queue?storeid=<id>
-│   ├── store/[id].ts               # GET /api/store/<id>
-│   ├── register.ts                 # POST /api/register
-│   ├── notify.ts                   # GET /api/notify (cron-triggered)
-│   ├── vapid-public-key.ts         # GET /api/vapid-public-key
-│   └── health.ts                   # GET /api/health
-├── src/
-│   ├── components/                 # 31 React components
-│   │   ├── Navbar.tsx              # Tab navigation
-│   │   ├── BookmarksSection.tsx    # Bookmark management
-│   │   ├── CompactStoreRow.tsx     # Store list row
-│   │   ├── CompareView.tsx         # Side-by-side comparison
-│   │   ├── StoreDetailModal.tsx    # Store detail + ticket calculator
-│   │   ├── StoreMap.tsx            # Leaflet interactive map
-│   │   ├── FareCalculator.tsx      # Price calculator
-│   │   ├── NotificationBell.tsx    # Push notification subscribe
-│   │   └── ...                     # 23 more components
-│   ├── hooks/                      # Custom React hooks
-│   │   ├── useBookmarks.ts
-│   │   ├── useFareCalculator.ts
-│   │   ├── useFilters.ts
-│   │   └── useIsTouch.ts
-│   ├── utils/                      # Utility functions
-│   │   ├── geolocation.ts          # GPS + Haversine distance
-│   │   ├── push.ts                 # Client-side push logic
-│   │   └── status.ts               # Store/ticket status helpers
-│   ├── data/
-│   │   └── menu.ts                 # Sushiro price tier definitions
-│   ├── App.tsx                     # Root component
-│   ├── main.tsx                    # Entry point
-│   ├── config.ts                   # Centralized config constants
-│   └── types.ts                    # TypeScript interfaces
-├── public/
-│   ├── manifest.json               # PWA Web App Manifest
-│   ├── sw.js                       # Service Worker
-│   ├── robots.txt
-│   ├── sitemap.xml
-│   └── icon.svg
-├── index.html                      # HTML entry (SEO, PWA, structured data)
-├── vercel.json                     # Vercel deployment config
-├── vite.config.ts
-├── vitest.config.ts
-├── SETUP.md                        # Notification system setup guide
-└── package.json
-```
 
 ---
 
