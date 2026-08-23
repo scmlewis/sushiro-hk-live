@@ -14,6 +14,12 @@ Real-time queue tracking for all 44 Sushiro locations across Hong Kong.
 
 ---
 
+---
+
+## Why this exists
+
+Deciding which Sushiro to walk into used to mean guessing and queuing blind. This app pulls live ticket-issue and waiting-list numbers for every Hong Kong store so you can pick the one that seats you fastest — a small real-time data problem with an immediately useful answer.
+
 ## 功能一覽 / Features
 
 ### 全港門市即時列表 / Live Store Directory
@@ -239,3 +245,6 @@ sushiro-hk-live/
 本網頁與壽司郎（Sushiro）官方無任何關聯。資料來源為 SUSHI-PASS API，資料準確性以官方為準。
 
 This website is not affiliated with or endorsed by Sushiro. Data is sourced from the SUSHI-PASS API; accuracy is subject to the official source.
+---
+
+If this saved you time or gave you an idea, a ⭐ on the repo is appreciated — it helps others find it.
