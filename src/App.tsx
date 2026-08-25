@@ -44,6 +44,12 @@ export default function App() {
   const [toast, setToast] = useState<ToastMessage | null>(null);
   const [isOffline, setIsOffline] = useState(typeof navigator !== 'undefined' ? !navigator.onLine : false);
   const [isStaleData, setIsStaleData] = useState(false);
+  const [splashReady, setSplashReady] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setSplashReady(true), 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const tabVariants = {
     initial: { opacity: 0, y: 8 },
@@ -502,9 +508,9 @@ export default function App() {
         </main>
 
         <AnimatePresence>
-          {loadingStores && stores.length === 0 && (
+          {!splashReady || (loadingStores && stores.length === 0) ? (
             <LoadingSplash />
-          )}
+          ) : null}
         </AnimatePresence>
 
         <AnimatePresence>
