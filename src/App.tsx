@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { SushiroStore, StoreQueueMap, ToastMessage, TabId } from './types';
 import { FALLBACK_LOCATION, TEXT_SIZE_MAP, TOTAL_STORE_COUNT, MAX_COMPARE_STORES, POLL_INTERVAL_MS, BRAND_COLOR } from './config';
@@ -26,6 +26,8 @@ export default function App() {
   const { viewMode, setViewMode } = useViewMode();
   const { bookmarkedIds, toggleBookmark, clearBookmarks } = useBookmarks();
   const filters = useFilters();
+  const tabScrollPositions = useRef<Record<string, number>>({});
+  const prevTabRef = useRef<string>('all');
 
   useEffect(() => {
     document.documentElement.style.fontSize = TEXT_SIZE_MAP[textSize];
@@ -50,6 +52,18 @@ export default function App() {
     const timer = setTimeout(() => setSplashReady(true), 2000);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    const prev = prevTabRef.current;
+    if (prev !== activeMainTab) {
+      tabScrollPositions.current[prev] = window.scrollY;
+      const saved = tabScrollPositions.current[activeMainTab];
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: saved ?? 0, behavior: saved ? 'auto' : 'instant' });
+      });
+      prevTabRef.current = activeMainTab;
+    }
+  }, [activeMainTab]);
 
   const tabVariants = {
     initial: { opacity: 0, y: 8 },
