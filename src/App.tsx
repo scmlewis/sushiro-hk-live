@@ -16,6 +16,7 @@ import { CompareView } from './components/CompareView';
 import { AboutSection } from './components/AboutSection';
 import { FareCalculator } from './components/FareCalculator';
 import { Toast } from './components/Toast';
+import { LoadingSplash } from './components/LoadingSplash';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { AlertCircle } from 'lucide-react';
 import noStoresFoundImg from './assets/images/no_stores_found_1785143279312.jpg';
@@ -437,7 +438,7 @@ export default function App() {
                 </motion.div>
               )}
 
-              {activeMainTab === 'all' && (
+                  {activeMainTab === 'all' && (
                 <motion.div
                   key="all"
                   variants={tabVariants}
@@ -457,17 +458,7 @@ export default function App() {
                   />
 
                   {loadingStores && stores.length === 0 ? (
-                    <div className="flex flex-col space-y-3">
-                      {[1, 2, 3, 4, 5, 6].map((idx) => (
-                        <div key={`skeleton-${idx}`} className="bg-white dark:bg-neutral-900 rounded-xl p-4 border border-neutral-100 dark:border-neutral-800/60 animate-pulse flex justify-between items-center">
-                          <div className="space-y-2.5">
-                            <div className="h-3.5 bg-neutral-200 dark:bg-neutral-800 rounded-full w-24" />
-                            <div className="h-5 bg-neutral-200 dark:bg-neutral-800 rounded-full w-48" />
-                          </div>
-                          <div className="h-9 bg-neutral-200 dark:bg-neutral-800 rounded-lg w-24" />
-                        </div>
-                      ))}
-                    </div>
+                    <></>
                   ) : processedStores.length === 0 ? (
                     <div className="text-center py-12 px-6 bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2)] max-w-xl mx-auto my-6 rounded-2xl">
                       <div className="w-36 h-36 sm:w-44 sm:h-44 mx-auto mb-4 overflow-hidden rounded-2xl bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center p-2">
@@ -509,6 +500,12 @@ export default function App() {
             </AnimatePresence>
           </div>
         </main>
+
+        <AnimatePresence>
+          {loadingStores && stores.length === 0 && (
+            <LoadingSplash />
+          )}
+        </AnimatePresence>
 
         <AnimatePresence>
           {selectedStoreModal && (
