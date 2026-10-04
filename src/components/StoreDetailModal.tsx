@@ -4,6 +4,7 @@ import { SushiroStore, GroupQueue } from '../types';
 import { getStoreStatusInfo, getTicketStatusInfo, formatGoogleMapsUrl, isStoreServicing, getStoreDisplayStatus, isLocalTicketingOff, isStoreEffectivelyOpen } from '../utils/status';
 import { X, RefreshCw, Heart, MapPin, ExternalLink, Info, Calculator } from 'lucide-react';
 import { NotificationBell } from './NotificationBell';
+import { ShareButton } from './ShareButton';
 import { loadMyTicket, saveMyTicket, clearMyTicket } from '../utils/myTickets';
 
 interface StoreDetailModalProps {
@@ -192,6 +193,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
             >
               <Heart className={`w-5 h-5 ${isBookmarked ? 'fill-white' : ''}`} />
             </button>
+            <ShareButton storeId={store.id} storeName={store.name} onToast={onToast || (() => {})} />
             <button
               onClick={onClose}
               className="p-2 rounded-full bg-neutral-800 hover:bg-[#aa151b] text-white transition-all duration-150 cursor-pointer active:scale-90"
