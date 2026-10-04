@@ -4,6 +4,7 @@ import { SushiroStore, GroupQueue } from '../types';
 import { getStoreStatusInfo, getTicketStatusInfo, formatGoogleMapsUrl, isStoreServicing, getStoreDisplayStatus, isLocalTicketingOff, isStoreEffectivelyOpen } from '../utils/status';
 import { X, RefreshCw, Heart, MapPin, ExternalLink, Info, Calculator } from 'lucide-react';
 import { NotificationBell } from './NotificationBell';
+import { loadMyTicket, saveMyTicket, clearMyTicket } from '../utils/myTickets';
 
 interface StoreDetailModalProps {
   store: SushiroStore | null;
@@ -26,16 +27,23 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   onToggleBookmark,
   onToast,
 }) => {
-  const [myTicket, setMyTicket] = useState<string>('');
+  const [myTicket, setMyTicket] = useState<string>(() => loadMyTicket(store?.id ?? 0));
 
   useEffect(() => {
-    setMyTicket('');
+    setMyTicket(loadMyTicket(store?.id ?? 0));
   }, [store?.id]);
+
+  useEffect(() => {
+    if (!store || !myTicket) return;
+    const t = setTimeout(() => saveMyTicket(store.id, myTicket), 300);
+    return () => clearTimeout(t);
+  }, [myTicket, store]);
 
   const handleNumpad = (key: string) => {
     if (key === 'del') {
       setMyTicket((prev) => prev.slice(0, -1));
     } else if (key === 'clear') {
+      if (store) clearMyTicket(store.id);
       setMyTicket('');
     } else if (key === '-') {
       setMyTicket((prev) => {
@@ -332,7 +340,7 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
                     ))}
                     <button
                       disabled={!isServicing}
-                      onClick={() => handleNumpad('clear')}
+                      onClick={() => { if (store) clearMyTicket(store.id); handleNumpad('clear'); }}
                       className={`mt-1.5 py-1.5 rounded-md border text-center transition-all font-black text-xs sm:text-sm ${
                         !isServicing
                           ? 'bg-neutral-50 dark:bg-neutral-800/40 border-neutral-200 dark:border-neutral-700 text-neutral-450 cursor-not-allowed opacity-50'

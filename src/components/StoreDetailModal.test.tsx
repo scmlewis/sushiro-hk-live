@@ -211,4 +211,15 @@ describe('StoreDetailModal', () => {
     render(<StoreDetailModal {...defaultProps} />);
     expect(screen.getByText(/僅供參考/)).toBeInTheDocument();
   });
+
+  it('restores saved ticket for store', async () => {
+    localStorage.setItem('sushiro_hk_my_tickets_v1', JSON.stringify({ 99: '123' }));
+    const store = { ...mockStore, id: 99 } as SushiroStore;
+    render(
+      <StoreDetailModal store={store} queue={null} loading={false} isBookmarked={false}
+        onClose={() => {}} onRefreshQueue={() => {}} onToggleBookmark={() => {}} onToast={() => {}} />
+    );
+    expect(screen.getByText('#123')).toBeInTheDocument();
+    localStorage.removeItem('sushiro_hk_my_tickets_v1');
+  });
 });
