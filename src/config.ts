@@ -37,6 +37,7 @@ export const STORAGE_KEYS = {
   textSize: 'sushiro_hk_text_size',
   viewMode: 'sushiro_view_mode',
   filterBarExpanded: 'sushiro_filter_bar_expanded',
+  myTickets: 'sushiro_hk_my_tickets_v1',
 } as const;
 
 // ── Text Size ──
