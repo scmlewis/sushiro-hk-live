@@ -35,7 +35,11 @@ export const StoreDetailModal: React.FC<StoreDetailModalProps> = ({
   }, [store?.id]);
 
   useEffect(() => {
-    if (!store || !myTicket) return;
+    if (!store) return;
+    if (!myTicket) {
+      clearMyTicket(store.id);
+      return;
+    }
     const t = setTimeout(() => saveMyTicket(store.id, myTicket), 300);
     return () => clearTimeout(t);
   }, [myTicket, store]);
