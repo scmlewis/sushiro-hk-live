@@ -211,4 +211,39 @@ describe('StoreDetailModal', () => {
     render(<StoreDetailModal {...defaultProps} />);
     expect(screen.getByText(/僅供參考/)).toBeInTheDocument();
   });
+
+  it('restores saved ticket for store', async () => {
+    localStorage.setItem('sushiro_hk_my_tickets_v1', JSON.stringify({ 99: '123' }));
+    const store = { ...mockStore, id: 99 } as SushiroStore;
+    render(
+      <StoreDetailModal store={store} queue={null} loading={false} isBookmarked={false}
+        onClose={() => {}} onRefreshQueue={() => {}} onToggleBookmark={() => {}} onToast={() => {}} />
+    );
+    expect(screen.getByText('#123')).toBeInTheDocument();
+    localStorage.removeItem('sushiro_hk_my_tickets_v1');
+  });
+
+  it('clears stored ticket when input emptied via del', async () => {
+    vi.useFakeTimers();
+    try {
+      const { fireEvent } = await import('@testing-library/react');
+      const { loadMyTicket } = await import('../utils/myTickets');
+      localStorage.setItem('sushiro_hk_my_tickets_v1', JSON.stringify({ 55: '123' }));
+      const store = { ...mockStore, id: 55 } as SushiroStore;
+      render(
+        <StoreDetailModal store={store} queue={mockQueue} loading={false} isBookmarked={false}
+          onClose={() => {}} onRefreshQueue={() => {}} onToggleBookmark={() => {}} onToast={() => {}} />
+      );
+      expect(screen.getByText('#123')).toBeInTheDocument();
+      const delBtn = screen.getByText('⌫ 刪除');
+      fireEvent.click(delBtn);
+      fireEvent.click(delBtn);
+      fireEvent.click(delBtn);
+      vi.advanceTimersByTime(500);
+      expect(loadMyTicket(55)).toBe('');
+    } finally {
+      vi.useRealTimers();
+      localStorage.removeItem('sushiro_hk_my_tickets_v1');
+    }
+  });
 });

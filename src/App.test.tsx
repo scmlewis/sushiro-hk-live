@@ -108,7 +108,7 @@ describe('auto-refresh polling', () => {
       await Promise.resolve();
     });
 
-    expect(screen.getByText('旺角店')).toBeInTheDocument();
+    expect(screen.getAllByText('旺角店')[0]).toBeInTheDocument();
 
     return queueCalls;
   }
@@ -197,10 +197,11 @@ describe('App integration flow', () => {
   it('loads and displays stores', async () => {
     render(<App />);
     await waitFor(() => {
-      expect(screen.getByText('旺角店')).toBeInTheDocument();
+      // FastestBanner duplicates store names, so tolerate multiple matches
+      expect(screen.getAllByText('旺角店')[0]).toBeInTheDocument();
     });
-    expect(screen.getByText('銅鑼灣店')).toBeInTheDocument();
-    expect(screen.getByText('荃灣店')).toBeInTheDocument();
+    expect(screen.getAllByText('銅鑼灣店')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('荃灣店')[0]).toBeInTheDocument();
   });
 
   it('can switch between tabs', async () => {
@@ -250,14 +251,14 @@ describe('App integration flow', () => {
     render(<App />);
 
     await waitFor(() => {
-      expect(screen.getByText('旺角店')).toBeInTheDocument();
+      expect(screen.getAllByText('旺角店')[0]).toBeInTheDocument();
     });
 
     const searchInput = screen.getByPlaceholderText(/搜尋門市/);
     await user.type(searchInput, '旺角');
 
     await waitFor(() => {
-      expect(screen.getByText('旺角店')).toBeInTheDocument();
+      expect(screen.getAllByText('旺角店')[0]).toBeInTheDocument();
       expect(screen.queryByText('銅鑼灣店')).not.toBeInTheDocument();
     });
   });
@@ -282,5 +283,49 @@ describe('App integration flow', () => {
     // The root div should have fontSize 19px
     const rootDiv = document.querySelector('.min-h-screen');
     expect(rootDiv?.getAttribute('style')).toContain('19px');
+  });
+});
+
+describe('fastest banner', () => {
+  beforeEach(() => {
+    global.fetch = vi.fn().mockImplementation((url: string) => {
+      if (url.includes('/api/stores')) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ success: true, stores: mockStores, timestamp: Date.now() }),
+        });
+      }
+      if (url.includes('/api/queue')) {
+        return Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              success: true,
+              queue: {
+                storeQueue: [],
+                boothQueue: ['#105', '#106'],
+                counterQueue: ['#88'],
+                mixedQueue: [],
+                reservationQueue: [],
+              },
+              timestamp: Date.now(),
+            }),
+        });
+      }
+      return Promise.resolve({ ok: false, json: () => Promise.resolve({}) });
+    });
+
+    Object.defineProperty(navigator, 'geolocation', {
+      value: { getCurrentPosition: vi.fn() },
+      writable: true,
+      configurable: true,
+    });
+  });
+
+  it('shows fastest banner with fastest store first', async () => {
+    render(<App />);
+    await waitFor(() => {
+      expect(screen.getByText(/最快 3 間/)).toBeInTheDocument();
+    });
   });
 });

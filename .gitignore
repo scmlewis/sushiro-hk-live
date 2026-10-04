@@ -8,4 +8,5 @@ coverage/
 .vercel
 .sisyphus/
 .superpowers/
+.worktrees/
 docs/superpowers/

@@ -9,6 +9,7 @@ import { useTextSize, useViewMode, useFilters } from './hooks/useFilters';
 import { Navbar } from './components/Navbar';
 import { BookmarksSection } from './components/BookmarksSection';
 import { DistrictFilterBar } from './components/DistrictFilterBar';
+import { FastestBanner } from './components/FastestBanner';
 import { CompactStoreRow } from './components/CompactStoreRow';
 import { StoreMap } from './components/StoreMap';
 import { StoreDetailModal } from './components/StoreDetailModal';
@@ -275,6 +276,28 @@ export default function App() {
     fetchSingleQueue(store.id, true);
   }, [fetchSingleQueue]);
 
+  const didDeepLink = useRef(false);
+  useEffect(() => {
+    if (didDeepLink.current || stores.length === 0) return;
+    didDeepLink.current = true;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const raw = params.get('store');
+      if (!raw) return;
+      const id = Number.parseInt(raw, 10);
+      if (!Number.isInteger(id) || id <= 0) return;
+      const found = stores.find((s) => s.id === id);
+      if (found) {
+        handleSelectStoreModal(found);
+        window.history.replaceState({}, '', window.location.pathname);
+      } else {
+        showToast('找不到該門市', 'warning');
+      }
+    } catch {
+      // ignore malformed URL
+    }
+  }, [stores, handleSelectStoreModal, showToast]);
+
   const regionCounts = useMemo(() => {
     let hkIsland = 0, kowloon = 0, nt = 0;
     stores.forEach((s) => {
@@ -467,6 +490,11 @@ export default function App() {
                   exit="exit"
                   transition={{ duration: 0.15, ease: 'easeOut' }}
                 >
+                  <FastestBanner
+                    stores={processedStores}
+                    hasLocation={userLocation !== null}
+                    onSelect={handleSelectStoreModal}
+                  />
                   <DistrictFilterBar
                     regionCounts={regionCounts} selectedArea={filters.selectedArea}
                     searchQuery={filters.searchQuery} sortBy={filters.sortBy}
