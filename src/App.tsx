@@ -9,6 +9,7 @@ import { useTextSize, useViewMode, useFilters } from './hooks/useFilters';
 import { Navbar } from './components/Navbar';
 import { BookmarksSection } from './components/BookmarksSection';
 import { DistrictFilterBar } from './components/DistrictFilterBar';
+import { FastestBanner } from './components/FastestBanner';
 import { CompactStoreRow } from './components/CompactStoreRow';
 import { StoreMap } from './components/StoreMap';
 import { StoreDetailModal } from './components/StoreDetailModal';
@@ -467,6 +468,11 @@ export default function App() {
                   exit="exit"
                   transition={{ duration: 0.15, ease: 'easeOut' }}
                 >
+                  <FastestBanner
+                    stores={processedStores}
+                    hasLocation={userLocation !== null}
+                    onSelect={handleSelectStoreModal}
+                  />
                   <DistrictFilterBar
                     regionCounts={regionCounts} selectedArea={filters.selectedArea}
                     searchQuery={filters.searchQuery} sortBy={filters.sortBy}
