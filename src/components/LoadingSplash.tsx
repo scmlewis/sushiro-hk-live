@@ -42,7 +42,7 @@ export const LoadingSplash: React.FC = () => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.4, delay: 0.3, ease: 'easeOut' }}
         >
-          即時追蹤全港 44 間壽司郎門市
+          即時追蹤全港壽司郎門市
         </motion.p>
 
         {/* Feature hints */}

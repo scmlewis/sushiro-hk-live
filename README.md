@@ -2,9 +2,9 @@
 
 # 壽司郎 HK Live Queue
 
-**即時追蹤香港全港 44 間壽司郎門市之籌號發放、輪候組數與預估等候時間**
+**即時追蹤香港全港壽司郎門市之籌號發放、輪候組數與預估等候時間**
 
-Real-time queue tracking for all 44 Sushiro locations across Hong Kong.
+Real-time queue tracking for all Sushiro locations across Hong Kong.
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/scmlewis/sushiro-hk-live)
 
@@ -23,9 +23,9 @@ Deciding which Sushiro to walk into used to mean guessing and queuing blind. Thi
 ## 功能一覽 / Features
 
 ### 全港門市即時列表 / Live Store Directory
-收錄全港 44 間壽司郎門市，每間顯示營業狀態、籌號派發狀態、預估等候時間與輪候組數。支援按地區篩選（港島 / 九龍 / 新界）及關鍵字搜尋。
+收錄全港壽司郎門市，每間顯示營業狀態、籌號派發狀態、預估等候時間與輪候組數。支援按地區篩選（港島 / 九龍 / 新界）及關鍵字搜尋。
 
-All 44 Sushiro HK stores with live status, ticket issuance, estimated wait time, and queue count. Filter by region (HK Island / Kowloon / NT) or search by name/address.
+All Sushiro HK stores with live status, ticket issuance, estimated wait time, and queue count. Filter by region (HK Island / Kowloon / NT) or search by name/address.
 
 ### 即時地圖 / Interactive Map View
 全屏 Leaflet 互動地圖，以顏色區分等候時間（藍色=即時、綠色<15分鐘、黃色<30分鐘、橙色<60分鐘、紅色>=60分鐘）。支援.Marker 聚合、使用者定位與地圖圖例。

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { SushiroStore, StoreQueueMap, ToastMessage, TabId } from './types';
-import { FALLBACK_LOCATION, TEXT_SIZE_MAP, TOTAL_STORE_COUNT, MAX_COMPARE_STORES, POLL_INTERVAL_MS, BRAND_COLOR } from './config';
+import { FALLBACK_LOCATION, TEXT_SIZE_MAP, MAX_COMPARE_STORES, POLL_INTERVAL_MS, BRAND_COLOR } from './config';
 import { calculateDistanceKm, getCurrentPosition } from './utils/geolocation';
 import { getStoreRegion, isStoreIssuingTickets } from './utils/status';
 import { useBookmarks } from './hooks/useBookmarks';
@@ -87,7 +87,7 @@ export default function App() {
         setLastUpdated(data.timestamp || Date.now());
         setIsStaleData(data.stale === true);
         if (force) {
-          showToast(`已更新全港 ${TOTAL_STORE_COUNT} 間門市資料`, 'success');
+          showToast(`已更新全港 ${data.stores.length} 間門市資料`, 'success');
         }
       } else {
         throw new Error(data.error || '無法載入門市資料');
@@ -520,7 +520,7 @@ export default function App() {
                     <div>
                       {viewMode !== 'map' && (
                         <div className="flex items-center justify-between mb-3 px-1">
-                          <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400">顯示 {processedStores.length} 間門市 (全港 {TOTAL_STORE_COUNT} 間)</span>
+                          <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400">顯示 {processedStores.length} 間門市 (全港 {stores.length} 間)</span>
                           <span className="text-xs text-neutral-400 hidden sm:inline">點擊門市「詳情」可查看即時叫號明細</span>
                         </div>
                       )}

@@ -16,9 +16,6 @@ export const TOAST_DURATION_MS = 3200;
 /** Maximum number of stores that can be compared simultaneously */
 export const MAX_COMPARE_STORES = 4;
 
-/** Total number of Sushiro stores in HK (display-only, not enforced) */
-export const TOTAL_STORE_COUNT = 44;
-
 // ── Cache TTLs (api/_lib/cache.ts) ──
 
 /** Stores list cache TTL (ms) */
