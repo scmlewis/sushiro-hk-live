@@ -39,12 +39,6 @@ html, body {
   background: #0e1117 !important;
 }
 
-/* Dark-mode basemap: OSM tiles are light, invert them to match the dark UI.
-   Only the tile pane is filtered — markers/overlays keep their colors. */
-.leaflet-tile-pane {
-  filter: invert(100%) hue-rotate(180deg) brightness(0.95) contrast(0.9);
-}
-
 .sushiro-tooltip {
   background: #1a1a1a !important;
   border: 1px solid #404040 !important;

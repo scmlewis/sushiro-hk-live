@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sushiro-hk-static-v3';
+const CACHE_NAME = 'sushiro-hk-static-v4';
 const API_CACHE_NAME = 'sushiro-hk-api-v3';
 
 const STATIC_ASSETS = [
